@@ -3,7 +3,7 @@
 _realname=libgweather
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=4.4.4
+pkgver=4.6.0
 pkgrel=1
 pkgdesc="Location and time zone database, and weather-lookup library. (mingw-w64)"
 arch=('any')
@@ -34,7 +34,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
 source=(https://download.gnome.org/sources/${_realname}/${pkgver%.*}/${_realname}-${pkgver}.tar.xz
         001-win.patch
         002-relocation.patch)
-sha256sums=('7017677753cdf7d1fdc355e4bfcdb1eba8369793a8df24d241427a939cbf4283'
+sha256sums=('7f5d0e8c9685ef2ff46c2f3a57cae48d7bf3540b2d83921f889ef28e6a876788'
             '6c593d789465b6a3b9f906d0ec89d0ed2c082ea344fbf3d16a25510d91c4d6d0'
             'ea10bdc7f95d23362989217c672c8af8b6d6e62eb27f3d361f0f830d19cdcf3f')
 
