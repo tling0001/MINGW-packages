@@ -5,7 +5,7 @@ pkgbase=mingw-w64-adw-gtk3-theme
 pkgname="${MINGW_PACKAGE_PREFIX}-adw-gtk3-theme"
 pkgver=6.5
 pkgrel=1
-pkgdesc="GTK3 port of the libadwaita theme (mingw-w64)"
+pkgdesc="Unofficial GTK 3 port of the libadwaita theme"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
 
@@ -34,8 +34,6 @@ sha256sums=('fc9fc3b3e89d90d9a0e38bae05445ce9e65faf47acea3ac658e5f42566def473')
 build() {
   npm install --prefix "${srcdir}" -g sass
   export PATH="${srcdir}/node_modules/.bin:$PATH"
-  npm install -g --allow-scripts=@parcel/watcher
-  npm config set allow-scripts=@parcel/watcher --location=user
   which sass
   sass --version
 
