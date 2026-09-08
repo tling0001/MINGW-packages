@@ -36,6 +36,8 @@ build() {
   export PATH="${srcdir}/node_modules/.bin:$PATH"
   npm install -g --allow-scripts=@parcel/watcher
   npm config set allow-scripts=@parcel/watcher --location=user
+  which sass
+  sass --version
 
   mkdir -p build-${MSYSTEM}
   cd build-${MSYSTEM}
