@@ -20,27 +20,22 @@ license=('spdx:LGPL-2.1-only')
 makedepends=(
   "${MINGW_PACKAGE_PREFIX}-meson"
   "${MINGW_PACKAGE_PREFIX}-ninja"
-  "${MINGW_PACKAGE_PREFIX}-sassc"
+  "${MINGW_PACKAGE_PREFIX}-nodejs"
   "${MINGW_PACKAGE_PREFIX}-pkgconf"
 )
 
 source=(
   "https://github.com/lassekongo83/adw-gtk3/archive/refs/tags/v${pkgver}.tar.gz"
-  "0001-use-sassc.patch"
 )
 
-sha256sums=('fc9fc3b3e89d90d9a0e38bae05445ce9e65faf47acea3ac658e5f42566def473'
-            '8c259f6df8407bd1627ed79493bfba24eb2ae9028f9b024ac0b214b801b9ac83')
+sha256sums=('fc9fc3b3e89d90d9a0e38bae05445ce9e65faf47acea3ac658e5f42566def473')
 
-prepare() {
-  cd "${_realname}-${pkgver}"
-
-  patch -Np1 -i "${srcdir}/0001-use-sassc.patch"
-}
 
 build() {
   mkdir -p build-${MSYSTEM}
   cd build-${MSYSTEM}
+  npm install sass
+  export PATH="${srcdir}/node_modules/.bin:$PATH"
 
   MSYS2_ARG_CONV_EXCL="--prefix=" \
   meson setup \
