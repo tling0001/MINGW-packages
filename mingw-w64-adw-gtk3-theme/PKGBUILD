@@ -30,7 +30,7 @@ source=(
 )
 
 sha256sums=('fc9fc3b3e89d90d9a0e38bae05445ce9e65faf47acea3ac658e5f42566def473'
-            '67510381bb21b497610aec515ee5ca478492cb726a14b345f6d36b46cac0edfb')
+            '8c259f6df8407bd1627ed79493bfba24eb2ae9028f9b024ac0b214b801b9ac83')
 
 prepare() {
   cd "${_realname}-${pkgver}"
