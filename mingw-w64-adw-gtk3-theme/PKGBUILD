@@ -32,10 +32,18 @@ sha256sums=('fc9fc3b3e89d90d9a0e38bae05445ce9e65faf47acea3ac658e5f42566def473')
 
 
 build() {
-  npm install --prefix "${srcdir}" -g sass
-  export PATH="${srcdir}/node_modules/.bin:$PATH"
-  which sass
-  sass --version
+  npm install --prefix "${srcdir}" sass
+
+  mkdir -p "${srcdir}/fake-bin"
+
+  cat > "${srcdir}/fake-bin/sass" <<'EOF'
+#!/usr/bin/env sh
+exec npx --yes sass "$@"
+EOF
+
+  chmod +x "${srcdir}/fake-bin/sass"
+
+  export PATH="${srcdir}/fake-bin:$PATH"
 
   mkdir -p build-${MSYSTEM}
   cd build-${MSYSTEM}
