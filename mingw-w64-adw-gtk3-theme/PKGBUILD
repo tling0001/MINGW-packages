@@ -20,8 +20,8 @@ license=('spdx:LGPL-2.1-only')
 makedepends=(
   "${MINGW_PACKAGE_PREFIX}-meson"
   "${MINGW_PACKAGE_PREFIX}-ninja"
-  "dart-sass"
-  "git"
+  "${MINGW_PACKAGE_PREFIX}-nodejs"
+  "${MINGW_PACKAGE_PREFIX}-pkgconf"
 )
 
 source=(
