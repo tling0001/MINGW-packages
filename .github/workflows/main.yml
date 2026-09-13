@@ -1,8 +1,8 @@
 name: main
 
 concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
+  group: deploy-${{ github.run_number % 2 }}
+  cancel-in-progress: false
 
 on:
   push:
