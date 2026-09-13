@@ -5,7 +5,7 @@ pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 pkgver=50.0
 pkgrel=1
-pkgdesc="IDE for writing GNOME applications (mingw-w64)"
+pkgdesc="An IDE for writing GNOME-based software"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
 
