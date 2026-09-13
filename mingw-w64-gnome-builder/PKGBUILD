@@ -5,7 +5,7 @@ pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 pkgver=50.0
 pkgrel=1
-pkgdesc="An IDE for writing GNOME-based software"
+pkgdesc="An IDE for writing GNOME-based software (MSYS2 port)"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
 
@@ -22,6 +22,12 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-gtk4"
   "${MINGW_PACKAGE_PREFIX}-libadwaita"
   "${MINGW_PACKAGE_PREFIX}-gtksourceview5"
+  "${MINGW_PACKAGE_PREFIX}-libdex"
+  "${MINGW_PACKAGE_PREFIX}-libpanel"
+  "${MINGW_PACKAGE_PREFIX}-dconf"
+  "${MINGW_PACKAGE_PREFIX}-json-glib"
+  "${MINGW_PACKAGE_PREFIX}-jsonrpc-glib"
+  "${MINGW_PACKAGE_PREFIX}-libportal-gtk4"
 )
 
 makedepends=(
@@ -30,6 +36,7 @@ makedepends=(
   "${MINGW_PACKAGE_PREFIX}-ninja"
   "${MINGW_PACKAGE_PREFIX}-pkgconf"
   "${MINGW_PACKAGE_PREFIX}-gobject-introspection"
+  "${MINGW_PACKAGE_PREFIX}-vala"
 )
 
 source=(
@@ -39,14 +46,18 @@ source=(
 sha256sums=('46d54fd13f4f4bdb6eed7d004b499d0b6d9a76a6fafc68ad16c389953fd92f46')
 
 build() {
-  mkdir -p build-${MSYSTEM}
-  cd build-${MSYSTEM}
+  mkdir -p "${srcdir}/build-${MSYSTEM}"
+  cd "${srcdir}/build-${MSYSTEM}"
 
   MSYS2_ARG_CONV_EXCL="--prefix=" \
   meson setup \
     --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
     --wrap-mode=nodownload \
+    -Dplugin_flatpak=disabled \
+    -Dplugin_sysprof=disabled \
+    -Dplugin_podman=disabled \
+    -Ddocs=false \
     "../${_realname}-${pkgver}"
 
   meson compile
