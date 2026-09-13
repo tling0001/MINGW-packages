@@ -1,0 +1,24 @@
+name: Branch Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Branch Difference
+        shell: bash
+        run: |
+          git fetch origin experimental
+          if git diff --quiet HEAD FETCH_HEAD; then
+            echo "HEAD matches experimental. Cancelling downstream main workflow."
+            exit 1
+          else
+            echo "HEAD differs from experimental. Proceeding to main workflow."
+          fi
