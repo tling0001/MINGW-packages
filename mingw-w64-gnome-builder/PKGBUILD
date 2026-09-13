@@ -57,6 +57,7 @@ build() {
     -Dplugin_flatpak=disabled \
     -Dplugin_sysprof=disabled \
     -Dplugin_podman=disabled \
+    -Dwebkit=disabled \
     -Ddocs=false \
     "../${_realname}-${pkgver}"
 
