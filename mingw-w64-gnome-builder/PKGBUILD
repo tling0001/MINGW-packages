@@ -24,10 +24,8 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-gtksourceview5"
   "${MINGW_PACKAGE_PREFIX}-libdex"
   "${MINGW_PACKAGE_PREFIX}-libpanel"
-  "${MINGW_PACKAGE_PREFIX}-dconf"
   "${MINGW_PACKAGE_PREFIX}-json-glib"
   "${MINGW_PACKAGE_PREFIX}-jsonrpc-glib"
-  "${MINGW_PACKAGE_PREFIX}-libportal-gtk4"
 )
 
 makedepends=(
@@ -57,6 +55,7 @@ build() {
     -Dplugin_flatpak=disabled \
     -Dplugin_sysprof=disabled \
     -Dplugin_podman=disabled \
+    -Dplugin_portal=disabled \
     -Dwebkit=disabled \
     -Ddocs=false \
     "../${_realname}-${pkgver}"
