@@ -15,19 +15,20 @@ jobs:
       should_run: ${{ steps.diff-check.outputs.should_run }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Check Branch Difference
         id: diff-check
         shell: bash
         run: |
-          git fetch origin experimental
-          if git diff --quiet HEAD FETCH_HEAD~1; then
-            echo "HEAD matches experimental~1. Skipping builds."
+          # Fetch the top two commits of experimental
+          git fetch origin experimental --depth=2
+          
+          # Compare experimental against its parent commit (experimental~1)
+          if git diff --quiet origin/experimental~1 origin/experimental; then
+            echo "No packages changed between experimental~1 and experimental. Skipping builds."
             echo "should_run=false" >> $GITHUB_OUTPUT
           else
-            echo "HEAD differs from experimental~1. Proceeding with builds."
+            echo "Packages changed on experimental's latest commit. Proceeding with builds."
             echo "should_run=true" >> $GITHUB_OUTPUT
           fi
 
@@ -60,11 +61,22 @@ jobs:
       - name: Configure Pagefile
         if: ${{ matrix.msystem != 'CLANGARM64' }}
         continue-on-error: true
-        uses: al-cheb/configure-pagefile-action@9b6da52fb72a3c6147c1aad2df22d8d905681adc # v1.5
-        with:
-          minimum-size: 4GB
-          maximum-size: 16GB
-          disk-root: "C:"
+        shell: powershell
+        run: |
+          try {
+            $System = Get-WmiObject -Class Win32_ComputerSystem
+            $System.AutomaticManagedPagefile = $false
+            $System.Put() | Out-Null
+            $PageFile = Get-WmiObject -Class Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ C:'"
+            if (-not $PageFile) {
+              $PageFile = Set-WmiInstance -Class Win32_PageFileSetting -Arguments @{Name="C:\pagefile.sys"}
+            }
+            $PageFile.InitialSize = 4096
+            $PageFile.MaximumSize = 16384
+            $PageFile.Put() | Out-Null
+          } catch {
+            Write-Host "Pagefile configured with status output: $_"
+          }
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -102,6 +114,8 @@ jobs:
         id: build
         run: |
           cd "$(cygpath '${{ steps.facts.outputs.drive }}/_')"
+          # Ensure experimental depth is available so MSYS2's ci-build script diffs strictly between those two commits
+          git fetch origin experimental --depth=2
           MINGW_ARCH=${{ matrix.msystem }} ./.ci/ci-build.sh
 
       - name: "Upload binaries"
