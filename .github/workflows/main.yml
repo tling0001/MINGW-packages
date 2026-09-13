@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.should_run == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -38,13 +38,11 @@ jobs:
 
       - name: Configure Pagefile
         if: ${{ matrix.msystem != 'CLANGARM64' }}
-        # https://github.com/al-cheb/configure-pagefile-action/issues/16
         continue-on-error: true
         uses: al-cheb/configure-pagefile-action@9b6da52fb72a3c6147c1aad2df22d8d905681adc # v1.5
         with:
           minimum-size: 4GB
           maximum-size: 16GB
-          # Needs to be C:, see https://github.com/al-cheb/configure-pagefile-action/issues/18
           disk-root: "C:"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
