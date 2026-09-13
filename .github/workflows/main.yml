@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-    if: ${{ github.event_name != 'push' || github.ref != 'refs/heads/master' }}
     strategy:
       fail-fast: false
       matrix:
@@ -34,8 +33,29 @@ jobs:
           $BUILD_DRIVE = Split-Path $env:GITHUB_WORKSPACE -Qualifier
           echo "drive=$BUILD_DRIVE" >> $env:GITHUB_OUTPUT
 
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: temp
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+
+      - name: Check Branch Difference
+        id: diff-check
+        shell: bash
+        run: |
+          cd temp
+          git fetch origin experimental-one:experimental-one
+          if git diff --quiet HEAD origin/experimental-one; then
+            echo "MATCH=true" >> $GITHUB_OUTPUT
+            echo "HEAD matches experimental-one. Skipping build."
+          else
+            echo "MATCH=false" >> $GITHUB_OUTPUT
+            echo "HEAD differs from experimental-one. Proceeding with build."
+          fi
+
       - name: Configure Pagefile
-        if: ${{ matrix.msystem != 'CLANGARM64' }}
+        if: ${{ matrix.msystem != 'CLANGARM64' && steps.diff-check.outputs.MATCH == 'false' }}
         # https://github.com/al-cheb/configure-pagefile-action/issues/16
         continue-on-error: true
         uses: al-cheb/configure-pagefile-action@9b6da52fb72a3c6147c1aad2df22d8d905681adc # v1.5
@@ -45,14 +65,8 @@ jobs:
           # Needs to be C:, see https://github.com/al-cheb/configure-pagefile-action/issues/18
           disk-root: "C:"
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          path: temp
-          fetch-depth: 0
-          filter: blob:none
-          persist-credentials: false
-
       - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2.32.0
+        if: steps.diff-check.outputs.MATCH == 'false'
         with:
           msystem: ${{ matrix.msystem }}
           install: git python base-devel
@@ -60,23 +74,27 @@ jobs:
           location: '${{ steps.facts.outputs.drive }}\M'
 
       - name: Add staging repo
+        if: steps.diff-check.outputs.MATCH == 'false'
         shell: msys2 {0}
         run: |
           cp /etc/pacman.conf /etc/pacman.conf.bak
           grep -qFx '[staging]' /etc/pacman.conf || sed -i '/^# \[staging\]/,/^$/ s|^# ||g' /etc/pacman.conf
 
       - name: Update using staging
+        if: steps.diff-check.outputs.MATCH == 'false'
         run: |
           msys2 -c 'pacman --noconfirm -Suuy'
           msys2 -c 'pacman --noconfirm -Suu'
 
       - name: Move Checkout
+        if: steps.diff-check.outputs.MATCH == 'false'
         run: |
           $path = "${{ steps.facts.outputs.drive }}\_"
           If (Test-Path "$path") { rm -r -fo "$path" }
           Move-Item -Path ".\temp" -Destination "$path"
 
       - name: CI-Build
+        if: steps.diff-check.outputs.MATCH == 'false'
         shell: msys2 {0}
         id: build
         run: |
@@ -84,7 +102,7 @@ jobs:
           MINGW_ARCH=${{ matrix.msystem }} ./.ci/ci-build.sh
 
       - name: "Upload binaries"
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.diff-check.outputs.MATCH == 'false' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ matrix.msystem }}-packages
