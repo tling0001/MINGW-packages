@@ -19,10 +19,10 @@ jobs:
         shell: bash
         run: |
           git fetch origin experimental
-          if git diff --quiet HEAD FETCH_HEAD; then
-            echo "HEAD matches experimental. Skipping main workflow."
-            echo "should_run=false" >> $GITHUB_OUTPUT
-          else
-            echo "HEAD differs from experimental. Proceeding to main workflow."
+          if git diff --quiet HEAD FETCH_HEAD~1; then
+            echo "HEAD matches experimental~1. Proceeding to main workflow."
             echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "HEAD does not match experimental~1. Skipping main workflow."
+            echo "should_run=false" >> $GITHUB_OUTPUT
           fi
