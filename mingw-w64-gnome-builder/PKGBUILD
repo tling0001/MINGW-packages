@@ -39,9 +39,16 @@ makedepends=(
 
 source=(
   "https://download.gnome.org/sources/gnome-builder/${pkgver%.*}/gnome-builder-${pkgver}.tar.xz"
+  "win32-gio-unix.patch"
 )
 
-sha256sums=('46d54fd13f4f4bdb6eed7d004b499d0b6d9a76a6fafc68ad16c389953fd92f46')
+sha256sums=('46d54fd13f4f4bdb6eed7d004b499d0b6d9a76a6fafc68ad16c389953fd92f46'
+            '9811b310968e60de4b6d45f5139d3bbc40e9f83232032519793a8d42588a0dfe')
+
+prepare() {
+  cd "${_realname}-${pkgver}"
+  patch -p1 -i "${srcdir}/win32-gio-unix.patch"
+}
 
 build() {
   mkdir -p "${srcdir}/build-${MSYSTEM}"
