@@ -52,10 +52,10 @@ build() {
     --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
     --wrap-mode=nodownload \
-    -Dplugin_flatpak=disabled \
-    -Dplugin_sysprof=disabled \
-    -Dplugin_podman=disabled \
-    -Dplugin_portal=disabled \
+    -Dplugin_flatpak=false \
+    -Dplugin_sysprof=false \
+    -Dplugin_podman=false \
+    -Dplugin_portal=false \
     -Dwebkit=disabled \
     -Ddocs=false \
     "../${_realname}-${pkgver}"
