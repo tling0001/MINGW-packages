@@ -45,13 +45,13 @@ jobs:
         shell: bash
         run: |
           cd temp
-          git fetch origin experimental-one:experimental-one
-          if git diff --quiet HEAD origin/experimental-one; then
+          git fetch origin experimental:experimental
+          if git diff --quiet HEAD origin/experimental; then
             echo "MATCH=true" >> $GITHUB_OUTPUT
-            echo "HEAD matches experimental-one. Skipping build."
+            echo "HEAD matches experimental. Skipping build."
           else
             echo "MATCH=false" >> $GITHUB_OUTPUT
-            echo "HEAD differs from experimental-one. Proceeding with build."
+            echo "HEAD differs from experimental. Proceeding with build."
           fi
 
       - name: Configure Pagefile
