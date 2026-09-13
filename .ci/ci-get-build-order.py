@@ -26,13 +26,13 @@ def get_toplevel():
 
 
 def list_changes(*git_args):
-    out = run("git", "log", *git_args, "upstream/master..").splitlines()
-    out += run("git", "log", *git_args, "HEAD^..").splitlines()
-    return list(dict.fromkeys(x.split("::")[-1] for x in sorted(out)))
+    # Strictly fetch diffs between experimental's parent commit and its HEAD
+    out = run("git", "diff", *git_args, "origin/experimental~1", "origin/experimental").splitlines()
+    return list(dict.fromkeys(x for x in sorted(out) if x))
 
 
 def list_packages():
-    changes = list_changes("--pretty=format:", "--name-only")
+    changes = list_changes("--name-only")
     return [
         x.split("/")[0]
         for x in changes
