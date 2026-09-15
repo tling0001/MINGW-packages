@@ -29,10 +29,23 @@ source=(
   "winq-emu-virglrenderer-${pkgver}.tar.gz::https://github.com/tling0001/winq-emu-virglrenderer/archive/refs/tags/${pkgver}.tar.gz"
   "winq-emu-qemu-${pkgver}.tar.gz::https://github.com/tling0001/winq-emu-qemu/archive/refs/tags/${pkgver}.tar.gz"
 )
+noextract=(
+  "winq-emu-virglrenderer-${pkgver}.tar.gz"
+  "winq-emu-qemu-${pkgver}.tar.gz"
+)
 sha256sums=('SKIP' 'SKIP')
 
+prepare() {
+  # Manually extract tarballs using tar to create missing subdirectories automatically
+  mkdir -p "$srcdir/winq-emu-virglrenderer-${pkgver}"
+  tar -xzf "$srcdir/winq-emu-virglrenderer-${pkgver}.tar.gz" -C "$srcdir"
+
+  mkdir -p "$srcdir/winq-emu-qemu-${pkgver}"
+  tar -xzf "$srcdir/winq-emu-qemu-${pkgver}.tar.gz" -C "$srcdir"
+}
+
 build() {
-  # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
+  # 1. Build virglrenderer
   MSYS2_ARG_CONV_EXCL="*" meson setup \
     --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
