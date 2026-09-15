@@ -6,7 +6,7 @@ pkgver=11.0.0
 pkgrel=1
 pkgdesc="WINQ-EMU components - virglrenderer and QEMU (${MINGW_CHOST})"
 arch=('any')
-mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
+mingw_arch=('mingw64' 'ucrt64')
 url="https://github.com/cmspam/winq-emu"
 license=('GPL-2.0-or-later' 'MIT')
 depends=(
@@ -38,10 +38,11 @@ source=(
 sha256sums=('SKIP' 'SKIP')
 
 build() {
-  # Force MSYS2 toolchain environment variables
-  export CC="${MINGW_PREFIX}/bin/gcc"
-  export CXX="${MINGW_PREFIX}/bin/g++"
-  export PKG_CONFIG="${MINGW_PREFIX}/bin/pkg-config"
+  # Force explicit Windows/MSYS2 executable paths to prevent Meson path resolution failures
+  export PATH="${MINGW_PREFIX}/bin:$PATH"
+  export CC="${MINGW_PREFIX}/bin/gcc.exe"
+  export CXX="${MINGW_PREFIX}/bin/g++.exe"
+  export PKG_CONFIG="${MINGW_PREFIX}/bin/pkg-config.exe"
 
   # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
   cd "$srcdir/winq-emu-virglrenderer"
@@ -58,7 +59,8 @@ build() {
 
   # 2. Build QEMU
   cd "$srcdir/winq-emu-qemu"
-  ./configure \
+  
+  MSYS2_ARG_CONV_EXCL="*" ./configure \
     --prefix="${MINGW_PREFIX}" \
     --target-list=x86_64-softmmu \
     --enable-virglrenderer \
