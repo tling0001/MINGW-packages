@@ -19,7 +19,7 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-glib2"
   "${MINGW_PACKAGE_PREFIX}-pixman"
   "${MINGW_PACKAGE_PREFIX}-libepoxy"
-  "${MINGW_PACKAGE_PREFIX}-libgbm"
+  "${MINGW_PACKAGE_PREFIX}-mesa"
   "${MINGW_PACKAGE_PREFIX}-vulkan-loader"
 )
 
@@ -34,8 +34,8 @@ makedepends=(
 
 source=(
   "${_realname}::git+https://github.com/cmspam/winq-emu.git"
-  "${_realname}-virglrenderer::git+https://github.com/cmspam/virglrenderer.git"
-  "${_realname}-qemu::git+https://github.com/cmspam/qemu.git"
+  "${_realname}-virglrenderer::git+https://github.com/cmspam/winq-emu-virglrenderer.git"
+  "${_realname}-qemu::git+https://github.com/cmspam/winq-emu-qemu.git"
 )
 
 sha256sums=(
@@ -64,7 +64,7 @@ build() {
     qemu_target="aarch64-softmmu,x86_64-softmmu"
   fi
 
-  # 1. Build winq-emu-virglrenderer
+  # 1. Build custom virglrenderer (requires -Dvenus=true and -Dvideo=true)
   mkdir -p "${srcdir}/build-virglrenderer-${MSYSTEM}"
   
   MSYS2_ARG_CONV_EXCL="--prefix=" \
@@ -79,13 +79,13 @@ build() {
 
   meson compile -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
 
-  # Stage virglrenderer locally so QEMU can link against it
+  # Stage virglrenderer in build tree so QEMU configure step links against it
   DESTDIR="${srcdir}/tmp_install" meson install -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
   export PKG_CONFIG_PATH="${srcdir}/tmp_install${MINGW_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
   export LDFLAGS="-L${srcdir}/tmp_install${MINGW_PREFIX}/lib ${LDFLAGS}"
   export CPPFLAGS="-I${srcdir}/tmp_install${MINGW_PREFIX}/include ${CPPFLAGS}"
 
-  # 2. Build winq-emu-qemu
+  # 2. Build custom QEMU
   mkdir -p "${srcdir}/build-qemu-${MSYSTEM}"
   cd "${srcdir}/build-qemu-${MSYSTEM}"
 
@@ -99,7 +99,7 @@ build() {
 
   make -j$(nproc)
 
-  # 3. Build C# GUI Frontend Launcher
+  # 3. Build C# Frontend Launcher
   cd "${srcdir}/${_realname}"
   mkdir -p installer/bin installer/icons
 
@@ -124,7 +124,7 @@ package() {
   cd "${srcdir}/build-qemu-${MSYSTEM}"
   make DESTDIR="${pkgdir}" install
 
-  # Deploy frontend and app runtime bundle
+  # Deploy frontend application bundle layout
   local app_dir="${pkgdir}${MINGW_PREFIX}/share/${_realname}"
   mkdir -p "${app_dir}/bin" "${app_dir}/icons"
 
@@ -132,7 +132,7 @@ package() {
   cp installer/WINQ-EMU.exe "${app_dir}/"
   cp launcher/winq-emu.ico "${app_dir}/icons/"
 
-  # Dynamically gather MSYS2 dynamic libraries via ldd across toolchains
+  # Dynamically bundle MSYS2 dynamic runtime DLL dependencies
   local qemu_bin="${srcdir}/build-qemu-${MSYSTEM}/qemu-system-x86_64.exe"
   [ -f "${qemu_bin}" ] || qemu_bin="${srcdir}/build-qemu-${MSYSTEM}/qemu-system-aarch64.exe"
   local virgl_dll="${srcdir}/tmp_install${MINGW_PREFIX}/bin/libvirglrenderer-1.dll"
@@ -143,6 +143,6 @@ package() {
     fi
   done
 
-  # Include compiled virglrenderer library into application bundle
+  # Include compiled virglrenderer library into output app folder
   cp "${srcdir}/tmp_install${MINGW_PREFIX}/bin/libvirglrenderer-1.dll" "${app_dir}/bin/"
 }
