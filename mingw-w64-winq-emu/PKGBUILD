@@ -1,148 +1,68 @@
 # Maintainer: Your Name <you@example.com>
-
-_realname=winq-emu
-pkgbase=mingw-w64-${_realname}
-pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=1.0.0.r0.g1234567
+pkgname=mingw-w64-ucrt-x86_64-winq-emu
+pkgver=11.0.0
 pkgrel=1
-pkgdesc="WINQ-EMU frontend, QEMU, and custom virglrenderer stack (MSYS2 port)"
+pkgdesc="WINQ-EMU components - virglrenderer and QEMU (UCRT64)"
 arch=('any')
-mingw_arch=('ucrt64' 'mingw64' 'clang64' 'clangarm64')
-
 url="https://github.com/cmspam/winq-emu"
-msys2_repository_url="https://github.com/cmspam/winq-emu"
-
-license=('spdx:GPL-2.0-only' 'spdx:MIT')
-
+license=('GPL-2.0-or-later' 'MIT')
 depends=(
-  "${MINGW_PACKAGE_PREFIX}-gcc-libs"
-  "${MINGW_PACKAGE_PREFIX}-glib2"
-  "${MINGW_PACKAGE_PREFIX}-pixman"
-  "${MINGW_PACKAGE_PREFIX}-libepoxy"
-  "${MINGW_PACKAGE_PREFIX}-mesa"
-  "${MINGW_PACKAGE_PREFIX}-vulkan-loader"
+  'mingw-w64-ucrt-x86_64-libepoxy'
+  'mingw-w64-ucrt-x86_64-spice-protocol'
+  'mingw-w64-ucrt-x86_64-usbredir'
+  'mingw-w64-ucrt-x86_64-sdl2'
+  'mingw-w64-ucrt-x86_64-pixman'
+  'mingw-w64-ucrt-x86_64-zstd'
+  'mingw-w64-ucrt-x86_64-glib2'
 )
-
 makedepends=(
-  "git"
-  "${MINGW_PACKAGE_PREFIX}-cc"
-  "${MINGW_PACKAGE_PREFIX}-meson"
-  "${MINGW_PACKAGE_PREFIX}-ninja"
-  "${MINGW_PACKAGE_PREFIX}-pkgconf"
-  "${MINGW_PACKAGE_PREFIX}-python"
+  'mingw-w64-ucrt-x86_64-meson'
+  'mingw-w64-ucrt-x86_64-ninja'
+  'mingw-w64-ucrt-x86_64-pkg-config'
+  'mingw-w64-ucrt-x86_64-python'
+  'mingw-w64-ucrt-x86_64-python-yaml'
+  'mingw-w64-ucrt-x86_64-python-sphinx'
 )
-
 source=(
-  "${_realname}::git+https://github.com/cmspam/winq-emu.git"
-  "${_realname}-virglrenderer::git+https://github.com/cmspam/winq-emu-virglrenderer.git"
-  "${_realname}-qemu::git+https://github.com/cmspam/winq-emu-qemu.git"
+  "winq-emu-virglrenderer::git+https://github.com/cmspam/winq-emu-virglrenderer.git"
+  "winq-emu-qemu::git+https://github.com/cmspam/winq-emu-qemu.git"
 )
-
-sha256sums=(
-  'SKIP'
-  'SKIP'
-  'SKIP'
-)
-
-# Host system C# compiler path (.NET Framework 4 provided by Windows)
-_csc="/c/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
-
-pkgver() {
-  cd "${srcdir}/${_realname}"
-  git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' || echo "1.0.0.r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)"
-}
-
-prepare() {
-  cd "${srcdir}/${_realname}"
-  git submodule update --init --recursive 2>/dev/null || true
-}
+sha256sums=('SKIP'
+            'SKIP')
 
 build() {
-  # Select architecture target for QEMU softmmu build
-  local qemu_target="x86_64-softmmu"
-  if [ "${CARCH}" = "aarch64" ]; then
-    qemu_target="aarch64-softmmu,x86_64-softmmu"
-  fi
-
-  # 1. Build custom virglrenderer (requires -Dvenus=true and -Dvideo=true)
-  mkdir -p "${srcdir}/build-virglrenderer-${MSYSTEM}"
-  
-  MSYS2_ARG_CONV_EXCL="--prefix=" \
-  meson setup \
-    --prefix="${MINGW_PREFIX}" \
+  # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
+  MSYS2_ARG_CONV_EXCL="*" meson setup \
+    --prefix=/ucrt64 \
     --buildtype=plain \
     -Dvenus=true \
     -Dvideo=true \
     -Dtests=false \
-    "${srcdir}/${_realname}-virglrenderer" \
-    "${srcdir}/build-virglrenderer-${MSYSTEM}"
+    "build-virglrenderer-UCRT64" \
+    "$srcdir/winq-emu-virglrenderer"
 
-  meson compile -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
+  meson compile -C "build-virglrenderer-UCRT64"
 
-  # Stage virglrenderer in build tree so QEMU configure step links against it
-  DESTDIR="${srcdir}/tmp_install" meson install -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
-  export PKG_CONFIG_PATH="${srcdir}/tmp_install${MINGW_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-  export LDFLAGS="-L${srcdir}/tmp_install${MINGW_PREFIX}/lib ${LDFLAGS}"
-  export CPPFLAGS="-I${srcdir}/tmp_install${MINGW_PREFIX}/include ${CPPFLAGS}"
-
-  # 2. Build custom QEMU
-  mkdir -p "${srcdir}/build-qemu-${MSYSTEM}"
-  cd "${srcdir}/build-qemu-${MSYSTEM}"
-
-  MSYS2_ARG_CONV_EXCL="--prefix=" \
-  "${srcdir}/${_realname}-qemu/configure" \
-    --prefix="${MINGW_PREFIX}" \
-    --target-list="${qemu_target}" \
+  # 2. Build QEMU
+  cd "$srcdir/winq-emu-qemu"
+  ./configure \
+    --prefix=/ucrt64 \
+    --target-list=x86_64-softmmu \
     --enable-virglrenderer \
-    --enable-whpx \
+    --enable-opengl \
+    --enable-sdl \
     --disable-werror
 
   make -j$(nproc)
 
-  # 3. Build C# Frontend Launcher
-  cd "${srcdir}/${_realname}"
-  mkdir -p installer/bin installer/icons
-
-  if [ ! -f "${_csc}" ]; then
-    echo "Error: C# compiler csc.exe not found at ${_csc}. Ensure .NET Framework 4 is enabled."
-    return 1
-  fi
-
-  "${_csc}" /target:winexe \
-    /out:installer\\WINQ-EMU.exe \
-    /win32icon:launcher\\winq-emu.ico \
-    /r:System.Windows.Forms.dll \
-    /r:System.Drawing.dll \
-    launcher\\WINQ-EMU.cs
+  # NOTE: Excluded C# frontend compilation (csc.exe) and NSIS installer (makensis).
 }
 
 package() {
-  # Install virglrenderer
-  DESTDIR="${pkgdir}" meson install -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
+  # Install virglrenderer DLLs and headers
+  meson install -C "build-virglrenderer-UCRT64" --destdir "$pkgdir"
 
-  # Install QEMU binaries
-  cd "${srcdir}/build-qemu-${MSYSTEM}"
-  make DESTDIR="${pkgdir}" install
-
-  # Deploy frontend application bundle layout
-  local app_dir="${pkgdir}${MINGW_PREFIX}/share/${_realname}"
-  mkdir -p "${app_dir}/bin" "${app_dir}/icons"
-
-  cd "${srcdir}/${_realname}"
-  cp installer/WINQ-EMU.exe "${app_dir}/"
-  cp launcher/winq-emu.ico "${app_dir}/icons/"
-
-  # Dynamically bundle MSYS2 dynamic runtime DLL dependencies
-  local qemu_bin="${srcdir}/build-qemu-${MSYSTEM}/qemu-system-x86_64.exe"
-  [ -f "${qemu_bin}" ] || qemu_bin="${srcdir}/build-qemu-${MSYSTEM}/qemu-system-aarch64.exe"
-  local virgl_dll="${srcdir}/tmp_install${MINGW_PREFIX}/bin/libvirglrenderer-1.dll"
-
-  ldd "${qemu_bin}" "${virgl_dll}" | grep -i "${MINGW_PREFIX}/bin/.*\.dll" | awk '{print $3}' | sort -u | while read -r dll; do
-    if [ -f "${dll}" ]; then
-      cp -u "${dll}" "${app_dir}/bin/"
-    fi
-  done
-
-  # Include compiled virglrenderer library into output app folder
-  cp "${srcdir}/tmp_install${MINGW_PREFIX}/bin/libvirglrenderer-1.dll" "${app_dir}/bin/"
+  # Install QEMU binaries and artifacts
+  cd "$srcdir/winq-emu-qemu"
+  make DESTDIR="$pkgdir" install
 }
