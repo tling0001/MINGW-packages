@@ -17,6 +17,7 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-pixman"
   "${MINGW_PACKAGE_PREFIX}-zstd"
   "${MINGW_PACKAGE_PREFIX}-glib2"
+  "${MINGW_PACKAGE_PREFIX}-vulkan-loader"
 )
 makedepends=(
   "git"
@@ -28,6 +29,7 @@ makedepends=(
   "${MINGW_PACKAGE_PREFIX}-python"
   "${MINGW_PACKAGE_PREFIX}-python-yaml"
   "${MINGW_PACKAGE_PREFIX}-python-sphinx"
+  "${MINGW_PACKAGE_PREFIX}-vulkan-headers"
 )
 source=(
   "winq-emu-virglrenderer::git+https://github.com/tling0001/winq-emu-virglrenderer.git#tag=${pkgver}"
