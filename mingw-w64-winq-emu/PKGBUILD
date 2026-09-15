@@ -43,6 +43,7 @@ build() {
   export CC="${MINGW_PREFIX}/bin/gcc.exe"
   export CXX="${MINGW_PREFIX}/bin/g++.exe"
   export PKG_CONFIG="${MINGW_PREFIX}/bin/pkg-config.exe"
+  export PYTHON="${MINGW_PREFIX}/bin/python3.exe"
 
   # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
   cd "$srcdir/winq-emu-virglrenderer"
@@ -66,7 +67,9 @@ build() {
     --enable-virglrenderer \
     --enable-opengl \
     --enable-sdl \
-    --disable-werror
+    --disable-werror \
+    --disable-download \
+    --python="${MINGW_PREFIX}/bin/python3.exe"
 
   make -j$(nproc)
 }
@@ -78,4 +81,19 @@ package() {
   # Install QEMU binaries and artifacts
   cd "$srcdir/winq-emu-qemu"
   make DESTDIR="$pkgdir" install
+
+  # Rename installed QEMU binaries from qemu-* to winq-emu-* and enforce .exe extension
+  local _bin_dir="${pkgdir}${MINGW_PREFIX}/bin"
+  if [ -d "${_bin_dir}" ]; then
+    for f in "${_bin_dir}"/qemu-*; do
+      if [ -f "$f" ]; then
+        # Strip path and 'qemu-' prefix
+        local filename="${f##*/qemu-}"
+        # Strip existing .exe if present to avoid .exe.exe duplicates
+        local base_name="${filename%.exe}"
+        # Rename to winq-emu-<name>.exe
+        mv "$f" "${_bin_dir}/winq-emu-${base_name}.exe"
+      fi
+    done
+  fi
 }
