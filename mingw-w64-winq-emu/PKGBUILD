@@ -20,6 +20,8 @@ depends=(
 )
 makedepends=(
   "git"
+  "${MINGW_PACKAGE_PREFIX}-cc"
+  "${MINGW_PACKAGE_PREFIX}-gcc"
   "${MINGW_PACKAGE_PREFIX}-meson"
   "${MINGW_PACKAGE_PREFIX}-ninja"
   "${MINGW_PACKAGE_PREFIX}-pkg-config"
@@ -34,8 +36,14 @@ source=(
 sha256sums=('SKIP' 'SKIP')
 
 build() {
+  # Force MSYS2 toolchain environment variables
+  export CC="${MINGW_PREFIX}/bin/gcc"
+  export CXX="${MINGW_PREFIX}/bin/g++"
+  export PKG_CONFIG="${MINGW_PREFIX}/bin/pkg-config"
+
   # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
   cd "$srcdir/winq-emu-virglrenderer"
+  
   MSYS2_ARG_CONV_EXCL="*" meson setup \
     --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
