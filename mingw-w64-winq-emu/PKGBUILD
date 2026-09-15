@@ -35,16 +35,16 @@ sha256sums=('SKIP' 'SKIP')
 
 build() {
   # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
+  cd "$srcdir/winq-emu-virglrenderer"
   MSYS2_ARG_CONV_EXCL="*" meson setup \
     --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
     -Dvenus=true \
     -Dvideo=true \
     -Dtests=false \
-    "$srcdir/winq-emu-virglrenderer" \
-    "$srcdir/build-virglrenderer"
+    . "../build-virglrenderer"
 
-  meson compile -C "$srcdir/build-virglrenderer"
+  meson compile -C "../build-virglrenderer"
 
   # 2. Build QEMU
   cd "$srcdir/winq-emu-qemu"
