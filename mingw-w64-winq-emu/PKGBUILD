@@ -1,52 +1,53 @@
 # Maintainer: Your Name <you@example.com>
-pkgname=mingw-w64-ucrt-x86_64-winq-emu
+_realname=winq-emu
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 pkgver=11.0.0
 pkgrel=1
-pkgdesc="WINQ-EMU components - virglrenderer and QEMU (UCRT64)"
+pkgdesc="WINQ-EMU components - virglrenderer and QEMU (${MINGW_CHOST})"
 arch=('any')
 url="https://github.com/cmspam/winq-emu"
 license=('GPL-2.0-or-later' 'MIT')
 depends=(
-  'mingw-w64-ucrt-x86_64-libepoxy'
-  'mingw-w64-ucrt-x86_64-spice-protocol'
-  'mingw-w64-ucrt-x86_64-usbredir'
-  'mingw-w64-ucrt-x86_64-sdl2'
-  'mingw-w64-ucrt-x86_64-pixman'
-  'mingw-w64-ucrt-x86_64-zstd'
-  'mingw-w64-ucrt-x86_64-glib2'
+  "${MINGW_PACKAGE_PREFIX}-libepoxy"
+  "${MINGW_PACKAGE_PREFIX}-spice-protocol"
+  "${MINGW_PACKAGE_PREFIX}-usbredir"
+  "${MINGW_PACKAGE_PREFIX}-SDL2"
+  "${MINGW_PACKAGE_PREFIX}-pixman"
+  "${MINGW_PACKAGE_PREFIX}-zstd"
+  "${MINGW_PACKAGE_PREFIX}-glib2"
 )
 makedepends=(
-  'mingw-w64-ucrt-x86_64-meson'
-  'mingw-w64-ucrt-x86_64-ninja'
-  'mingw-w64-ucrt-x86_64-pkg-config'
-  'mingw-w64-ucrt-x86_64-python'
-  'mingw-w64-ucrt-x86_64-python-yaml'
-  'mingw-w64-ucrt-x86_64-python-sphinx'
+  "${MINGW_PACKAGE_PREFIX}-meson"
+  "${MINGW_PACKAGE_PREFIX}-ninja"
+  "${MINGW_PACKAGE_PREFIX}-pkg-config"
+  "${MINGW_PACKAGE_PREFIX}-python"
+  "${MINGW_PACKAGE_PREFIX}-python-yaml"
+  "${MINGW_PACKAGE_PREFIX}-python-sphinx"
 )
 source=(
   "winq-emu-virglrenderer::git+https://github.com/cmspam/winq-emu-virglrenderer.git"
   "winq-emu-qemu::git+https://github.com/cmspam/winq-emu-qemu.git"
 )
-sha256sums=('SKIP'
-            'SKIP')
+sha256sums=('SKIP' 'SKIP')
 
 build() {
   # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
   MSYS2_ARG_CONV_EXCL="*" meson setup \
-    --prefix=/ucrt64 \
+    --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
     -Dvenus=true \
     -Dvideo=true \
     -Dtests=false \
-    "build-virglrenderer-UCRT64" \
+    "build-virglrenderer" \
     "$srcdir/winq-emu-virglrenderer"
 
-  meson compile -C "build-virglrenderer-UCRT64"
+  meson compile -C "build-virglrenderer"
 
   # 2. Build QEMU
   cd "$srcdir/winq-emu-qemu"
   ./configure \
-    --prefix=/ucrt64 \
+    --prefix="${MINGW_PREFIX}" \
     --target-list=x86_64-softmmu \
     --enable-virglrenderer \
     --enable-opengl \
@@ -54,13 +55,11 @@ build() {
     --disable-werror
 
   make -j$(nproc)
-
-  # NOTE: Excluded C# frontend compilation (csc.exe) and NSIS installer (makensis).
 }
 
 package() {
   # Install virglrenderer DLLs and headers
-  meson install -C "build-virglrenderer-UCRT64" --destdir "$pkgdir"
+  meson install -C "build-virglrenderer" --destdir "$pkgdir"
 
   # Install QEMU binaries and artifacts
   cd "$srcdir/winq-emu-qemu"
