@@ -1,0 +1,148 @@
+# Maintainer: Your Name <you@example.com>
+
+_realname=winq-emu
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=1.0.0.r0.g1234567
+pkgrel=1
+pkgdesc="WINQ-EMU frontend, QEMU, and custom virglrenderer stack (MSYS2 port)"
+arch=('any')
+mingw_arch=('ucrt64' 'mingw64' 'clang64' 'clangarm64')
+
+url="https://github.com/cmspam/winq-emu"
+msys2_repository_url="https://github.com/cmspam/winq-emu"
+
+license=('spdx:GPL-2.0-only' 'spdx:MIT')
+
+depends=(
+  "${MINGW_PACKAGE_PREFIX}-gcc-libs"
+  "${MINGW_PACKAGE_PREFIX}-glib2"
+  "${MINGW_PACKAGE_PREFIX}-pixman"
+  "${MINGW_PACKAGE_PREFIX}-libepoxy"
+  "${MINGW_PACKAGE_PREFIX}-libgbm"
+  "${MINGW_PACKAGE_PREFIX}-vulkan-loader"
+)
+
+makedepends=(
+  "git"
+  "${MINGW_PACKAGE_PREFIX}-cc"
+  "${MINGW_PACKAGE_PREFIX}-meson"
+  "${MINGW_PACKAGE_PREFIX}-ninja"
+  "${MINGW_PACKAGE_PREFIX}-pkgconf"
+  "${MINGW_PACKAGE_PREFIX}-python"
+)
+
+source=(
+  "${_realname}::git+https://github.com/cmspam/winq-emu.git"
+  "${_realname}-virglrenderer::git+https://github.com/cmspam/virglrenderer.git"
+  "${_realname}-qemu::git+https://github.com/cmspam/qemu.git"
+)
+
+sha256sums=(
+  'SKIP'
+  'SKIP'
+  'SKIP'
+)
+
+# Host system C# compiler path (.NET Framework 4 provided by Windows)
+_csc="/c/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+
+pkgver() {
+  cd "${srcdir}/${_realname}"
+  git describe --long --tags 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' || echo "1.0.0.r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "${srcdir}/${_realname}"
+  git submodule update --init --recursive 2>/dev/null || true
+}
+
+build() {
+  # Select architecture target for QEMU softmmu build
+  local qemu_target="x86_64-softmmu"
+  if [ "${CARCH}" = "aarch64" ]; then
+    qemu_target="aarch64-softmmu,x86_64-softmmu"
+  fi
+
+  # 1. Build winq-emu-virglrenderer
+  mkdir -p "${srcdir}/build-virglrenderer-${MSYSTEM}"
+  
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  meson setup \
+    --prefix="${MINGW_PREFIX}" \
+    --buildtype=plain \
+    -Dvenus=true \
+    -Dvideo=true \
+    -Dtests=false \
+    "${srcdir}/${_realname}-virglrenderer" \
+    "${srcdir}/build-virglrenderer-${MSYSTEM}"
+
+  meson compile -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
+
+  # Stage virglrenderer locally so QEMU can link against it
+  DESTDIR="${srcdir}/tmp_install" meson install -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
+  export PKG_CONFIG_PATH="${srcdir}/tmp_install${MINGW_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+  export LDFLAGS="-L${srcdir}/tmp_install${MINGW_PREFIX}/lib ${LDFLAGS}"
+  export CPPFLAGS="-I${srcdir}/tmp_install${MINGW_PREFIX}/include ${CPPFLAGS}"
+
+  # 2. Build winq-emu-qemu
+  mkdir -p "${srcdir}/build-qemu-${MSYSTEM}"
+  cd "${srcdir}/build-qemu-${MSYSTEM}"
+
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  "${srcdir}/${_realname}-qemu/configure" \
+    --prefix="${MINGW_PREFIX}" \
+    --target-list="${qemu_target}" \
+    --enable-virglrenderer \
+    --enable-whpx \
+    --disable-werror
+
+  make -j$(nproc)
+
+  # 3. Build C# GUI Frontend Launcher
+  cd "${srcdir}/${_realname}"
+  mkdir -p installer/bin installer/icons
+
+  if [ ! -f "${_csc}" ]; then
+    echo "Error: C# compiler csc.exe not found at ${_csc}. Ensure .NET Framework 4 is enabled."
+    return 1
+  fi
+
+  "${_csc}" /target:winexe \
+    /out:installer\\WINQ-EMU.exe \
+    /win32icon:launcher\\winq-emu.ico \
+    /r:System.Windows.Forms.dll \
+    /r:System.Drawing.dll \
+    launcher\\WINQ-EMU.cs
+}
+
+package() {
+  # Install virglrenderer
+  DESTDIR="${pkgdir}" meson install -C "${srcdir}/build-virglrenderer-${MSYSTEM}"
+
+  # Install QEMU binaries
+  cd "${srcdir}/build-qemu-${MSYSTEM}"
+  make DESTDIR="${pkgdir}" install
+
+  # Deploy frontend and app runtime bundle
+  local app_dir="${pkgdir}${MINGW_PREFIX}/share/${_realname}"
+  mkdir -p "${app_dir}/bin" "${app_dir}/icons"
+
+  cd "${srcdir}/${_realname}"
+  cp installer/WINQ-EMU.exe "${app_dir}/"
+  cp launcher/winq-emu.ico "${app_dir}/icons/"
+
+  # Dynamically gather MSYS2 dynamic libraries via ldd across toolchains
+  local qemu_bin="${srcdir}/build-qemu-${MSYSTEM}/qemu-system-x86_64.exe"
+  [ -f "${qemu_bin}" ] || qemu_bin="${srcdir}/build-qemu-${MSYSTEM}/qemu-system-aarch64.exe"
+  local virgl_dll="${srcdir}/tmp_install${MINGW_PREFIX}/bin/libvirglrenderer-1.dll"
+
+  ldd "${qemu_bin}" "${virgl_dll}" | grep -i "${MINGW_PREFIX}/bin/.*\.dll" | awk '{print $3}' | sort -u | while read -r dll; do
+    if [ -f "${dll}" ]; then
+      cp -u "${dll}" "${app_dir}/bin/"
+    fi
+  done
+
+  # Include compiled virglrenderer library into application bundle
+  cp "${srcdir}/tmp_install${MINGW_PREFIX}/bin/libvirglrenderer-1.dll" "${app_dir}/bin/"
+}

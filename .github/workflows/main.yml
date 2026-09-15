@@ -21,11 +21,13 @@ jobs:
         shell: bash
         run: |
           git fetch origin experimental --depth=2
-          if git diff --quiet origin/experimental~1 origin/experimental; then
-            echo "No packages changed between experimental~1 and experimental. Skipping builds."
+          
+          # Check if any PKGBUILD files changed between experimental~1 and experimental
+          if git diff --quiet origin/experimental~1 origin/experimental -- '*/PKGBUILD' 'PKGBUILD'; then
+            echo "No PKGBUILD files changed. Skipping matrix builds."
             echo "should_run=false" >> $GITHUB_OUTPUT
           else
-            echo "Packages changed on experimental's latest commit. Proceeding with builds."
+            echo "PKGBUILD changes detected. Proceeding with builds."
             echo "should_run=true" >> $GITHUB_OUTPUT
           fi
 
@@ -111,16 +113,7 @@ jobs:
         id: build
         run: |
           cd "$(cygpath '${{ steps.facts.outputs.drive }}/_')"
-          
-          # Fetch experimental branch history
           git fetch origin experimental --depth=2
-          
-          # Force local origin/master to point to origin/experimental~1 so ci-build.sh 
-          # compares HEAD strictly against the previous experimental commit
-          git branch -f master origin/experimental~1
-          git update-ref refs/remotes/origin/master origin/experimental~1
-          
-          export BUILD_BASE="origin/experimental~1"
           MINGW_ARCH=${{ matrix.msystem }} ./.ci/ci-build.sh
 
       - name: "Upload binaries"
