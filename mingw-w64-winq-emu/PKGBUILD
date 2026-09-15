@@ -6,6 +6,7 @@ pkgver=11.0.0
 pkgrel=1
 pkgdesc="WINQ-EMU components - virglrenderer and QEMU (${MINGW_CHOST})"
 arch=('any')
+mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://github.com/cmspam/winq-emu"
 license=('GPL-2.0-or-later' 'MIT')
 depends=(
@@ -18,6 +19,7 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-glib2"
 )
 makedepends=(
+  "git"
   "${MINGW_PACKAGE_PREFIX}-meson"
   "${MINGW_PACKAGE_PREFIX}-ninja"
   "${MINGW_PACKAGE_PREFIX}-pkg-config"
@@ -26,20 +28,10 @@ makedepends=(
   "${MINGW_PACKAGE_PREFIX}-python-sphinx"
 )
 source=(
-  "winq-emu-virglrenderer-${pkgver}.tar.gz::https://github.com/tling0001/winq-emu-virglrenderer/archive/refs/tags/${pkgver}.tar.gz"
-  "winq-emu-qemu-${pkgver}.tar.gz::https://github.com/tling0001/winq-emu-qemu/archive/refs/tags/${pkgver}.tar.gz"
-)
-noextract=(
-  "winq-emu-virglrenderer-${pkgver}.tar.gz"
-  "winq-emu-qemu-${pkgver}.tar.gz"
+  "winq-emu-virglrenderer::git+https://github.com/tling0001/winq-emu-virglrenderer.git#tag=${pkgver}"
+  "winq-emu-qemu::git+https://github.com/tling0001/winq-emu-qemu.git#tag=${pkgver}"
 )
 sha256sums=('SKIP' 'SKIP')
-
-prepare() {
-  # Extract tarballs while bypassing Windows symlink failures
-  tar -xzf "$srcdir/winq-emu-virglrenderer-${pkgver}.tar.gz" -C "$srcdir" || true
-  tar -xzf "$srcdir/winq-emu-qemu-${pkgver}.tar.gz" -C "$srcdir" || true
-}
 
 build() {
   # 1. Build virglrenderer (-Dvideo=true required for D3D11 video decode)
@@ -49,13 +41,13 @@ build() {
     -Dvenus=true \
     -Dvideo=true \
     -Dtests=false \
-    "$srcdir/winq-emu-virglrenderer-${pkgver}" \
+    "$srcdir/winq-emu-virglrenderer" \
     "$srcdir/build-virglrenderer"
 
   meson compile -C "$srcdir/build-virglrenderer"
 
   # 2. Build QEMU
-  cd "$srcdir/winq-emu-qemu-${pkgver}"
+  cd "$srcdir/winq-emu-qemu"
   ./configure \
     --prefix="${MINGW_PREFIX}" \
     --target-list=x86_64-softmmu \
@@ -72,6 +64,6 @@ package() {
   meson install -C "$srcdir/build-virglrenderer" --destdir "$pkgdir"
 
   # Install QEMU binaries and artifacts
-  cd "$srcdir/winq-emu-qemu-${pkgver}"
+  cd "$srcdir/winq-emu-qemu"
   make DESTDIR="$pkgdir" install
 }
