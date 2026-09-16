@@ -38,11 +38,13 @@ source=(
 sha256sums=('SKIP' 'SKIP')
 
 prepare() {
-  # Normalize srcdir to a POSIX path to prevent D:/ drive letter prepending in python venv setup
   local _srcdir=$(cygpath -u "$srcdir")
 
-  # Initialize and update submodules for QEMU in case subprojects are required
+  # Force LF line endings and checkout repo state cleanly to prevent CRLF script failures
   cd "${_srcdir}/winq-emu-qemu"
+  git config core.autocrlf false
+  git config core.symlinks true
+  git checkout -f
   git submodule update --init --recursive || true
 }
 
@@ -54,14 +56,13 @@ build() {
   export PKG_CONFIG="${MINGW_PREFIX}/bin/pkg-config.exe"
   export PYTHON="${MINGW_PREFIX}/bin/python3.exe"
 
-  # Prevent MSYS2 from converting arguments/paths automatically
-  export MSYS2_ARG_CONV_EXCL="*"
-
-  # Normalize working directories to POSIX paths
+  # Normalize working directories to POSIX paths[cite: 1]
   local _srcdir=$(cygpath -u "$srcdir")
 
   # 1. Build virglrenderer
   cd "${_srcdir}/winq-emu-virglrenderer"
+  
+  export MSYS2_ARG_CONV_EXCL="*"
   meson setup \
     --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
@@ -75,6 +76,9 @@ build() {
   # 2. Build QEMU
   cd "${_srcdir}/winq-emu-qemu"
   
+  # Temporarily allow MSYS2 argument conversion so configure passes valid POSIX/Windows paths to Python[cite: 1]
+  unset MSYS2_ARG_CONV_EXCL
+
   ./configure \
     --prefix="${MINGW_PREFIX}" \
     --target-list=x86_64-softmmu \
@@ -83,6 +87,9 @@ build() {
     --enable-sdl \
     --disable-werror \
     --python="${MINGW_PREFIX}/bin/python3.exe"
+
+  # Re-enable argument exclusion for standard make steps
+  export MSYS2_ARG_CONV_EXCL="*"
 
   make -j$(nproc)
 }
