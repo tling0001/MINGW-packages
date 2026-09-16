@@ -38,8 +38,11 @@ source=(
 sha256sums=('SKIP' 'SKIP')
 
 prepare() {
+  # Normalize srcdir to a POSIX path to prevent D:/ drive letter prepending in python venv setup
+  local _srcdir=$(cygpath -u "$srcdir")
+
   # Initialize and update submodules for QEMU in case subprojects are required
-  cd "$srcdir/winq-emu-qemu"
+  cd "${_srcdir}/winq-emu-qemu"
   git submodule update --init --recursive || true
 }
 
@@ -54,20 +57,23 @@ build() {
   # Prevent MSYS2 from converting arguments/paths automatically
   export MSYS2_ARG_CONV_EXCL="*"
 
+  # Normalize working directories to POSIX paths
+  local _srcdir=$(cygpath -u "$srcdir")
+
   # 1. Build virglrenderer
-  cd "$srcdir/winq-emu-virglrenderer"
+  cd "${_srcdir}/winq-emu-virglrenderer"
   meson setup \
     --prefix="${MINGW_PREFIX}" \
     --buildtype=plain \
     -Dvenus=true \
     -Dvideo=true \
     -Dtests=false \
-    . "../build-virglrenderer"
+    . "${_srcdir}/build-virglrenderer"
 
-  meson compile -C "../build-virglrenderer"
+  meson compile -C "${_srcdir}/build-virglrenderer"
 
   # 2. Build QEMU
-  cd "$srcdir/winq-emu-qemu"
+  cd "${_srcdir}/winq-emu-qemu"
   
   ./configure \
     --prefix="${MINGW_PREFIX}" \
@@ -82,11 +88,13 @@ build() {
 }
 
 package() {
+  local _srcdir=$(cygpath -u "$srcdir")
+
   # Install virglrenderer DLLs and headers
-  meson install -C "$srcdir/build-virglrenderer" --destdir "$pkgdir"
+  meson install -C "${_srcdir}/build-virglrenderer" --destdir "$pkgdir"
 
   # Install QEMU binaries and artifacts
-  cd "$srcdir/winq-emu-qemu"
+  cd "${_srcdir}/winq-emu-qemu"
   make DESTDIR="$pkgdir" install
 
   # Rename installed QEMU binaries from qemu-* to winq-emu-* and enforce .exe extension
