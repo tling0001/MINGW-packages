@@ -40,7 +40,7 @@ sha256sums=('SKIP' 'SKIP')
 prepare() {
   local _srcdir=$(cygpath -u "$srcdir")
 
-  # Force LF line endings and checkout repo state cleanly to prevent CRLF script failures
+  # Ensure git line-endings do not break script execution on Windows
   cd "${_srcdir}/winq-emu-qemu"
   git config core.autocrlf false
   git config core.symlinks true
@@ -56,11 +56,12 @@ build() {
   export PKG_CONFIG="${MINGW_PREFIX}/bin/pkg-config.exe"
   export PYTHON="${MINGW_PREFIX}/bin/python3.exe"
 
-  # Normalize working directories to POSIX paths[cite: 1]
-  local _srcdir=$(cygpath -u "$srcdir")
+  # POSIX path for cd/meson, Mixed-Windows path for QEMU python scripts[cite: 1]
+  local _srcdir_posix=$(cygpath -u "$srcdir")
+  local _qemu_srcdir_win=$(cygpath -m "$srcdir/winq-emu-qemu")
 
   # 1. Build virglrenderer
-  cd "${_srcdir}/winq-emu-virglrenderer"
+  cd "${_srcdir_posix}/winq-emu-virglrenderer"
   
   export MSYS2_ARG_CONV_EXCL="*"
   meson setup \
@@ -69,17 +70,18 @@ build() {
     -Dvenus=true \
     -Dvideo=true \
     -Dtests=false \
-    . "${_srcdir}/build-virglrenderer"
+    . "${_srcdir_posix}/build-virglrenderer"
 
-  meson compile -C "${_srcdir}/build-virglrenderer"
+  meson compile -C "${_srcdir_posix}/build-virglrenderer"
 
   # 2. Build QEMU
-  cd "${_srcdir}/winq-emu-qemu"
+  cd "${_srcdir_posix}/winq-emu-qemu"
   
-  # Temporarily allow MSYS2 argument conversion so configure passes valid POSIX/Windows paths to Python[cite: 1]
+  # Bypass MSYS2 automatic path rewriting for configure options
   unset MSYS2_ARG_CONV_EXCL
 
-  ./configure \
+  # Running configure with explicit Windows-style path prevents D:/d/_/... duplication[cite: 1]
+  python3 "${_qemu_srcdir_win}/configure" \
     --prefix="${MINGW_PREFIX}" \
     --target-list=x86_64-softmmu \
     --enable-virglrenderer \
@@ -88,20 +90,19 @@ build() {
     --disable-werror \
     --python="${MINGW_PREFIX}/bin/python3.exe"
 
-  # Re-enable argument exclusion for standard make steps
   export MSYS2_ARG_CONV_EXCL="*"
 
   make -j$(nproc)
 }
 
 package() {
-  local _srcdir=$(cygpath -u "$srcdir")
+  local _srcdir_posix=$(cygpath -u "$srcdir")
 
   # Install virglrenderer DLLs and headers
-  meson install -C "${_srcdir}/build-virglrenderer" --destdir "$pkgdir"
+  meson install -C "${_srcdir_posix}/build-virglrenderer" --destdir "$pkgdir"
 
   # Install QEMU binaries and artifacts
-  cd "${_srcdir}/winq-emu-qemu"
+  cd "${_srcdir_posix}/winq-emu-qemu"
   make DESTDIR="$pkgdir" install
 
   # Rename installed QEMU binaries from qemu-* to winq-emu-* and enforce .exe extension
