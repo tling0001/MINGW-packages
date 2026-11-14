@@ -1,0 +1,89 @@
+--- a/Source/WebKit/UIProcess/Notifications/glib/NotificationService.cpp
++++ b/Source/WebKit/UIProcess/Notifications/glib/NotificationService.cpp
+@@ -32,8 +32,8 @@
+ #include <WebCore/NotificationResources.h>
+ #include <gio/gio.h>
+ #include <glib/gi18n-lib.h>
++#include <glib/gstdio.h>
+ #include <mutex>
+-#include <unistd.h>
+ #include <wtf/FastMalloc.h>
+ #include <wtf/NeverDestroyed.h>
+ #include <wtf/RunLoop.h>
+@@ -75,45 +75,6 @@
+ 
+ static const Seconds s_dbusCallTimeout = 20_ms;
+ 
+-// Alias to avoid conflicting with write() below.
+-ssize_t (*writeToFD)(int, const void*, size_t) = write;
+-
+-// Simple stream that writes to an fd.
+-class FileDescriptorWriteStream : public SkWStream {
+-public:
+-    explicit FileDescriptorWriteStream(int fd)
+-        : m_fd(fd, UnixFileDescriptor::Adopt)
+-    {
+-    };
+-
+-    bool write(const void* buffer, size_t size) final
+-    {
+-        ssize_t written = writeToFD(m_fd.value(), buffer, size);
+-        if (written < 0)
+-            return false;
+-
+-        if (static_cast<size_t>(written) != size)
+-            return false;
+-
+-        m_bytesWritten += written;
+-        return true;
+-    };
+-
+-    void flush() final
+-    {
+-        fsync(m_fd.value());
+-    };
+-
+-    size_t bytesWritten() const final
+-    {
+-        return m_bytesWritten;
+-    };
+-
+-private:
+-    UnixFileDescriptor m_fd;
+-    size_t m_bytesWritten { 0 };
+-};
+-
+ class IconCache {
+     WTF_MAKE_TZONE_ALLOCATED_INLINE(IconCache);
+ public:
+@@ -150,10 +111,20 @@
+                 return { };
+             }
+ 
+-            auto stream = FileDescriptorWriteStream(fd); // Transfers fd ownership.
++            g_close(fd, nullptr);
++
++            SkDynamicMemoryWStream stream;
+             SkPixmap pixmap;
+             if (!surface->peekPixels(&pixmap) || !SkPngEncoder::Encode(&stream, pixmap, { })) {
+                 g_warning("Failed to encode notification icon to PNG");
++                g_unlink(filename.get());
++                return { };
++            }
++
++            auto data = stream.detachAsData();
++            if (!g_file_set_contents(filename.get(), static_cast<const char*>(data->data()), data->size(), &error.outPtr())) {
++                g_warning("Failed to write notification icon to temporary file: %s", error->message);
++                g_unlink(filename.get());
+                 return { };
+             }
+ 
+@@ -238,7 +209,7 @@
+                 WTF::switchOn(it.value.second,
+                     [](const CString& path) {
+                         if (!path.isNull()) {
+-                            if (unlink(path.data()) == -1)
++                            if (g_unlink(path.data()) == -1)
+                                 WTFLogAlways("Failed to remove cached notification icon %s: %s", path.data(), safeStrerror(errno).data());
+                         }
+                     },
