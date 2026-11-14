@@ -476,7 +476,7 @@
  Platform/glib/ModuleGlib.cpp
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -47,6 +47,21 @@
+@@ -47,7 +47,21 @@
      "SourcesGTK.txt"
  )
  
