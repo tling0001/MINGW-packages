@@ -1,0 +1,57 @@
+--- a/Source/WebCore/bindings/scripts/generate-bindings-all.pl
++++ b/Source/WebCore/bindings/scripts/generate-bindings-all.pl
+@@ -186,6 +186,20 @@
+ my $totalCount = @resolvedIdlFilesToUpdate;
+ my $currentCount = 0;
+ 
++if ($^O eq 'MSWin32') {
++    # Native Windows Perl does not implement fork(). Generate bindings in-process.
++    while (@resolvedIdlFilesToUpdate) {
++        my $batchCount = int(($totalCount + $numOfJobs - 1) / $numOfJobs) || 1;
++        my @files = splice(@resolvedIdlFilesToUpdate, 0, $batchCount);
++        for (@files) {
++            $currentCount++;
++            printProgress("[$currentCount/$totalCount] " . basename($_));
++        }
++        generateBindings(@files);
++    }
++    exit 0;
++}
++
+ spawnGenerateBindingsIfNeeded() for (1 .. $numOfJobs);
+ while (waitpid(-1, 0) != -1) {
+     if ($?) {
+@@ -235,20 +249,26 @@
+     }
+     my $pid = fork();
+     if ($pid == 0) {
+-        my $suppressVerboseOutput = 1;
+-        my $writeDependencies = 1;
+-        my $verbose = 0;
+-        for my $targetIdlFile (@files) {
+-            my $targetParser = IDLParser->new($suppressVerboseOutput);
+-            my $targetDocument = $targetParser->Parse($targetIdlFile, $defines, $idlAttributes);
+-            my $codeGen = CodeGenerator->new($generator, $outputDirectory, $outputDirectory, $writeDependencies, $verbose, $targetIdlFile, $idlAttributes, \%supplementalDependencies, $idlFileNamesList, $ignoreStandaloneConstructorAttributes);
+-            $codeGen->ProcessDocument($targetDocument, $defines);
+-        }
++        generateBindings(@files);
+         exit 0;
+     }
+     $abort = 1 unless defined $pid;
+ }
+ 
++sub generateBindings
++{
++    my (@files) = @_;
++    my $suppressVerboseOutput = 1;
++    my $writeDependencies = 1;
++    my $verbose = 0;
++    for my $targetIdlFile (@files) {
++        my $targetParser = IDLParser->new($suppressVerboseOutput);
++        my $targetDocument = $targetParser->Parse($targetIdlFile, $defines, $idlAttributes);
++        my $codeGen = CodeGenerator->new($generator, $outputDirectory, $outputDirectory, $writeDependencies, $verbose, $targetIdlFile, $idlAttributes, \%supplementalDependencies, $idlFileNamesList, $ignoreStandaloneConstructorAttributes);
++        $codeGen->ProcessDocument($targetDocument, $defines);
++    }
++}
++
+ sub buildDirectoryCache
