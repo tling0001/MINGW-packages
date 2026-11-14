@@ -8,7 +8,7 @@
  use File::Path qw(make_path remove_tree);
  use File::Spec;
  use Getopt::Long;
-@@ -69,7 +70,21 @@
+@@ -69,6 +70,20 @@
          }
          closedir $dh;
      } else {
