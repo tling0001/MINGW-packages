@@ -24,7 +24,7 @@
      MapWrapper* wrapper = new MapWrapper { WTF::move(mappedFile) };
      return { adoptGRef(g_bytes_new_with_free_func(map, size, reinterpret_cast<GDestroyNotify>(deleteMapWrapper), wrapper)), WTF::move(fileHandle) };
  }
-@@ -142,5 +146,13 @@
+@@ -142,7 +146,15 @@
  
      gsize length;
      const auto* data = g_bytes_get_data(m_buffer.get(), &length);
