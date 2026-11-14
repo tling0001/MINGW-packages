@@ -1,0 +1,20 @@
+--- a/Source/WebKit/UIProcess/API/gtk/PageClientImpl.cpp
++++ b/Source/WebKit/UIProcess/API/gtk/PageClientImpl.cpp
+@@ -63,7 +63,6 @@
+ #include <wtf/glib/GWeakPtr.h>
+ #include <wtf/text/CString.h>
+ #include <wtf/text/WTFString.h>
+-#include <wtf/unix/UnixFileDescriptor.h>
+ 
+ namespace WebKit {
+ using namespace WebCore;
+--- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/AcceleratedSurface.cpp
++++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/AcceleratedSurface.cpp
+@@ -39,8 +39,6 @@
+ #include <WebCore/ShareableBitmap.h>
+ #include <array>
+-#include <fcntl.h>
+-#include <unistd.h>
+ #include <wtf/SafeStrerror.h>
+ #include <wtf/SystemTracing.h>
+ #include <wtf/TZoneMallocInlines.h>
