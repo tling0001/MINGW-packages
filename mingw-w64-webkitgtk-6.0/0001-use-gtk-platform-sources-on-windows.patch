@@ -21,6 +21,28 @@
      list(APPEND WTF_PUBLIC_HEADERS
          text/win/WCharStringExtras.h
  
+--- a/Source/WTF/wtf/text/WTFString.h
++++ b/Source/WTF/wtf/text/WTFString.h
+@@ -37,7 +37,7 @@
+ #include <wtf/RetainPtr.h>
+ #endif
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+ #include <wtf/text/win/WCharStringExtras.h>
+ #endif
+ 
+--- a/Source/WTF/wtf/Platform.h
++++ b/Source/WTF/wtf/Platform.h
+@@ -168,7 +168,7 @@
+ #define USE_ACCESSIBILITY_CONTEXT_MENUS 1
+ #endif
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && COMPILER(MSVC)
+ // https://github.com/MicrosoftDocs/cpp-docs/blob/main/docs/cpp/empty-bases.md
+ #define WTF_EMPTY_BASE_CLASS __declspec(empty_bases)
+ #else
 --- a/Source/ThirdParty/skia/CMakeLists.txt
 +++ b/Source/ThirdParty/skia/CMakeLists.txt
 @@ -811,7 +811,7 @@
