@@ -404,7 +404,7 @@
  #include "pas_utils.h"
 --- a/Source/WTF/wtf/glib/GRefPtr.h
 +++ b/Source/WTF/wtf/glib/GRefPtr.h
-@@ -47,10 +47,3 @@
+@@ -47,9 +47,0 @@
 -    // Since GLib 2.56 a g_object_ref_sink() macro may be defined which propagates
 -    // the type of the parameter to the returned value, but it conflicts with the
 -    // declaration below, causing an error when glib-object.h is included before
@@ -416,7 +416,7 @@
 -#endif
 --- a/Source/WTF/wtf/glib/GSpanExtras.h
 +++ b/Source/WTF/wtf/glib/GSpanExtras.h
-@@ -28,14 +28,3 @@
+@@ -28,11 +28,1 @@
 -extern "C" {
 -void* g_malloc(size_t);
 -void* g_malloc0(size_t);
