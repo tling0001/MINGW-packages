@@ -331,3 +331,51 @@
  typedef HANDLE PlatformFileHandle;
  const PlatformFileHandle invalidPlatformFileHandle = INVALID_HANDLE_VALUE;
  typedef FILE_ID_128 PlatformFileID;
+--- a/Source/WTF/wtf/MemoryPressureHandler.h
++++ b/Source/WTF/wtf/MemoryPressureHandler.h
+@@ -35,7 +35,7 @@
+ #include <wtf/Function.h>
+ #include <wtf/RunLoop.h>
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+ #include <wtf/win/Win32Handle.h>
+ #endif
+ 
+@@ -258,7 +258,7 @@
+ 
+     Configuration m_configuration;
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+     friend VOID CALLBACK lowMemoryNotificationCallback(PVOID, BOOLEAN);
+     void windowsMeasurementTimerFired();
+     void windowsLowMemoryNotificationFired();
+--- a/Source/WTF/wtf/MemoryPressureHandler.cpp
++++ b/Source/WTF/wtf/MemoryPressureHandler.cpp
+@@ -69,7 +69,7 @@
+ MemoryPressureHandler::MemoryPressureHandler()
+ #if (OS(LINUX) || OS(FREEBSD) || OS(HAIKU) || OS(QNX)) && !OS(ANDROID)
+     : m_holdOffTimer(RunLoop::mainSingleton(), "MemoryPressureHandler::HoldOffTimer"_s, this, &MemoryPressureHandler::holdOffTimerFired)
+-#elif OS(WINDOWS)
++#elif OS(WINDOWS) && !PLATFORM(GTK)
+     : m_windowsMeasurementTimer(RunLoop::mainSingleton(), "MemoryPressureHandler::WindowsMeasurementTimer"_s, this, &MemoryPressureHandler::windowsMeasurementTimerFired)
+ #endif
+ {
+@@ -367,7 +367,7 @@
+ }
+ 
+-#if !OS(WINDOWS)
++#if !OS(WINDOWS) || PLATFORM(GTK)
+ void MemoryPressureHandler::platformInitialize() { }
+ #endif
+--- a/Source/WTF/wtf/CMakeLists.txt
++++ b/Source/WTF/wtf/CMakeLists.txt
+@@ -707,7 +707,7 @@
+     )
+ )
+ 
+-if (WIN32)
++if (WIN32 AND NOT PORT STREQUAL "GTK")
+     list(APPEND WTF_PUBLIC_HEADERS
+         text/win/WCharStringExtras.h
