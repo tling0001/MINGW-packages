@@ -1,21 +1,22 @@
 --- a/Source/WTF/wtf/PlatformUse.h
 +++ b/Source/WTF/wtf/PlatformUse.h
-@@ -179,7 +179,7 @@
+@@ -178,7 +178,7 @@
 -#if PLATFORM(GTK) || PLATFORM(WPE)
 +#if (PLATFORM(GTK) || PLATFORM(WPE)) && !OS(WINDOWS)
  #define USE_UNIX_DOMAIN_SOCKETS 1
  #endif
 --- a/Source/WebCore/SourcesGTK.txt
 +++ b/Source/WebCore/SourcesGTK.txt
-@@ -107,7 +107,6 @@
- platform/sql/SQLiteFileSystem.cpp
- platform/text/gtk/TextBreakIteratorGtk.cpp
- platform/unix/Language.cpp
+@@ -107,6 +107,5 @@
+ platform/text/hyphen/HyphenationLibHyphen.cpp
+ 
+ platform/unix/LoggingUnix.cpp
 -platform/unix/SharedMemoryUnix.cpp
- platform/unix/SocketStreamHandleImpl.cpp
+ 
+ platform/xdg/MIMETypeRegistryXdg.cpp
 --- a/Source/WebCore/PlatformGTK.cmake
 +++ b/Source/WebCore/PlatformGTK.cmake
-@@ -7,6 +7,12 @@
+@@ -6,6 +6,12 @@
  include(platform/Skia.cmake)
  include(platform/Soup.cmake)
  include(platform/TextureMapper.cmake)
@@ -31,7 +32,7 @@
  
 --- a/Source/WebCore/platform/win/SharedMemoryWin.cpp
 +++ b/Source/WebCore/platform/win/SharedMemoryWin.cpp
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,93 @@
 +/*
 + * Copyright (C) 2026 OpenAI. All rights reserved.
 + *
