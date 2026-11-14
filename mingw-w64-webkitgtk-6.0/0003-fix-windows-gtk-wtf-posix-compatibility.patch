@@ -56,21 +56,21 @@
  }
 --- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
 +++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
-@@ -29,11 +29,12 @@
+@@ -29,10 +29,10 @@
  #include "config.h"
  #include <wtf/FileHandle.h>
  
  #if OS(WINDOWS) && PLATFORM(GTK)
  #include <io.h>
  #include <windows.h>
+-#endif
 +#else
-+#include <sys/file.h>
- #endif
--#include <sys/file.h>
+ #include <sys/file.h>
++#endif
  #include <sys/stat.h>
  #include <unistd.h>
  #include <wtf/CheckedArithmetic.h>
-@@ -71,12 +73,20 @@
+@@ -67,12 +67,20 @@
  bool FileHandle::truncate(int64_t offset)
  {
      // ftruncate returns 0 to indicate the success.
@@ -89,9 +89,9 @@
      return m_handle && !fsync(*m_handle);
 +#endif
  }
- 
- std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
-@@ -141,10 +151,23 @@
+@@ -135,11 +143,24 @@
+ bool FileHandle::lock(OptionSet<FileLockMode> lockMode)
+ {
      if (!m_handle)
          return false;
  
@@ -110,8 +110,8 @@
      static_assert(LOCK_SH == std::to_underlying(FileLockMode::Shared), "LockSharedEncoding is as expected");
      static_assert(LOCK_EX == std::to_underlying(FileLockMode::Exclusive), "LockExclusiveEncoding is as expected");
      static_assert(LOCK_NB == std::to_underlying(FileLockMode::Nonblocking), "LockNonblockingEncoding is as expected");
+ 
      return flock(*m_handle, lockMode.toRaw()) != -1;
 +#endif
  }
  #endif // USE(FILE_LOCK)
- 
