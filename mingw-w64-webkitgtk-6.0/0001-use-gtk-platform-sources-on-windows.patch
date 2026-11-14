@@ -393,7 +393,7 @@
  
 --- a/Source/bmalloc/libpas/src/libpas/pas_thread.c
 +++ b/Source/bmalloc/libpas/src/libpas/pas_thread.c
-@@ -27,7 +27,7 @@
+@@ -27,6 +27,6 @@
  
  #include "pas_config.h"
  
@@ -701,7 +701,7 @@
 
 --- a/Source/WTF/wtf/PlatformUse.h
 +++ b/Source/WTF/wtf/PlatformUse.h
-@@ -44,7 +44,7 @@
+@@ -44,6 +44,6 @@
  /* Export macro support. Detects the attributes available for shared library symbol export
     decorations. */
 -#if OS(WINDOWS) || (COMPILER_HAS_CLANG_DECLSPEC(dllimport) && COMPILER_HAS_CLANG_DECLSPEC(dllexport))
