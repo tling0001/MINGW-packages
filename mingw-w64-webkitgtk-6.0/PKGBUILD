@@ -117,7 +117,7 @@ prepare() {
     "${srcdir}/0015-remove-posix-includes-from-glib-cache-data.patch" \
     "${srcdir}/0016-fix-mingw-jsc-assembler-and-perflog.patch" \
     "${srcdir}/0017-fix-mingw-profiler-support-fdopen.patch" \
-    "${srcdir}/0018-fix-clangarm64-llint-coff-alignment.patch" \\
+    "${srcdir}/0018-fix-clangarm64-llint-coff-alignment.patch" \
     "${srcdir}/0019-fix-mingw-executable-allocator-process-id.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
