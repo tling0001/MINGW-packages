@@ -1,0 +1,32 @@
+--- a/Source/WebInspectorUI/Scripts/copy-user-interface-resources.pl
++++ b/Source/WebInspectorUI/Scripts/copy-user-interface-resources.pl
+@@ -27,6 +27,7 @@
+ use English;
+ use File::Basename qw(dirname);
+ use File::Copy qw(copy);
++use File::Find qw(find);
+ use File::Path qw(make_path remove_tree);
+ use File::Spec;
+ use Getopt::Long;
+@@ -69,7 +70,21 @@
+         }
+         closedir $dh;
+     } else {
+-        die "Please install the PEP module File::Copy::Recursive";
++        # File::Copy::Recursive is not available in every Perl distribution
++        # shipped with MSYS2. Use core modules for the Windows fallback.
++        my $sourceRoot = File::Spec->rel2abs($source);
++        my $destinationRoot = File::Spec->rel2abs($destination);
++        find({ no_chdir => 1, wanted => sub {
++            my $path = $File::Find::name;
++            my $relativePath = File::Spec->abs2rel($path, $sourceRoot);
++            my $targetPath = File::Spec->catfile($destinationRoot, $relativePath);
++            if (-d $path) {
++                make_path($targetPath);
++            } elsif (-f $path) {
++                make_path(dirname($targetPath));
++                copy($path, $targetPath) or die "Unable to copy $path to $targetPath: $!";
++            }
++        }}, $sourceRoot);
+     }
+ }
