@@ -732,7 +732,7 @@
 
 --- a/Source/WTF/wtf/glib/GRefPtr.h
 +++ b/Source/WTF/wtf/glib/GRefPtr.h
-@@ -26,18 +26,7 @@
+@@ -26,15 +26,7 @@
  #if USE(GLIB)
  
  #include <algorithm>
