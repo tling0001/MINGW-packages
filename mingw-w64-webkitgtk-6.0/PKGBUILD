@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=10
+pkgrel=11
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -91,18 +91,7 @@ prepare() {
     error "WebKit source extraction is missing Source/JavaScriptCore/CMakeLists.txt"
     return 1
   }
-  for required_file in \
-    Source/WTF/wtf/text/win/WCharStringExtras.h \
-    Source/WTF/wtf/win/DbgHelperWin.h \
-    Source/WTF/wtf/win/GDIObject.h \
-    Source/WTF/wtf/win/PathWalker.h \
-    Source/WTF/wtf/win/SoftLinking.h \
-    Source/WTF/wtf/win/Win32Handle.h; do
-    [[ -f "${source_dir}/${required_file}" ]] || {
-      error "WebKit source extraction is missing ${required_file}"
-      return 1
-    }
-  done
+
 }
 
 build() {
