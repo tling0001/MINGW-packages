@@ -96,10 +96,10 @@ prepare() {
     "${srcdir}/0003-fix-windows-gtk-wtf-posix-compatibility.patch" \
     "${srcdir}/0004-add-win32-virtual-memory-support.patch" \
     "${srcdir}/0005-fix-windows-gtk-posix-locale-and-cloexec.patch" \
-    "${srcdir}/0006-use-glib-for-portable-temporary-files.patch" \\
-    "${srcdir}/0007-win32-unistd-extras.patch" \\
-    "${srcdir}/0008-win32-memory-footprint.patch" \\
-    "${srcdir}/0009-link-psapi-for-windows-gtk.patch" \\
+    "${srcdir}/0006-use-glib-for-portable-temporary-files.patch" \
+    "${srcdir}/0007-win32-unistd-extras.patch" \
+    "${srcdir}/0008-win32-memory-footprint.patch" \
+    "${srcdir}/0009-link-psapi-for-windows-gtk.patch" \
     "${srcdir}/0010-fix-windows-build-warning.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
@@ -156,8 +156,8 @@ build() {
     -DUSE_VULKAN=ON
     -DUSE_SYSTEM_MALLOC=OFF
     -DUSE_MIMALLOC=ON
-    -DCMAKE_C_FLAGS=-Wno-ignored-attributes\ -Wno-unsafe-buffer-usage
-    -DCMAKE_CXX_FLAGS=-Wno-ignored-attributes\ -Wno-unsafe-buffer-usage
+    "-DCMAKE_C_FLAGS=${compiler_warning_flags}"
+    "-DCMAKE_CXX_FLAGS=${compiler_warning_flags}"
   )
 
   mkdir -p "${srcdir}/build-${MSYSTEM}"
