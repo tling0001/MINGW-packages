@@ -9,7 +9,7 @@
 -
      text/unix/TextBreakIteratorInternalICUUnix.cpp
  
-@@ -32,6 +30,17 @@
+@@ -32,7 +30,18 @@
      unix/LoggingUnix.cpp
      unix/UniStdExtrasUnix.cpp
  )
