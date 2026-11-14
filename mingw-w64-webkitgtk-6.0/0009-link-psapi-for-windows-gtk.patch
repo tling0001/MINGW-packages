@@ -1,0 +1,13 @@
+--- a/Source/WTF/wtf/PlatformGTK.cmake
++++ b/Source/WTF/wtf/PlatformGTK.cmake
+@@ -91,6 +91,10 @@
+     ZLIB::ZLIB
+ )
+ 
++if (WIN32)
++    list(APPEND WTF_LIBRARIES psapi)
++endif ()
++
+ if (ENABLE_JOURNALD_LOG)
+     list(APPEND WTF_LIBRARIES Journald::Journald)
+ endif ()
