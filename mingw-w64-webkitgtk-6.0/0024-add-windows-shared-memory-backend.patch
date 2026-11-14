@@ -16,7 +16,7 @@
  platform/xdg/MIMETypeRegistryXdg.cpp
 --- a/Source/WebCore/PlatformGTK.cmake
 +++ b/Source/WebCore/PlatformGTK.cmake
-@@ -6,6 +6,12 @@
+@@ -6,7 +6,13 @@
  include(platform/Skia.cmake)
  include(platform/Soup.cmake)
  include(platform/TextureMapper.cmake)
