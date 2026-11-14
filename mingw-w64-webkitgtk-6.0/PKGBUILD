@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=81
+pkgrel=82
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -92,8 +92,9 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0025-add-windows-named-pipe-ipc.patch"
         "0026-fix-windows-network-cache-shared-memory.patch"
         "0027-add-windows-process-launcher.patch"
-        "0028-remove-unused-unix-includes.patch")
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+        "0028-remove-unused-unix-includes.patch"
+        "0029-guard-unix-printing-portal-on-windows.patch")
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
 # Follow the extraction workaround used by mingw-w64-qemu.
@@ -136,7 +137,8 @@ prepare() {
     "${srcdir}/0025-add-windows-named-pipe-ipc.patch" \
     "${srcdir}/0026-fix-windows-network-cache-shared-memory.patch" \
     "${srcdir}/0027-add-windows-process-launcher.patch" \
-    "${srcdir}/0028-remove-unused-unix-includes.patch"; do
+    "${srcdir}/0028-remove-unused-unix-includes.patch" \
+    "${srcdir}/0029-guard-unix-printing-portal-on-windows.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
 
