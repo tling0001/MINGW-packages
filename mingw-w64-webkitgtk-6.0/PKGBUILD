@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=9
+pkgrel=10
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -92,7 +92,6 @@ prepare() {
     return 1
   }
   for required_file in \
-    Source/ThirdParty/skia/src/utils/win/SkDWrite.cpp \
     Source/WTF/wtf/text/win/WCharStringExtras.h \
     Source/WTF/wtf/win/DbgHelperWin.h \
     Source/WTF/wtf/win/GDIObject.h \
