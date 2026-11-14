@@ -1,0 +1,28 @@
+--- a/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
++++ b/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
+@@ -188,11 +188,26 @@ std::pair<String, FileHandle> openTemporaryFile(StringView prefix, StringView su
+     snprintf(buffer.mutableSpan().data(), length, "%s/%s-XXXXXX", directory, prefixUTF8.data());
+     IGNORE_CLANG_WARNINGS_END
+ 
++#if USE(GLIB)
++    // GLib provides a portable, race-safe temporary-file implementation on Windows.
++    gchar* temporaryFilePath = nullptr;
++    GError* error = nullptr;
++    int descriptor = g_file_open_tmp(buffer.mutableSpan().data(), &temporaryFilePath, &error);
++    if (error)
++        g_error_free(error);
++    if (descriptor == -1)
++        return { String(), FileHandle() };
++
++    String path = String::fromUTF8(temporaryFilePath);
++    g_free(temporaryFilePath);
++    return { WTF::move(path), FileHandle::adopt(descriptor) };
++#else
+     auto handle = FileHandle::adopt(mkostemp(buffer.mutableSpan().data(), O_CLOEXEC));
+     if (!handle)
+         return { String(), FileHandle() };
+ 
+     return { String::fromUTF8(buffer.span().data()), WTF::move(handle) };
++#endif
+ }
+ #endif // !PLATFORM(COCOA)
