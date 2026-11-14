@@ -84,7 +84,7 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0017-fix-mingw-profiler-support-fdopen.patch"
         "0018-fix-clangarm64-llint-coff-alignment.patch"
         "0019-fix-mingw-executable-allocator-process-id.patch")
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
 # Follow the extraction workaround used by mingw-w64-qemu.
