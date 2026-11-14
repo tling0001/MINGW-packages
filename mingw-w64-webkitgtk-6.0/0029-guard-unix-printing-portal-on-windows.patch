@@ -49,7 +49,7 @@
      WebKitPrintOperationResponse response;
      if (shouldUsePortal())
          response = webkitPrintOperationRunPortalDialog(printOperation);
-@@ -700,6 +708,11 @@
+@@ -700,4 +708,9 @@
          webkitPrintOperationPrintPagesForFrame(printOperation, webFrame, priv->printer.get(), priv->printSettings.get(), priv->pageSetup.get());
  
      return response;
