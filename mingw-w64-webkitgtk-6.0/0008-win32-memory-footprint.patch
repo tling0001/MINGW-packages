@@ -1,0 +1,27 @@
+--- a/Source/WTF/wtf/generic/MemoryFootprintGeneric.cpp
++++ b/Source/WTF/wtf/generic/MemoryFootprintGeneric.cpp
+@@ -29,12 +29,23 @@
+ #include <wtf/MemoryFootprint.h>
+ #include <wtf/Platform.h>
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++#include <windows.h>
++#include <psapi.h>
++#endif
++
+ namespace WTF {
+ 
+ size_t memoryFootprint()
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    PROCESS_MEMORY_COUNTERS_EX counters { };
++    if (!GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&counters), sizeof(counters)))
++        return 0;
++    return static_cast<size_t>(counters.WorkingSetSize);
++#else
+     auto memoryUse = memoryStatus();
+     return memoryUse.memoryFootprint;
++#endif
+ }
+ 
+ } // namespace WTF
