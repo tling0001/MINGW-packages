@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=14
+pkgrel=15
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -125,7 +125,8 @@ build() {
     -DUSE_SYSTEM_SYSPROF_CAPTURE=NO
     -DUSE_SYSPROF_CAPTURE=OFF
     -DUSE_VULKAN=ON
-    -DUSE_SYSTEM_MALLOC=ON
+    -DUSE_SYSTEM_MALLOC=OFF
+    -DUSE_MIMALLOC=ON
   )
 
   mkdir -p "${srcdir}/build-${MSYSTEM}"
