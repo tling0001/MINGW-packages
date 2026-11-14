@@ -460,7 +460,7 @@
 +} // namespace IPC
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -58,11 +58,5 @@
+@@ -58,13 +58,6 @@
  
  NetworkProcess/webrtc/rice/RiceBackend.cpp
  
