@@ -56,7 +56,7 @@
  }
 --- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
 +++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
-@@ -29,10 +29,10 @@
+@@ -29,11 +29,12 @@
  #include "config.h"
  #include <wtf/FileHandle.h>
  
@@ -70,7 +70,7 @@
  #include <sys/stat.h>
  #include <unistd.h>
  #include <wtf/CheckedArithmetic.h>
-@@ -67,12 +67,20 @@
+@@ -71,10 +71,18 @@
  bool FileHandle::truncate(int64_t offset)
  {
      // ftruncate returns 0 to indicate the success.
@@ -89,7 +89,7 @@
      return m_handle && !fsync(*m_handle);
 +#endif
  }
-@@ -135,11 +143,24 @@
+@@ -139,12 +143,25 @@
  bool FileHandle::lock(OptionSet<FileLockMode> lockMode)
  {
      if (!m_handle)
