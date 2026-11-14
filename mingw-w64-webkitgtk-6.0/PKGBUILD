@@ -77,7 +77,8 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0010-fix-windows-build-warning.patch"
         "0011-guard-unix-vulkan-device-identification.patch"
         "0012-fix-mingw-arm64-unwind-flag.patch"
-        "0013-use-windows-platform-for-angle.patch"\n        "0014-fix-windows-perl-bindings-generation.patch")
+        "0013-use-windows-platform-for-angle.patch"
+        "0014-fix-windows-perl-bindings-generation.patch")
 sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
