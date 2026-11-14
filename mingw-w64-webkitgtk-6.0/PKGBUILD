@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=11
+pkgrel=12
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -63,8 +63,9 @@ optdepends=(
   "${MINGW_PACKAGE_PREFIX}-gst-plugins-bad: additional multimedia codecs"
   "${MINGW_PACKAGE_PREFIX}-gst-plugins-good: additional multimedia codecs"
 )
-source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz")
-sha256sums=('SKIP')
+source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
+        "0001-use-gtk-platform-sources-on-windows.patch")
+sha256sums=('SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
 # Follow the extraction workaround used by mingw-w64-qemu.
@@ -78,6 +79,8 @@ prepare() {
   # are regular files, so tolerate those link-only errors and validate key inputs.
   tar --exclude="*/Source/ThirdParty/skia/src/ports/fontations/Cargo.toml" \
     -xf "${srcdir}/webkitgtk-${pkgver}.tar.xz" -C "${srcdir}" || true
+
+  patch -d "${source_dir}" -Np1 -i "${srcdir}/0001-use-gtk-platform-sources-on-windows.patch"
 
   [[ -f "${source_dir}/CMakeLists.txt" ]] || {
     error "WebKit source extraction did not produce the top-level CMakeLists.txt"
