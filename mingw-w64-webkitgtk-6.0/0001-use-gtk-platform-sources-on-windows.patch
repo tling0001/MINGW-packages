@@ -144,18 +144,6 @@
  };
 --- a/Source/WTF/wtf/MappedFileData.h
 +++ b/Source/WTF/wtf/MappedFileData.h
-@@ -56,6 +56,11 @@
-     MappedFileData() = default;
-     WTF_EXPORT_PRIVATE ~MappedFileData();
-
-+#if OS(WINDOWS) && PLATFORM(GTK)
-+    MappedFileData(MappedFileData&&);
-+    MappedFileData& operator=(MappedFileData&&);
-+#else
-     MappedFileData(MappedFileData&&) = default;
-     MappedFileData& operator=(MappedFileData&&) = default;
-+#endif
-
 @@ -35,8 +35,10 @@
  #include <wtf/MmapSpan.h>
  #endif
@@ -168,6 +156,18 @@
  #endif
  
  namespace WTF {
+@@ -56,6 +56,11 @@
+     MappedFileData() = default;
+     WTF_EXPORT_PRIVATE ~MappedFileData();
+
++#if OS(WINDOWS) && PLATFORM(GTK)
++    MappedFileData(MappedFileData&&);
++    MappedFileData& operator=(MappedFileData&&);
++#else
+     MappedFileData(MappedFileData&&) = default;
+     MappedFileData& operator=(MappedFileData&&) = default;
++#endif
+
 @@ -73,9 +75,15 @@
      size_t size() const { return m_fileData.span().size(); }
      std::span<const uint8_t> span() const LIFETIME_BOUND { return m_fileData.span(); }
