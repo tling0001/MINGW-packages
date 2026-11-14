@@ -32,3 +32,9 @@
  #include <fnmatch.h>
  #include <assert.h>
  
+@@ -105 +107 @@
+-#ifdef HAVE_MMAP
++#if HAVE_MMAP
+@@ -117 +119 @@
+-#ifdef HAVE_MMAP
++#if HAVE_MMAP
