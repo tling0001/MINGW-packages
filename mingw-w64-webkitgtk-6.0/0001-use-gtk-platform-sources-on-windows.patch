@@ -142,7 +142,7 @@
  #endif
 --- a/Source/WTF/wtf/CurrentTime.cpp
 +++ b/Source/WTF/wtf/CurrentTime.cpp
-@@ -118,7 +118,7 @@ static double highResUpTime()
+@@ -118,6 +118,6 @@ static double highResUpTime()
          if (tickCount >= tickCountLast)
              tickCountElapsed = (tickCount - tickCountLast);
          else {
