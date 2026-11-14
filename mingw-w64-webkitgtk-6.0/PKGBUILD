@@ -111,7 +111,7 @@ prepare() {
     "${srcdir}/0012-fix-mingw-arm64-unwind-flag.patch" \
     "${srcdir}/0013-use-windows-platform-for-angle.patch" \
     "${srcdir}/0014-fix-windows-perl-bindings-generation.patch" \
-    "${srcdir}/0015-remove-posix-includes-from-glib-cache-data.patch" \\
+    "${srcdir}/0015-remove-posix-includes-from-glib-cache-data.patch" \
     "${srcdir}/0016-fix-mingw-jsc-assembler-and-perflog.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
