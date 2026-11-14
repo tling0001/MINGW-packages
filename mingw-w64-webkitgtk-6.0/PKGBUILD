@@ -104,8 +104,8 @@ prepare() {
     "${srcdir}/0008-win32-memory-footprint.patch" \
     "${srcdir}/0009-link-psapi-for-windows-gtk.patch" \
     "${srcdir}/0010-fix-windows-build-warning.patch" \
-    "${srcdir}/0011-guard-unix-vulkan-device-identification.patch" \\
-    "${srcdir}/0012-fix-mingw-arm64-unwind-flag.patch" \\
+    "${srcdir}/0011-guard-unix-vulkan-device-identification.patch" \
+    "${srcdir}/0012-fix-mingw-arm64-unwind-flag.patch" \
     "${srcdir}/0013-use-windows-platform-for-angle.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
