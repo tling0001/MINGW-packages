@@ -111,35 +111,171 @@
              if (!name && DbgHelper::SymFromAddress(hProc, reinterpret_cast<DWORD64>(m_stack[i]), nullptr, symbolInfo))
                  name = symbolInfo->Name;
  #endif
+--- a/Source/WTF/wtf/FileSystem.h
++++ b/Source/WTF/wtf/FileSystem.h
+@@ -66,7 +66,7 @@
+ 
+ enum class MappedFileMode : bool;
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+ typedef FILE_ID_128 PlatformFileID;
+ #else
+ typedef ino_t PlatformFileID;
+--- a/Source/WTF/wtf/FunctionTraits.h
++++ b/Source/WTF/wtf/FunctionTraits.h
+@@ -80,7 +80,7 @@
+ 
+ };
+ 
+-#if OS(WINDOWS) && CPU(X86_64)
++#if OS(WINDOWS) && CPU(X86_64) && !PLATFORM(GTK)
+ template<typename Result, typename... Args>
+ struct FunctionTraits<Result SYSV_ABI(Args...)> : public FunctionTraits<Result(Args...)> {
+ };
+@@ -90,7 +90,7 @@
+ struct FunctionTraits<Result(*)(Args...)> : public FunctionTraits<Result(Args...)> {
+ };
+ 
+-#if OS(WINDOWS) && CPU(X86_64)
++#if OS(WINDOWS) && CPU(X86_64) && !PLATFORM(GTK)
+ template<typename Result, typename... Args>
+ struct FunctionTraits<Result SYSV_ABI (*)(Args...)> : public FunctionTraits<Result(Args...)> {
+ };
 --- a/Source/WTF/wtf/MappedFileData.h
 +++ b/Source/WTF/wtf/MappedFileData.h
-@@ -35,7 +35,7 @@
+@@ -35,8 +35,10 @@
  #include <wtf/MmapSpan.h>
  #endif
  
 -#if OS(WINDOWS)
 +#if OS(WINDOWS) && !PLATFORM(GTK)
  #include <wtf/win/Win32Handle.h>
++#elif OS(WINDOWS) && PLATFORM(GTK)
++#include <windows.h>
  #endif
  
-@@ -73,7 +73,7 @@
+ namespace WTF {
+@@ -73,9 +75,15 @@
      size_t size() const { return m_fileData.span().size(); }
      std::span<const uint8_t> span() const LIFETIME_BOUND { return m_fileData.span(); }
      std::span<uint8_t> mutableSpan() LIFETIME_BOUND { return m_fileData.mutableSpan(); }
--#elif OS(WINDOWS)
-+#elif OS(WINDOWS) && !PLATFORM(GTK)
++#elif OS(WINDOWS) && PLATFORM(GTK)
++    MappedFileData(std::span<uint8_t>);
++
++    size_t size() const { return m_fileData.size(); }
++    std::span<const uint8_t> span() const LIFETIME_BOUND { return m_fileData; }
++    std::span<uint8_t> mutableSpan() LIFETIME_BOUND { return m_fileData; }
+ #elif OS(WINDOWS)
      MappedFileData(std::span<uint8_t>, Win32Handle&&);
-     
+-    
++
      const Win32Handle& fileMapping() const LIFETIME_BOUND { return m_fileMapping; }
-@@ -85,7 +85,7 @@
+     size_t size() const { return m_fileData.size(); }
+     std::span<const uint8_t> span() const LIFETIME_BOUND { return m_fileData; }
+@@ -85,6 +93,8 @@
  private:
  #if HAVE(MMAP)
      MmapSpan<uint8_t> m_fileData;
--#elif OS(WINDOWS)
-+#elif OS(WINDOWS) && !PLATFORM(GTK)
++#elif OS(WINDOWS) && PLATFORM(GTK)
++    std::span<uint8_t> m_fileData;
+ #elif OS(WINDOWS)
      std::span<uint8_t> m_fileData;
      Win32Handle m_fileMapping;
+--- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
++++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
+@@ -29,6 +29,10 @@
+ #include "config.h"
+ #include <wtf/FileHandle.h>
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++#include <io.h>
++#include <windows.h>
++#endif
+ #include <sys/file.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
+@@ -185,6 +189,44 @@
+ 
+     return MappedFileData { WTF::move(fileData) };
+ }
+-#endif // HAVE(MMAP)
++#elif OS(WINDOWS) && PLATFORM(GTK)
++std::optional<MappedFileData> FileHandle::map(MappedFileMode mapMode, FileOpenMode openMode)
++{
++    if (!m_handle)
++        return { };
++
++    struct stat fileStat;
++    if (fstat(platformHandle(), &fileStat))
++        return { };
++
++    size_t size;
++    if (!WTF::convertSafely(fileStat.st_size, size))
++        return { };
++    if (!size)
++        return MappedFileData::emptyFile();
++
++    auto nativeHandle = reinterpret_cast<HANDLE>(_get_osfhandle(platformHandle()));
++    if (nativeHandle == INVALID_HANDLE_VALUE)
++        return { };
++
++    DWORD protection = PAGE_READONLY;
++    DWORD access = FILE_MAP_READ;
++    if (mapMode == MappedFileMode::Private) {
++        protection = PAGE_WRITECOPY;
++        access = FILE_MAP_COPY;
++    } else if (openMode != FileOpenMode::Read) {
++        protection = PAGE_READWRITE;
++        access = FILE_MAP_READ | FILE_MAP_WRITE;
++    }
++
++    HANDLE mapping = CreateFileMappingW(nativeHandle, nullptr, protection,
++        static_cast<DWORD>(static_cast<uint64_t>(size) >> 32), static_cast<DWORD>(size), nullptr);
++    if (!mapping)
++        return { };
++
++    void* address = MapViewOfFile(mapping, access, 0, 0, size);
++    if (!address) {
++        CloseHandle(mapping);
++        return { };
++    }
++    // The mapped view keeps the section object alive after its handle is closed.
++    CloseHandle(mapping);
++    return MappedFileData { std::span<uint8_t> { static_cast<uint8_t*>(address), size } };
++}
++#endif // HAVE(MMAP) / GTK Win32 mapping
+ 
+ } // WTF::FileSystemImpl
+--- a/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
++++ b/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
+@@ -25,6 +25,9 @@
+ 
+ #include "config.h"
+ #include <wtf/MappedFileData.h>
++#if OS(WINDOWS) && PLATFORM(GTK)
++#include <windows.h>
++#endif
+ 
+ namespace WTF::FileSystemImpl {
+ 
+@@ -35,6 +38,11 @@
+ { }
+ 
+ MappedFileData::~MappedFileData() = default;
++#elif OS(WINDOWS) && PLATFORM(GTK)
++MappedFileData::MappedFileData(std::span<uint8_t> fileData)
++    : m_fileData(fileData)
++    , m_isValid(true)
++{ }
++
++MappedFileData::~MappedFileData()
++{
++    if (!m_fileData.empty())
++        UnmapViewOfFile(m_fileData.data());
++}
  #endif
+
 --- a/Source/WTF/wtf/CurrentTime.cpp
 +++ b/Source/WTF/wtf/CurrentTime.cpp
 @@ -118,6 +118,6 @@ static double highResUpTime()
