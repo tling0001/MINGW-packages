@@ -460,7 +460,7 @@
 +} // namespace IPC
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -58,11 +58,6 @@
+@@ -58,11 +58,5 @@
  
  NetworkProcess/webrtc/rice/RiceBackend.cpp
  
@@ -470,12 +470,13 @@
 -Platform/IPC/unix/IPCSemaphoreUnix.cpp
 -Platform/IPC/unix/IPCUtilitiesUnix.cpp
 -
+-
  Platform/classifier/ResourceLoadStatisticsClassifier.cpp
  
  Platform/glib/ModuleGlib.cpp
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -45,6 +45,20 @@
+@@ -47,6 +47,20 @@
      "SourcesGTK.txt"
  )
  
