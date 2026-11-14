@@ -1,0 +1,44 @@
+--- a/Source/WTF/wtf/glib/GRefPtr.h
++++ b/Source/WTF/wtf/glib/GRefPtr.h
+@@ -26,25 +26,7 @@
+ #if USE(GLIB)
+ 
+ #include <algorithm>
+-#include <glib-object.h>
++#include <gio/gio.h>
+ #include <wtf/HashTraits.h>
+ 
+-extern "C" {
+-    typedef struct _GDBusConnection GDBusConnection;
+-    typedef struct _GDBusNodeInfo GDBusNodeInfo;
+-
+-    GDBusNodeInfo* g_dbus_node_info_ref(GDBusNodeInfo*);
+-    void g_dbus_node_info_unref(GDBusNodeInfo*);
+-
+-    // Since GLib 2.56 a g_object_ref_sink() macro may be defined which propagates
+-    // the type of the parameter to the returned value, but it conflicts with the
+-    // declaration below, causing an error when glib-object.h is included before
+-    // this file. Thus, add the forward declarations only when the macro is not
+-    // present.
+-#ifndef g_object_ref_sink
+-    void g_object_unref(gpointer);
+-    gpointer g_object_ref_sink(gpointer);
+-#endif
+-};
+-
+ namespace WTF {
+--- a/Source/WTF/wtf/glib/GSpanExtras.h
++++ b/Source/WTF/wtf/glib/GSpanExtras.h
+@@ -28,11 +28,1 @@
+-extern "C" {
+-void* g_malloc(size_t);
+-void* g_malloc0(size_t);
+-void* g_realloc(void*, size_t);
+-void* g_try_malloc(size_t);
+-void* g_try_malloc0(size_t);
+-void* g_try_realloc(void*, size_t);
+-void g_strfreev(char**);
+-}
+-
+ namespace WTF {
+
