@@ -1,0 +1,18 @@
+--- a/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp
+@@ -38,7 +38,6 @@
+ #include <WebCore/PlatformScreen.h>
+ #include <cstdlib>
+ #include <epoxy/gl.h>
+-#include <fcntl.h>
+ #include <gio/gio.h>
+ #include <wtf/TZoneMallocInlines.h>
+ #include <wtf/URL.h>
+@@ -49,7 +48,6 @@
+ #include <wtf/text/StringToIntegerConversion.h>
+ #include <wtf/text/StringView.h>
+ #include <wtf/text/WTFString.h>
+-#include <wtf/unix/UnixFileDescriptor.h>
+ 
+ #if OS(UNIX)
+ #include <sys/utsname.h>
