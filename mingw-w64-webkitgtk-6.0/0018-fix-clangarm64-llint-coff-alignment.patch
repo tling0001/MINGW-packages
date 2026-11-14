@@ -1,6 +1,6 @@
 --- a/Source/JavaScriptCore/llint/LowLevelInterpreter.cpp
 +++ b/Source/JavaScriptCore/llint/LowLevelInterpreter.cpp
-@@ -602,6 +602,7 @@
+@@ -602,5 +602,6 @@
  #if CPU(ARM64) && OS(WINDOWS)
  // COFF uses power-of-two alignment: .align N means 2^N bytes
 +#define OFFLINE_ASM_ALIGN_TRAP_512 "\n .align 9\n"
