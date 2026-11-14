@@ -66,7 +66,7 @@ optdepends=(
 source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0001-use-gtk-platform-sources-on-windows.patch"
         "0002-fix-glib-header-declarations.patch"
-        "0003-fix-windows-gtk-wtf-posix-compatibility.patch"
+    "${srcdir}/0003-fix-windows-gtk-wtf-posix-compatibility.patch" \
         "0004-add-win32-virtual-memory-support.patch")
 sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
