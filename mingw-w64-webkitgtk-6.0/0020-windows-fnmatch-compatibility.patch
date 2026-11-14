@@ -164,5 +164,5 @@
  set(XDGMIME_INCLUDE_DIRECTORIES
      "${XDGMIME_DIR}/src"
      "${CMAKE_BINARY_DIR}"
-    "${WTF_DIR}"
++    "${WTF_DIR}"
  )
