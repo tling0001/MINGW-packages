@@ -144,6 +144,18 @@
  };
 --- a/Source/WTF/wtf/MappedFileData.h
 +++ b/Source/WTF/wtf/MappedFileData.h
+@@ -56,6 +56,10 @@
+     MappedFileData() = default;
+     WTF_EXPORT_PRIVATE ~MappedFileData();
+
++#if OS(WINDOWS) && PLATFORM(GTK)
++    MappedFileData(MappedFileData&&);
++    MappedFileData& operator=(MappedFileData&&);
++#else
+     MappedFileData(MappedFileData&&) = default;
+     MappedFileData& operator=(MappedFileData&&) = default;
++#endif
+
 @@ -35,8 +35,10 @@
  #include <wtf/MmapSpan.h>
  #endif
@@ -195,7 +207,7 @@
  #include <sys/file.h>
  #include <sys/stat.h>
  #include <unistd.h>
-@@ -185,6 +189,44 @@
+@@ -185,6 +189,50 @@
  
      return MappedFileData { WTF::move(fileData) };
  }
@@ -259,15 +271,31 @@
  
  namespace WTF::FileSystemImpl {
  
-@@ -35,6 +38,11 @@
+@@ -35,6 +38,32 @@
  { }
- 
+
  MappedFileData::~MappedFileData() = default;
 +#elif OS(WINDOWS) && PLATFORM(GTK)
 +MappedFileData::MappedFileData(std::span<uint8_t> fileData)
 +    : m_fileData(fileData)
 +    , m_isValid(true)
 +{ }
++
++MappedFileData::MappedFileData(MappedFileData&& other)
++    : m_fileData(std::exchange(other.m_fileData, { }))
++    , m_isValid(std::exchange(other.m_isValid, false))
++{ }
++
++MappedFileData& MappedFileData::operator=(MappedFileData&& other)
++{
++    if (this == &other)
++        return *this;
++    if (!m_fileData.empty())
++        UnmapViewOfFile(m_fileData.data());
++    m_fileData = std::exchange(other.m_fileData, { });
++    m_isValid = std::exchange(other.m_isValid, false);
++    return *this;
++}
 +
 +MappedFileData::~MappedFileData()
 +{
