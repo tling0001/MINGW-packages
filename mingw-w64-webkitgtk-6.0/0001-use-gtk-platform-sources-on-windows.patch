@@ -129,7 +129,7 @@
  };
  
 -#if OS(WINDOWS) && CPU(X86_64)
-+#if OS(WINDOWS) && CPU(X86_64) && !PLATFORM(GTK)
++#if OS(WINDOWS) && CPU(X86_64) && !COMPILER(GCC)
  template<typename Result, typename... Args>
  struct FunctionTraits<Result SYSV_ABI(Args...)> : public FunctionTraits<Result(Args...)> {
  };
@@ -138,7 +138,7 @@
  };
  
 -#if OS(WINDOWS) && CPU(X86_64)
-+#if OS(WINDOWS) && CPU(X86_64) && !PLATFORM(GTK)
++#if OS(WINDOWS) && CPU(X86_64) && !COMPILER(GCC)
  template<typename Result, typename... Args>
  struct FunctionTraits<Result SYSV_ABI (*)(Args...)> : public FunctionTraits<Result(Args...)> {
  };
