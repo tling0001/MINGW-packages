@@ -1,10 +1,10 @@
-
+# Maintainer: tling0001
 
 _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -24,14 +24,18 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-gstreamer"
   "${MINGW_PACKAGE_PREFIX}-gtk4"
   "${MINGW_PACKAGE_PREFIX}-harfbuzz"
+  "${MINGW_PACKAGE_PREFIX}-harfbuzz-icu"
   "${MINGW_PACKAGE_PREFIX}-hyphen"
   "${MINGW_PACKAGE_PREFIX}-icu"
   "${MINGW_PACKAGE_PREFIX}-lcms2"
   "${MINGW_PACKAGE_PREFIX}-libavif"
-  "${MINGW_PACKAGE_PREFIX}-libepoxy"
+  "${MINGW_PACKAGE_PREFIX}-libgcrypt"
   "${MINGW_PACKAGE_PREFIX}-libjpeg-turbo"
+  "${MINGW_PACKAGE_PREFIX}-libjxl"
   "${MINGW_PACKAGE_PREFIX}-libpng"
+  "${MINGW_PACKAGE_PREFIX}-libsecret"
   "${MINGW_PACKAGE_PREFIX}-libsoup3"
+  "${MINGW_PACKAGE_PREFIX}-libtasn1"
   "${MINGW_PACKAGE_PREFIX}-libwebp"
   "${MINGW_PACKAGE_PREFIX}-libxml2"
   "${MINGW_PACKAGE_PREFIX}-libxslt"
@@ -46,15 +50,16 @@ makedepends=(
   "${MINGW_PACKAGE_PREFIX}-cmake"
   "${MINGW_PACKAGE_PREFIX}-gobject-introspection"
   "${MINGW_PACKAGE_PREFIX}-gperf"
-  "${MINGW_PACKAGE_PREFIX}-gst-plugins-bad"
   "${MINGW_PACKAGE_PREFIX}-ninja"
   "${MINGW_PACKAGE_PREFIX}-perl"
+  "${MINGW_PACKAGE_PREFIX}-pkgconf"
   "${MINGW_PACKAGE_PREFIX}-python"
   "${MINGW_PACKAGE_PREFIX}-ruby"
   "${MINGW_PACKAGE_PREFIX}-unifdef"
 )
 optdepends=(
   "${MINGW_PACKAGE_PREFIX}-gst-libav: additional multimedia codecs"
+  "${MINGW_PACKAGE_PREFIX}-gst-plugins-bad: additional multimedia codecs"
   "${MINGW_PACKAGE_PREFIX}-gst-plugins-good: additional multimedia codecs"
 )
 source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz")
