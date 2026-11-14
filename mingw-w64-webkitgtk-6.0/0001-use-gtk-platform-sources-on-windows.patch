@@ -404,6 +404,25 @@
  #include "pas_utils.h"
 --- a/Source/WTF/wtf/glib/GRefPtr.h
 +++ b/Source/WTF/wtf/glib/GRefPtr.h
+@@ -26,15 +26,7 @@
+ #if USE(GLIB)
+ 
+ #include <algorithm>
+-#include <glib-object.h>
++#include <gio/gio.h>
+ #include <wtf/HashTraits.h>
+ 
+-extern "C" {
+-    typedef struct _GDBusConnection GDBusConnection;
+-    typedef struct _GDBusNodeInfo GDBusNodeInfo;
+-
+-    GDBusNodeInfo* g_dbus_node_info_ref(GDBusNodeInfo*);
+-    void g_dbus_node_info_unref(GDBusNodeInfo*);
+-};
+-
+ namespace WTF {
+--- a/Source/WTF/wtf/glib/GRefPtr.h
++++ b/Source/WTF/wtf/glib/GRefPtr.h
 @@ -47,9 +47,0 @@
 -    // Since GLib 2.56 a g_object_ref_sink() macro may be defined which propagates
 -    // the type of the parameter to the returned value, but it conflicts with the
@@ -730,22 +749,3 @@
      close();
      m_readBuffer.shrink(0);
 
---- a/Source/WTF/wtf/glib/GRefPtr.h
-+++ b/Source/WTF/wtf/glib/GRefPtr.h
-@@ -26,15 +26,7 @@
- #if USE(GLIB)
- 
- #include <algorithm>
--#include <glib-object.h>
-+#include <gio/gio.h>
- #include <wtf/HashTraits.h>
- 
--extern "C" {
--    typedef struct _GDBusConnection GDBusConnection;
--    typedef struct _GDBusNodeInfo GDBusNodeInfo;
--
--    GDBusNodeInfo* g_dbus_node_info_ref(GDBusNodeInfo*);
--    void g_dbus_node_info_unref(GDBusNodeInfo*);
--};
--
- namespace WTF {
