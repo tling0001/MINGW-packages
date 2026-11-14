@@ -1,3 +1,9 @@
+--- a/Source/WebKit/UIProcess/API/glib/WebKitUserMessage.h.in
++++ b/Source/WebKit/UIProcess/API/glib/WebKitUserMessage.h.in
+@@ -27,0 +28,3 @@
++#ifndef G_OS_UNIX
++typedef struct _GUnixFDList GUnixFDList;
++#endif
 --- a/Source/WebKit/Shared/glib/ArgumentCodersGLib.cpp
 +++ b/Source/WebKit/Shared/glib/ArgumentCodersGLib.cpp
 @@ -29,0 +30 @@
