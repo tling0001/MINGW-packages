@@ -32,7 +32,7 @@
  
 --- a/Source/WebCore/platform/win/SharedMemoryWin.cpp
 +++ b/Source/WebCore/platform/win/SharedMemoryWin.cpp
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,96 @@
 +/*
 + * Copyright (C) 2026 OpenAI. All rights reserved.
 + *
@@ -114,13 +114,16 @@
 +        UnmapViewOfFile(m_data);
 +}
 +
-+auto SharedMemory::createHandle(Protection) -> std::optional<Handle>
++auto SharedMemory::createHandle(Protection protection) -> std::optional<Handle>
 +{
 +    if (!m_handle)
 +        return std::nullopt;
 +
-+    // Win32Handle's copy constructor duplicates the mapping handle in this process.
-+    return Handle(Win32Handle { m_handle }, m_size);
++    HANDLE duplicatedHandle = INVALID_HANDLE_VALUE;
++    DWORD access = protection == Protection::ReadOnly ? FILE_MAP_READ : FILE_MAP_READ | FILE_MAP_WRITE;
++    if (!DuplicateHandle(GetCurrentProcess(), m_handle.get(), GetCurrentProcess(), &duplicatedHandle, access, FALSE, 0))
++        return std::nullopt;
++    return Handle(Win32Handle::adopt(duplicatedHandle), m_size);
 +}
 +
 +} // namespace WebCore
