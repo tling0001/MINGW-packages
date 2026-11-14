@@ -1,0 +1,33 @@
+--- a/Source/ThirdParty/ANGLE/PlatformGTK.cmake
++++ b/Source/ThirdParty/ANGLE/PlatformGTK.cmake
+@@ -1,4 +1,8 @@
+-list(APPEND ANGLE_DEFINITIONS ANGLE_PLATFORM_LINUX EGL_NO_PLATFORM_SPECIFIC_TYPES USE_SYSTEM_EGL)
+-include(linux.cmake)
++list(APPEND ANGLE_DEFINITIONS EGL_NO_PLATFORM_SPECIFIC_TYPES USE_SYSTEM_EGL)
++if (WIN32)
++    # platform.h derives ANGLE_PLATFORM_WINDOWS from _WIN32. Do not also
++    # define ANGLE_PLATFORM_LINUX: both paths enable incompatible APIs.
++else ()
++    list(APPEND ANGLE_DEFINITIONS ANGLE_PLATFORM_LINUX)
++    include(linux.cmake)
++endif ()
+ 
+ if (USE_OPENGL)
+     # Enable GLSL compiler output.
+@@ -17,7 +21,11 @@
+         ${libangle_gl_egl_dl_sources}
+         ${libangle_gl_egl_sources}
+         ${libangle_gl_sources}
+ 
+-        ${libangle_gpu_info_util_sources}
+-        ${libangle_gpu_info_util_linux_sources}
++        ${libangle_gpu_info_util_sources}
+     )
++    if (WIN32)
++        list(APPEND ANGLE_SOURCES ${libangle_gpu_info_util_win_sources})
++    else ()
++        list(APPEND ANGLE_SOURCES ${libangle_gpu_info_util_linux_sources})
++    endif ()
+ 
+     list(APPEND ANGLE_DEFINITIONS
+         ANGLE_ENABLE_OPENGL
