@@ -1,9 +1,6 @@
 --- a/Source/WebCore/bindings/scripts/generate-bindings-all.pl
 +++ b/Source/WebCore/bindings/scripts/generate-bindings-all.pl
-@@ -186,6 +186,20 @@
- my $totalCount = @resolvedIdlFilesToUpdate;
- my $currentCount = 0;
- 
+@@ -188,0 +189,14 @@
 +if ($^O eq 'MSWin32') {
 +    # Native Windows Perl does not implement fork(). Generate bindings in-process.
 +    while (@resolvedIdlFilesToUpdate) {
@@ -18,13 +15,7 @@
 +    exit 0;
 +}
 +
- spawnGenerateBindingsIfNeeded() for (1 .. $numOfJobs);
- while (waitpid(-1, 0) != -1) {
-     if ($?) {
-@@ -235,18 +249,24 @@
-     }
-     my $pid = fork();
-     if ($pid == 0) {
+@@ -238,9 +252 @@
 -        my $suppressVerboseOutput = 1;
 -        my $writeDependencies = 1;
 -        my $verbose = 0;
@@ -35,11 +26,9 @@
 -            $codeGen->ProcessDocument($targetDocument, $defines);
 -        }
 +        generateBindings(@files);
-         exit 0;
-     }
-     $abort = 1 unless defined $pid;
- }
- 
+@@ -249,0 +256,14 @@
++}
++
 +sub generateBindings
 +{
 +    my (@files) = @_;
@@ -53,5 +42,3 @@
 +        $codeGen->ProcessDocument($targetDocument, $defines);
 +    }
 +}
-+
- sub buildDirectoryCache
