@@ -333,7 +333,7 @@
  typedef FILE_ID_128 PlatformFileID;
 --- a/Source/WTF/wtf/MemoryPressureHandler.h
 +++ b/Source/WTF/wtf/MemoryPressureHandler.h
-@@ -35,7 +35,7 @@
+@@ -35,5 +35,5 @@
  #include <wtf/Function.h>
  #include <wtf/RunLoop.h>
  
@@ -342,7 +342,7 @@
  #include <wtf/win/Win32Handle.h>
  #endif
  
-@@ -258,7 +258,7 @@
+@@ -258,6 +258,6 @@
  
      Configuration m_configuration;
  
