@@ -1,0 +1,27 @@
+--- a/Source/JavaScriptCore/assembler/MacroAssemblerX86_64.cpp
++++ b/Source/JavaScriptCore/assembler/MacroAssemblerX86_64.cpp
+@@ -231,7 +231,7 @@
+ #endif // !OS(DARWIN)
+ 
+-#if COMPILER(MSVC)
++#if OS(WINDOWS)
+ #define ASM_PREVIOUS_SECTION
+ #else
+ #define ASM_PREVIOUS_SECTION ".previous" "\n"
+--- a/Source/JavaScriptCore/assembler/PerfLog.cpp
++++ b/Source/JavaScriptCore/assembler/PerfLog.cpp
+@@ -52,12 +52,7 @@
+ #if OS(WINDOWS)
+ #include <io.h>
+ 
+-inline static int open(const char* filename, int oflag, int pmode)
+-{
+-    return _open(filename, oflag, pmode);
+-}
+-
+-inline static FILE* fdopen(int fd, const char* mode)
+-{
+-    return _fdopen(fd, mode);
+-}
++// MinGW already declares fdopen in stdio.h. Use the CRT declaration directly.
+ #endif
