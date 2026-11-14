@@ -96,7 +96,7 @@
  std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
  {
      if (!m_handle)
-@@ -140,5 +153,18 @@
+@@ -140,6 +153,19 @@
 -    static_assert(LOCK_SH == std::to_underlying(FileLockMode::Shared), "LockSharedEncoding is as expected");
 -    static_assert(LOCK_EX == std::to_underlying(FileLockMode::Exclusive), "LockExclusiveEncoding is as expected");
 -    static_assert(LOCK_NB == std::to_underlying(FileLockMode::Nonblocking), "LockNonblockingEncoding is as expected");
