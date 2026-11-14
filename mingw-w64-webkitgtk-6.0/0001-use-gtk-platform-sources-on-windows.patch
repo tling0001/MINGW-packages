@@ -490,7 +490,7 @@
  #include <sys/stat.h>
  #include <unistd.h>
  #include <wtf/CheckedArithmetic.h>
-@@ -76,6 +78,10 @@
+@@ -76,7 +78,11 @@
  
  bool FileHandle::flush()
  {
@@ -504,7 +504,7 @@
  std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
 --- a/Source/WTF/wtf/PlatformUse.h
 +++ b/Source/WTF/wtf/PlatformUse.h
-@@ -91,7 +91,7 @@
+@@ -91,6 +91,6 @@
  #define USE_CF 1
  #endif
  
