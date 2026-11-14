@@ -1,6 +1,6 @@
 --- a/Source/WTF/wtf/generic/MemoryFootprintGeneric.cpp
 +++ b/Source/WTF/wtf/generic/MemoryFootprintGeneric.cpp
-@@ -29,12 +29,23 @@
+@@ -29,12 +29,24 @@
  #include <wtf/MemoryFootprint.h>
  #include <wtf/Platform.h>
  
