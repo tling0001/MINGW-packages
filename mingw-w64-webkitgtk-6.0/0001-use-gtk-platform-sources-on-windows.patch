@@ -490,7 +490,7 @@
  #include <sys/stat.h>
  #include <unistd.h>
  #include <wtf/CheckedArithmetic.h>
-@@ -76,7 +78,11 @@
+@@ -76,6 +78,10 @@
  
  bool FileHandle::flush()
  {
@@ -582,7 +582,7 @@
  #if !USE(CF)
 --- /dev/null
 +++ b/Source/WTF/wtf/OSAllocatorWinGTK.cpp
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,115 @@
 +/* Windows virtual-memory implementation for the GTK port. */
 +#include "config.h"
 +#include <wtf/OSAllocator.h>
