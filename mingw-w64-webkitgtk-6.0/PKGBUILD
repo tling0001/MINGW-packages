@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=4
+pkgrel=5
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -114,6 +114,7 @@ build() {
     -DENABLE_QUARTZ_TARGET=OFF
     -DENABLE_JOURNALD=OFF
     -DUSE_LIBBACKTRACE=OFF
+    -DUSE_LIBDRM=OFF
     -DUSE_SYSTEM_MALLOC=ON
   )
 
