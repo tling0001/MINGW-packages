@@ -144,9 +144,9 @@
  UIProcess/Launcher/glib/XDGDBusProxy.cpp @no-unify
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -47,6 +47,14 @@
-     "SourcesGTK.txt"
- )
+@@ -61,6 +61,12 @@
+     )
+ endif ()
  
 +if (WIN32)
 +    list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
@@ -155,3 +155,5 @@
 +endif ()
 +
  list(APPEND WebKit_LIBRARIES
+     GLib::GioUnix
+     GLib::Module
