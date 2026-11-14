@@ -1,6 +1,6 @@
 --- a/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
 +++ b/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
-@@ -196,11 +196,26 @@
+@@ -196,10 +196,25 @@
      snprintf(buffer.mutableSpan().data(), length, "%s/%s-XXXXXX", directory, prefixUTF8.data());
      IGNORE_CLANG_WARNINGS_END
  
