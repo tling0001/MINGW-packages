@@ -30,7 +30,7 @@
  
 --- a/Source/JavaScriptCore/interpreter/CallFrame.h
 +++ b/Source/JavaScriptCore/interpreter/CallFrame.h
-@@ -392,7 +392,9 @@
+@@ -392,6 +392,8 @@
              : "rbp" /* clobber rbp */ \
          ); \
          ASSERT(JSC::isFromJSCode(removeCodePtrTag<void*>(__builtin_return_address(0)))); \
