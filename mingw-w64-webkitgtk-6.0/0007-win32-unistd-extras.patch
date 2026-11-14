@@ -1,0 +1,99 @@
+--- a/Source/WTF/wtf/unix/UniStdExtrasUnix.cpp
++++ b/Source/WTF/wtf/unix/UniStdExtrasUnix.cpp
+@@ -26,12 +26,25 @@
+ #include "config.h"
+ #include <wtf/UniStdExtras.h>
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++#include <errno.h>
++#include <io.h>
++#include <winsock2.h>
++#include <windows.h>
++#else
+ #include <fcntl.h>
++#endif
+ 
+ namespace WTF {
+ 
+ bool setCloseOnExec(int fileDescriptor)
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    auto nativeHandle = reinterpret_cast<HANDLE>(_get_osfhandle(fileDescriptor));
++    if (nativeHandle == INVALID_HANDLE_VALUE)
++        return true; // Winsock sockets are non-inheritable unless explicitly created for inheritance.
++    return SetHandleInformation(nativeHandle, HANDLE_FLAG_INHERIT, 0);
++#else
+     int returnValue = -1;
+     do {
+         int flags = fcntl(fileDescriptor, F_GETFD);
+@@ -40,10 +53,17 @@
+     } while (returnValue == -1 && errno == EINTR);
+ 
+     return returnValue != -1;
++#endif
+ }
+ 
+ bool unsetCloseOnExec(int fileDescriptor)
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    auto nativeHandle = reinterpret_cast<HANDLE>(_get_osfhandle(fileDescriptor));
++    if (nativeHandle == INVALID_HANDLE_VALUE)
++        return true;
++    return SetHandleInformation(nativeHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
++#else
+     int returnValue = -1;
+     do {
+         int flags = fcntl(fileDescriptor, F_GETFD);
+@@ -52,10 +72,21 @@
+     } while (returnValue == -1 && errno == EINTR);
+ 
+     return returnValue != -1;
++#endif
+ }
+ 
+ int dupCloseOnExec(int fileDescriptor)
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    int duplicatedFileDescriptor = _dup(fileDescriptor);
++    if (duplicatedFileDescriptor == -1) {
++        WSAPROTOCOL_INFO protocolInfo { };
++        auto socket = static_cast<SOCKET>(static_cast<uintptr_t>(fileDescriptor));
++        if (!WSADuplicateSocket(socket, GetCurrentProcessId(), &protocolInfo)) {
++            auto duplicatedSocket = WSASocket(FROM_PROTOCOL_INFO, FROM_PROTOCOL_INFO, FROM_PROTOCOL_INFO, &protocolInfo, 0, WSA_FLAG_OVERLAPPED);
++            if (duplicatedSocket != INVALID_SOCKET)
++                return static_cast<int>(duplicatedSocket);
++        }
++        return -1;
++    }
++    if (!setCloseOnExec(duplicatedFileDescriptor)) {
++        _close(duplicatedFileDescriptor);
++        return -1;
++    }
++    return duplicatedFileDescriptor;
++#else
+     int duplicatedFileDescriptor = -1;
+ #ifdef F_DUPFD_CLOEXEC
+     while ((duplicatedFileDescriptor = fcntl(fileDescriptor, F_DUPFD_CLOEXEC, 0)) == -1 && errno == EINTR) { }
+@@ -74,16 +105,22 @@
+     }
+ 
+     return duplicatedFileDescriptor;
++#endif
+ }
+ 
+ bool setNonBlock(int fileDescriptor)
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    u_long nonBlocking = 1;
++    return ioctlsocket(static_cast<SOCKET>(static_cast<uintptr_t>(fileDescriptor)), FIONBIO, &nonBlocking) == 0;
++#else
+     int returnValue = -1;
+ 
+     int flags = fcntl(fileDescriptor, F_GETFL, 0);
+     while ((returnValue = fcntl(fileDescriptor, F_SETFL, flags | O_NONBLOCK)) == -1 && errno == EINTR) { }
+ 
+     return returnValue != -1;
++#endif
+ }
+ 
+ } // namespace WTF
