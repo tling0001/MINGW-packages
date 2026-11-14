@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=8
+pkgrel=9
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -56,6 +56,7 @@ makedepends=(
   "${MINGW_PACKAGE_PREFIX}-python"
   "${MINGW_PACKAGE_PREFIX}-ruby"
   "${MINGW_PACKAGE_PREFIX}-unifdef"
+  "${MINGW_PACKAGE_PREFIX}-vulkan-volk"
 )
 optdepends=(
   "${MINGW_PACKAGE_PREFIX}-gst-libav: additional multimedia codecs"
@@ -75,7 +76,8 @@ prepare() {
   rm -rf "${source_dir}"
   # Some vendored symlinks fail to extract on Windows; the required build sources
   # are regular files, so tolerate those link-only errors and validate key inputs.
-  tar -xf "${srcdir}/webkitgtk-${pkgver}.tar.xz" -C "${srcdir}" || true
+  tar --exclude="*/Source/ThirdParty/skia/src/ports/fontations/Cargo.toml" \
+    -xf "${srcdir}/webkitgtk-${pkgver}.tar.xz" -C "${srcdir}" || true
 
   [[ -f "${source_dir}/CMakeLists.txt" ]] || {
     error "WebKit source extraction did not produce the top-level CMakeLists.txt"
@@ -89,6 +91,19 @@ prepare() {
     error "WebKit source extraction is missing Source/JavaScriptCore/CMakeLists.txt"
     return 1
   }
+  for required_file in \
+    Source/ThirdParty/skia/src/utils/win/SkDWrite.cpp \
+    Source/WTF/wtf/text/win/WCharStringExtras.h \
+    Source/WTF/wtf/win/DbgHelperWin.h \
+    Source/WTF/wtf/win/GDIObject.h \
+    Source/WTF/wtf/win/PathWalker.h \
+    Source/WTF/wtf/win/SoftLinking.h \
+    Source/WTF/wtf/win/Win32Handle.h; do
+    [[ -f "${source_dir}/${required_file}" ]] || {
+      error "WebKit source extraction is missing ${required_file}"
+      return 1
+    }
+  done
 }
 
 build() {
@@ -117,6 +132,7 @@ build() {
     -DUSE_LIBBACKTRACE=OFF
     -DUSE_LIBDRM=OFF
     -DUSE_SYSTEM_SYSPROF_CAPTURE=NO
+    -DUSE_VULKAN=ON
     -DUSE_SYSTEM_MALLOC=ON
   )
 
