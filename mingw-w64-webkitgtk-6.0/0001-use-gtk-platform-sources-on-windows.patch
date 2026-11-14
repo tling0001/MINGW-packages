@@ -159,7 +159,7 @@
 @@ -56,6 +56,11 @@
      MappedFileData() = default;
      WTF_EXPORT_PRIVATE ~MappedFileData();
-
+ 
 +#if OS(WINDOWS) && PLATFORM(GTK)
 +    MappedFileData(MappedFileData&&);
 +    MappedFileData& operator=(MappedFileData&&);
@@ -167,7 +167,7 @@
      MappedFileData(MappedFileData&&) = default;
      MappedFileData& operator=(MappedFileData&&) = default;
 +#endif
-
+ 
 @@ -73,9 +75,15 @@
      size_t size() const { return m_fileData.span().size(); }
      std::span<const uint8_t> span() const LIFETIME_BOUND { return m_fileData.span(); }
@@ -261,7 +261,7 @@
  } // WTF::FileSystemImpl
 --- a/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
 +++ b/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
-@@ -25,6 +25,10 @@
+@@ -25,6 +25,11 @@
  
  #include "config.h"
  #include <wtf/MappedFileData.h>
@@ -273,7 +273,7 @@
  
 @@ -35,6 +38,32 @@
  { }
-
+ 
  MappedFileData::~MappedFileData() = default;
 +#elif OS(WINDOWS) && PLATFORM(GTK)
 +MappedFileData::MappedFileData(std::span<uint8_t> fileData)
