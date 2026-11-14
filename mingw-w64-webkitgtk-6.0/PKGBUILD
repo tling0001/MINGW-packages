@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=73
+pkgrel=74
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -82,7 +82,8 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0015-remove-posix-includes-from-glib-cache-data.patch"
         "0016-fix-mingw-jsc-assembler-and-perflog.patch"
         "0017-fix-mingw-profiler-support-fdopen.patch"
-        "0018-fix-clangarm64-llint-coff-alignment.patch")
+        "0018-fix-clangarm64-llint-coff-alignment.patch"
+        "0019-fix-mingw-executable-allocator-process-id.patch")
 sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
@@ -116,7 +117,8 @@ prepare() {
     "${srcdir}/0015-remove-posix-includes-from-glib-cache-data.patch" \
     "${srcdir}/0016-fix-mingw-jsc-assembler-and-perflog.patch" \
     "${srcdir}/0017-fix-mingw-profiler-support-fdopen.patch" \
-    "${srcdir}/0018-fix-clangarm64-llint-coff-alignment.patch"; do
+    "${srcdir}/0018-fix-clangarm64-llint-coff-alignment.patch" \\
+    "${srcdir}/0019-fix-mingw-executable-allocator-process-id.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
 
