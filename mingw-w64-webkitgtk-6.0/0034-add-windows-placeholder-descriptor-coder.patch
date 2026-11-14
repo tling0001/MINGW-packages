@@ -1,0 +1,111 @@
+--- a/Source/WebKit/Platform/IPC/ArgumentCoders.h
++++ b/Source/WebKit/Platform/IPC/ArgumentCoders.h
+@@ -53,0 +54,2 @@
++#elif OS(WINDOWS)
++#include "ArgumentCodersWin.h"
+--- /dev/null
++++ b/Source/WebKit/Platform/IPC/win/ArgumentCodersWin.h
+@@ -0,0 +1,42 @@
++/*
++ * Copyright (C) 2026 OpenAI. All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++ * POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#pragma once
++
++#include <wtf/ArgumentCoder.h>
++
++namespace WTF {
++class UnixFileDescriptor;
++}
++
++namespace IPC {
++
++template<> struct ArgumentCoder<WTF::UnixFileDescriptor> {
++    static void encode(Encoder&, const WTF::UnixFileDescriptor&);
++    static void encode(Encoder&, WTF::UnixFileDescriptor&&);
++    static std::optional<WTF::UnixFileDescriptor> decode(Decoder&);
++};
++
++} // namespace IPC
+--- /dev/null
++++ b/Source/WebKit/Platform/IPC/win/ArgumentCodersWin.cpp
+@@ -0,0 +1,58 @@
++/*
++ * Copyright (C) 2026 OpenAI. All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++ * POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include "config.h"
++#include "ArgumentCodersWin.h"
++
++#include "Decoder.h"
++#include "Encoder.h"
++#include <wtf/Assertions.h>
++#include <wtf/unix/UnixFileDescriptor.h>
++
++namespace IPC {
++
++void ArgumentCoder<UnixFileDescriptor>::encode(Encoder& encoder, const UnixFileDescriptor& descriptor)
++{
++    // GTK on Windows does not transfer POSIX descriptors. Its shared-memory
++    // renderer path must therefore send an invalid descriptor for each frame.
++    RELEASE_ASSERT(!descriptor);
++    encoder << false;
++}
++
++void ArgumentCoder<UnixFileDescriptor>::encode(Encoder& encoder, UnixFileDescriptor&& descriptor)
++{
++    RELEASE_ASSERT(!descriptor);
++    encoder << false;
++}
++
++std::optional<UnixFileDescriptor> ArgumentCoder<UnixFileDescriptor>::decode(Decoder& decoder)
++{
++    auto hasDescriptor = decoder.decode<bool>();
++    if (!hasDescriptor || *hasDescriptor)
++        return std::nullopt;
++    return UnixFileDescriptor { };
++}
++
++} // namespace IPC
