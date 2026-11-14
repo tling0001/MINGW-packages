@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=55
+pkgrel=56
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -70,8 +70,12 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0003-fix-windows-gtk-wtf-posix-compatibility.patch"
         "0004-add-win32-virtual-memory-support.patch"
         "0005-fix-windows-gtk-posix-locale-and-cloexec.patch"
-        "0006-use-glib-for-portable-temporary-files.patch")
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+        "0006-use-glib-for-portable-temporary-files.patch"
+        "0007-win32-unistd-extras.patch"
+        "0008-win32-memory-footprint.patch"
+        "0009-link-psapi-for-windows-gtk.patch"
+        "0010-fix-windows-build-warning.patch")
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
 # Follow the extraction workaround used by mingw-w64-qemu.
@@ -92,7 +96,11 @@ prepare() {
     "${srcdir}/0003-fix-windows-gtk-wtf-posix-compatibility.patch" \
     "${srcdir}/0004-add-win32-virtual-memory-support.patch" \
     "${srcdir}/0005-fix-windows-gtk-posix-locale-and-cloexec.patch" \
-    "${srcdir}/0006-use-glib-for-portable-temporary-files.patch"; do
+    "${srcdir}/0006-use-glib-for-portable-temporary-files.patch" \\
+    "${srcdir}/0007-win32-unistd-extras.patch" \\
+    "${srcdir}/0008-win32-memory-footprint.patch" \\
+    "${srcdir}/0009-link-psapi-for-windows-gtk.patch" \\
+    "${srcdir}/0010-fix-windows-build-warning.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
 
@@ -112,6 +120,13 @@ prepare() {
 }
 
 build() {
+  local compiler_warning_flags="-Wno-ignored-attributes"
+  case "${MSYSTEM}" in
+    CLANG64|CLANGARM64)
+      compiler_warning_flags+=" -Wno-unsafe-buffer-usage"
+      ;;
+  esac
+
   local -a cmake_args=(
     -GNinja
     -DPORT=GTK
