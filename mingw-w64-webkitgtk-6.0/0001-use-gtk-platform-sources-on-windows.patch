@@ -369,13 +369,3 @@
 +#if !OS(WINDOWS) || PLATFORM(GTK)
  void MemoryPressureHandler::platformInitialize() { }
  #endif
---- a/Source/WTF/wtf/CMakeLists.txt
-+++ b/Source/WTF/wtf/CMakeLists.txt
-@@ -707,7 +707,7 @@
-     )
- )
- 
--if (WIN32)
-+if (WIN32 AND NOT PORT STREQUAL "GTK")
-     list(APPEND WTF_PUBLIC_HEADERS
-         text/win/WCharStringExtras.h
