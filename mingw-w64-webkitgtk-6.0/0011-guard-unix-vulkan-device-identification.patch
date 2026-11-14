@@ -1,0 +1,29 @@
+--- a/Source/WebCore/platform/graphics/vulkan/VulkanTypes.cpp
++++ b/Source/WebCore/platform/graphics/vulkan/VulkanTypes.cpp
+@@ -34,7 +34,9 @@
+ #include <epoxy/egl.h>
+ #include <epoxy/gl.h>
+ #include <sys/stat.h>
++#if OS(UNIX)
+ #include <sys/sysmacros.h>
++#endif
+ #include <wtf/Scope.h>
+ #include <wtf/text/CStringView.h>
+ #include <wtf/text/StringBuilder.h>
+@@ -409,6 +411,7 @@
+     // and match those to the identifiers reported by Vulkan.
+     //
+     UnixFileDescriptor drmFileDescriptor;
++#if OS(UNIX)
+ #if USE(GBM)
+     if (is<PlatformDisplayGBM>(display))
+         drmFileDescriptor = drmFileDescriptorForGBMDisplay();
+@@ -459,6 +462,8 @@
+         }
+     }
+ 
++#endif // OS(UNIX)
++
+     //
+     // As a last resort, try to split the list of devices in software renderers (CPU based)
+     // and hardware ones (the rest)
