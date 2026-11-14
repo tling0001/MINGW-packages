@@ -56,7 +56,7 @@
  }
 --- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
 +++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
-@@ -29,8 +29,10 @@
+@@ -29,11 +29,12 @@
  #include "config.h"
  #include <wtf/FileHandle.h>
  
