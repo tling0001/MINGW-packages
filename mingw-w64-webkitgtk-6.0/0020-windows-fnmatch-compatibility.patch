@@ -160,7 +160,7 @@
  #include <wtf/PrintStream.h>
 --- a/Source/ThirdParty/xdgmime/CMakeLists.txt
 +++ b/Source/ThirdParty/xdgmime/CMakeLists.txt
-@@ -3,5 +3,6 @@
+@@ -3,4 +3,5 @@
  set(XDGMIME_INCLUDE_DIRECTORIES
      "${XDGMIME_DIR}/src"
      "${CMAKE_BINARY_DIR}"
