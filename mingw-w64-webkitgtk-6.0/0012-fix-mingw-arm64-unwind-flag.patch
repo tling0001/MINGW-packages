@@ -1,6 +1,6 @@
 --- a/Source/JavaScriptCore/CMakeLists.txt
 +++ b/Source/JavaScriptCore/CMakeLists.txt
-@@ -1830,14 +1830,22 @@
+@@ -1830,12 +1830,19 @@
  # Windows ARM64: Disable unwind tables to work around LLVM bug #47432
  # (alignment directives in inline asm break SEH unwind info calculation)
  if (WIN32 AND WTF_CPU_ARM64)
