@@ -429,4 +429,86 @@
 -
  namespace WTF {
 
-$(PLACEHOLDER)
+--- a/Source/WTF/wtf/posix/CPUTimePOSIX.cpp
++++ b/Source/WTF/wtf/posix/CPUTimePOSIX.cpp
+@@ -26,11 +26,39 @@
+ #include "config.h"
+ #include <wtf/CPUTime.h>
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++#include <windows.h>
++#else
+ #include <sys/resource.h>
+ #include <time.h>
++#endif
+ 
+ namespace WTF {
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++static Seconds fileTimeToSeconds(const FILETIME& value)
++{
++    ULARGE_INTEGER ticks;
++    ticks.LowPart = value.dwLowDateTime;
++    ticks.HighPart = value.dwHighDateTime;
++    return Seconds(static_cast<double>(ticks.QuadPart) / 10000000.0);
++}
++
++std::optional<CPUTime> CPUTime::get()
++{
++    FILETIME creationTime, exitTime, kernelTime, userTime;
++    if (!GetProcessTimes(GetCurrentProcess(), &creationTime, &exitTime, &kernelTime, &userTime))
++        return std::nullopt;
++    return CPUTime { MonotonicTime::now(), fileTimeToSeconds(userTime), fileTimeToSeconds(kernelTime) };
++}
++
++Seconds CPUTime::forCurrentThread()
++{
++    FILETIME creationTime, exitTime, kernelTime, userTime;
++    RELEASE_ASSERT(GetThreadTimes(GetCurrentThread(), &creationTime, &exitTime, &kernelTime, &userTime));
++    return fileTimeToSeconds(userTime) + fileTimeToSeconds(kernelTime);
++}
++#else
+ static Seconds NODELETE timevalToSeconds(const struct timeval& value)
+ {
+     return Seconds(value.tv_sec) + Seconds::fromMicroseconds(value.tv_usec);
+@@ -51,5 +79,6 @@
+     RELEASE_ASSERT(!ret);
+     return Seconds(ts.tv_sec) + Seconds::fromNanoseconds(ts.tv_nsec);
+ }
++#endif
+ 
+ }
+--- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
++++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
+@@ -33,7 +33,9 @@
+ #include <io.h>
+ #include <windows.h>
+ #endif
++#if !OS(WINDOWS)
+ #include <sys/file.h>
++#endif
+ #include <sys/stat.h>
+ #include <unistd.h>
+ #include <wtf/CheckedArithmetic.h>
+@@ -76,7 +78,11 @@
+ 
+ bool FileHandle::flush()
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    return m_handle && !_commit(*m_handle);
++#else
+     return m_handle && !fsync(*m_handle);
++#endif
+ }
+ 
+ std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
+--- a/Source/WTF/wtf/PlatformUse.h
++++ b/Source/WTF/wtf/PlatformUse.h
+@@ -91,7 +91,7 @@
+ #define USE_CF 1
+ #endif
+ 
+-#if PLATFORM(COCOA) || (PLATFORM(GTK) || PLATFORM(WPE))
++#if PLATFORM(COCOA) || ((PLATFORM(GTK) || PLATFORM(WPE)) && !OS(WINDOWS))
+ #define USE_FILE_LOCK 1
+ #endif
