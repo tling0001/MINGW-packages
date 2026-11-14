@@ -1,0 +1,38 @@
+--- a/Source/WTF/wtf/text/unix/TextBreakIteratorInternalICUUnix.cpp
++++ b/Source/WTF/wtf/text/unix/TextBreakIteratorInternalICUUnix.cpp
+@@ -26,14 +26,22 @@
+ 
+ const char* currentSearchLocaleID()
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    if (auto* localeDefault = setlocale(LC_CTYPE, nullptr))
++#else
+     if (auto* localeDefault = setlocale(LC_MESSAGES, nullptr))
++#endif
+         return localeDefault;
+     return "";
+ }
+ 
+ const char* currentTextBreakLocaleID()
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    if (auto* localeDefault = setlocale(LC_CTYPE, nullptr))
++#else
+     if (auto* localeDefault = setlocale(LC_MESSAGES, nullptr))
++#endif
+         return localeDefault;
+     return "en_us";
+ }
+--- a/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
++++ b/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
+@@ -31,6 +31,10 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++
++#if OS(WINDOWS) && PLATFORM(GTK) && !defined(O_CLOEXEC)
++#define O_CLOEXEC O_NOINHERIT
++#endif
+ #include <stdio.h>
+ #include <sys/stat.h>
+ #include <sys/statvfs.h>
