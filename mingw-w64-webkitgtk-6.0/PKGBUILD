@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=3
+pkgrel=4
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -64,6 +64,32 @@ optdepends=(
 )
 source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz")
 sha256sums=('SKIP')
+
+# WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
+# Follow the extraction workaround used by mingw-w64-qemu.
+noextract=("webkitgtk-${pkgver}.tar.xz")
+
+prepare() {
+  local source_dir="${srcdir}/webkitgtk-${pkgver}"
+
+  rm -rf "${source_dir}"
+  # Some vendored symlinks fail to extract on Windows; the required build sources
+  # are regular files, so tolerate those link-only errors and validate key inputs.
+  tar -xf "${srcdir}/webkitgtk-${pkgver}.tar.xz" -C "${srcdir}" || true
+
+  [[ -f "${source_dir}/CMakeLists.txt" ]] || {
+    error "WebKit source extraction did not produce the top-level CMakeLists.txt"
+    return 1
+  }
+  [[ -f "${source_dir}/Source/WebKit/CMakeLists.txt" ]] || {
+    error "WebKit source extraction is missing Source/WebKit/CMakeLists.txt"
+    return 1
+  }
+  [[ -f "${source_dir}/Source/JavaScriptCore/CMakeLists.txt" ]] || {
+    error "WebKit source extraction is missing Source/JavaScriptCore/CMakeLists.txt"
+    return 1
+  }
+}
 
 build() {
   local -a cmake_args=(
