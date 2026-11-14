@@ -144,7 +144,7 @@
  };
 --- a/Source/WTF/wtf/MappedFileData.h
 +++ b/Source/WTF/wtf/MappedFileData.h
-@@ -56,6 +56,10 @@
+@@ -56,6 +56,11 @@
      MappedFileData() = default;
      WTF_EXPORT_PRIVATE ~MappedFileData();
 
@@ -261,7 +261,7 @@
  } // WTF::FileSystemImpl
 --- a/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
 +++ b/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
-@@ -25,6 +25,9 @@
+@@ -25,6 +25,10 @@
  
  #include "config.h"
  #include <wtf/MappedFileData.h>
