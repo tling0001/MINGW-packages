@@ -160,7 +160,7 @@
      MappedFileData() = default;
      WTF_EXPORT_PRIVATE ~MappedFileData();
  
-+#if OS(WINDOWS) && PLATFORM(GTK)
++#if OS(WINDOWS) && PLATFORM(GTK) && !HAVE(MMAP)
 +    MappedFileData(MappedFileData&&);
 +    MappedFileData& operator=(MappedFileData&&);
 +#else
