@@ -29,7 +29,7 @@
      target_compile_definitions(Skia PRIVATE SK_TYPEFACE_FACTORY_FREETYPE)
 --- a/Source/WTF/wtf/CMakeLists.txt
 +++ b/Source/WTF/wtf/CMakeLists.txt
-@@ -707,6 +707,6 @@
+@@ -707,7 +707,7 @@
      unicode/icu/ICUHelpers.cpp
  )
  
