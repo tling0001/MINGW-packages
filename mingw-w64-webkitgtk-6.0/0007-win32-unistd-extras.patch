@@ -44,7 +44,7 @@
      int returnValue = -1;
      do {
          int flags = fcntl(fileDescriptor, F_GETFD);
-@@ -52,10 +72,21 @@
+@@ -52,10 +72,29 @@
      } while (returnValue == -1 && errno == EINTR);
  
      return returnValue != -1;
