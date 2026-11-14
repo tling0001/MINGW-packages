@@ -59,12 +59,14 @@
 +} // namespace WebKit
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -105,7 +105,6 @@
- Shared/glib/ProcessExecutablePathGLib.cpp
+@@ -106,7 +106,6 @@
+ 
+ Shared/soup/WebErrorsSoup.cpp
  
 -Shared/unix/AuxiliaryProcessMain.cpp
 -
- UIProcess/API/glib/WebKitProtocolHandler.cpp @no-unify
+ UIProcess/DefaultUndoController.cpp
+ UIProcess/LegacySessionStateCodingNone.cpp
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
 @@ -67,6 +67,12 @@
