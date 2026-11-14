@@ -1,0 +1,117 @@
+--- a/Source/WTF/wtf/posix/CPUTimePOSIX.cpp
++++ b/Source/WTF/wtf/posix/CPUTimePOSIX.cpp
+@@ -26,11 +26,46 @@
+ #include "config.h"
+ #include <wtf/CPUTime.h>
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++#include <windows.h>
++#else
+ #include <sys/resource.h>
+ #include <time.h>
++#endif
+ 
+ namespace WTF {
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++static Seconds NODELETE fileTimeToSeconds(const FILETIME& value)
++{
++    ULARGE_INTEGER ticks;
++    ticks.LowPart = value.dwLowDateTime;
++    ticks.HighPart = value.dwHighDateTime;
++    return Seconds(static_cast<double>(ticks.QuadPart) / 10000000.0);
++}
++
++std::optional<CPUTime> CPUTime::get()
++{
++    FILETIME creationTime;
++    FILETIME exitTime;
++    FILETIME kernelTime;
++    FILETIME userTime;
++    if (!GetProcessTimes(GetCurrentProcess(), &creationTime, &exitTime, &kernelTime, &userTime))
++        return std::nullopt;
++    return CPUTime { MonotonicTime::now(), fileTimeToSeconds(userTime), fileTimeToSeconds(kernelTime) };
++}
++
++Seconds CPUTime::forCurrentThread()
++{
++    FILETIME creationTime;
++    FILETIME exitTime;
++    FILETIME kernelTime;
++    FILETIME userTime;
++    if (!GetThreadTimes(GetCurrentThread(), &creationTime, &exitTime, &kernelTime, &userTime))
++        return Seconds(0);
++    return fileTimeToSeconds(userTime) + fileTimeToSeconds(kernelTime);
++}
++#else
+ static Seconds NODELETE timevalToSeconds(const struct timeval& value)
+ {
+     return Seconds(value.tv_sec) + Seconds::fromMicroseconds(value.tv_usec);
+@@ -51,5 +86,6 @@
+     RELEASE_ASSERT(!ret);
+     return Seconds(ts.tv_sec) + Seconds::fromNanoseconds(ts.tv_nsec);
+ }
++#endif
+ 
+ }
+--- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
++++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
+@@ -29,8 +29,10 @@
+ #include "config.h"
+ #include <wtf/FileHandle.h>
+ 
+ #if OS(WINDOWS) && PLATFORM(GTK)
+ #include <io.h>
+ #include <windows.h>
++#else
++#include <sys/file.h>
+ #endif
+-#include <sys/file.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
+ #include <wtf/CheckedArithmetic.h>
+@@ -71,12 +73,20 @@
+ bool FileHandle::truncate(int64_t offset)
+ {
+     // ftruncate returns 0 to indicate the success.
++#if OS(WINDOWS) && PLATFORM(GTK)
++    return m_handle && !_chsize_s(*m_handle, offset);
++#else
+     return m_handle && !ftruncate(*m_handle, offset);
++#endif
+ }
+ 
+ bool FileHandle::flush()
+ {
++#if OS(WINDOWS) && PLATFORM(GTK)
++    return m_handle && !_commit(*m_handle);
++#else
+     return m_handle && !fsync(*m_handle);
++#endif
+ }
+ 
+ std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
+@@ -141,10 +151,23 @@
+     if (!m_handle)
+         return false;
+ 
++#if OS(WINDOWS) && PLATFORM(GTK)
++    auto nativeHandle = reinterpret_cast<HANDLE>(_get_osfhandle(*m_handle));
++    if (nativeHandle == INVALID_HANDLE_VALUE)
++        return false;
++    OVERLAPPED overlapped { };
++    DWORD flags = 0;
++    if (lockMode.contains(FileLockMode::Exclusive))
++        flags |= LOCKFILE_EXCLUSIVE_LOCK;
++    if (lockMode.contains(FileLockMode::Nonblocking))
++        flags |= LOCKFILE_FAIL_IMMEDIATELY;
++    return LockFileEx(nativeHandle, flags, 0, MAXDWORD, MAXDWORD, &overlapped);
++#else
+     static_assert(LOCK_SH == std::to_underlying(FileLockMode::Shared), "LockSharedEncoding is as expected");
+     static_assert(LOCK_EX == std::to_underlying(FileLockMode::Exclusive), "LockExclusiveEncoding is as expected");
+     static_assert(LOCK_NB == std::to_underlying(FileLockMode::Nonblocking), "LockNonblockingEncoding is as expected");
+     return flock(*m_handle, lockMode.toRaw()) != -1;
++#endif
+ }
+ #endif // USE(FILE_LOCK)
+ 
