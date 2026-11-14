@@ -56,8 +56,7 @@
  }
 --- a/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
 +++ b/Source/WTF/wtf/posix/FileHandlePOSIX.cpp
-@@ -29,11 +29,12 @@
- #include "config.h"
+@@ -30,12 +30,13 @@
  #include <wtf/FileHandle.h>
  
  #if OS(WINDOWS) && PLATFORM(GTK)
@@ -70,7 +69,11 @@
  #include <sys/stat.h>
  #include <unistd.h>
  #include <wtf/CheckedArithmetic.h>
-@@ -71,10 +71,18 @@
+ #include <wtf/FileSystem.h>
+ #include <wtf/MappedFileData.h>
+@@ -69,16 +70,24 @@
+ }
+ 
  bool FileHandle::truncate(int64_t offset)
  {
      // ftruncate returns 0 to indicate the success.
@@ -89,7 +92,11 @@
      return m_handle && !fsync(*m_handle);
 +#endif
  }
-@@ -139,12 +143,25 @@
+ 
+ std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
+ {
+     if (!m_handle)
+@@ -139,15 +148,28 @@
  bool FileHandle::lock(OptionSet<FileLockMode> lockMode)
  {
      if (!m_handle)
@@ -115,3 +122,4 @@
 +#endif
  }
  #endif // USE(FILE_LOCK)
+
