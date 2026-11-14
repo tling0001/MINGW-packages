@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=91
+pkgrel=92
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -96,8 +96,9 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0029-guard-unix-printing-portal-on-windows.patch"
         "0030-add-windows-auxiliary-process-main.patch"
         "0031-remove-stale-unix-includes.patch"
-        "0032-use-glib-for-notification-icon-files.patch")
-sha256sums=('a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+        "0032-use-glib-for-notification-icon-files.patch"
+        "0033-stub-unix-fence-monitor-on-windows.patch")
+sha256sums=('a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
 # Follow the extraction workaround used by mingw-w64-qemu.
@@ -144,7 +145,8 @@ prepare() {
     "${srcdir}/0029-guard-unix-printing-portal-on-windows.patch" \
     "${srcdir}/0030-add-windows-auxiliary-process-main.patch" \
     "${srcdir}/0031-remove-stale-unix-includes.patch" \
-    "${srcdir}/0032-use-glib-for-notification-icon-files.patch"; do
+    "${srcdir}/0032-use-glib-for-notification-icon-files.patch" \
+    "${srcdir}/0033-stub-unix-fence-monitor-on-windows.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
 
