@@ -1,0 +1,8 @@
+--- a/Source/WebCore/platform/mediastream/gstreamer/DesktopPortal.cpp
++++ b/Source/WebCore/platform/mediastream/gstreamer/DesktopPortal.cpp
+@@ -20,0 +21,2 @@
++
++#if OS(UNIX) && ENABLE(MEDIA_STREAM)
+@@ -311,0 +314,2 @@
++
++#endif // OS(UNIX) && ENABLE(MEDIA_STREAM)
