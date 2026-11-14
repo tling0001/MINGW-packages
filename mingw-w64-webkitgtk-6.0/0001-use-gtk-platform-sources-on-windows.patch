@@ -9,42 +9,6 @@
      find_package(Freetype 2.9.0 REQUIRED)
      find_package(Fontconfig 2.13.0 REQUIRED)
  endif ()
- 
---- a/Source/WTF/wtf/CMakeLists.txt
-+++ b/Source/WTF/wtf/CMakeLists.txt
-@@ -707,7 +707,7 @@
-     unicode/icu/ICUHelpers.cpp
- )
- 
--if (WIN32)
-+if (WIN32 AND NOT PORT STREQUAL "GTK")
-     list(APPEND WTF_PUBLIC_HEADERS
-         text/win/WCharStringExtras.h
- 
---- a/Source/WTF/wtf/text/WTFString.h
-+++ b/Source/WTF/wtf/text/WTFString.h
-@@ -37,7 +37,7 @@
- #include <wtf/RetainPtr.h>
- #endif
- 
--#if OS(WINDOWS)
-+#if OS(WINDOWS) && !PLATFORM(GTK)
- #include <wtf/text/win/WCharStringExtras.h>
- #endif
- 
---- a/Source/WTF/wtf/Platform.h
-+++ b/Source/WTF/wtf/Platform.h
-@@ -168,7 +168,7 @@
- #define USE_ACCESSIBILITY_CONTEXT_MENUS 1
- #endif
- 
--#if OS(WINDOWS)
-+#if OS(WINDOWS) && COMPILER(MSVC)
- // https://github.com/MicrosoftDocs/cpp-docs/blob/main/docs/cpp/empty-bases.md
- #define WTF_EMPTY_BASE_CLASS __declspec(empty_bases)
- #else
---- a/Source/ThirdParty/skia/CMakeLists.txt
-+++ b/Source/ThirdParty/skia/CMakeLists.txt
 @@ -811,7 +811,7 @@
      modules/skcms/src/skcms_TransformSkx.cc
  )
@@ -63,3 +27,116 @@
      target_compile_definitions(Skia PRIVATE SK_TYPEFACE_FACTORY_DIRECTWRITE)
  else ()
      target_compile_definitions(Skia PRIVATE SK_TYPEFACE_FACTORY_FREETYPE)
+--- a/Source/WTF/wtf/CMakeLists.txt
++++ b/Source/WTF/wtf/CMakeLists.txt
+@@ -707,7 +707,7 @@
+     unicode/icu/ICUHelpers.cpp
+ )
+ 
+-if (WIN32)
++if (WIN32 AND NOT PORT STREQUAL "GTK")
+     list(APPEND WTF_PUBLIC_HEADERS
+         text/win/WCharStringExtras.h
+ 
+--- a/Source/WTF/wtf/text/WTFString.h
++++ b/Source/WTF/wtf/text/WTFString.h
+@@ -36,7 +36,7 @@
+ #include <wtf/RetainPtr.h>
+ #endif
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+ #include <wtf/text/win/WCharStringExtras.h>
+ #endif
+ 
+@@ -261,7 +261,7 @@
+     RetainPtr<NSString> createNSString() const;
+ #endif
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+     String(const wchar_t* characters, unsigned length)
+         : String({ ucharFrom(characters), length }) { }
+ 
+--- a/Source/WTF/wtf/text/AtomString.h
++++ b/Source/WTF/wtf/text/AtomString.h
+@@ -116,7 +116,7 @@
+     RetainPtr<NSString> createNSString() const { return m_string.createNSString(); }
+ #endif
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+     AtomString(const wchar_t* characters, unsigned length)
+         : AtomString({ ucharFrom(characters), length }) { }
+ 
+--- a/Source/WTF/wtf/Platform.h
++++ b/Source/WTF/wtf/Platform.h
+@@ -167,7 +167,7 @@
+ #define USE_ACCESSIBILITY_CONTEXT_MENUS 1
+ #endif
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && COMPILER(MSVC)
+ // https://github.com/MicrosoftDocs/cpp-docs/blob/main/docs/cpp/empty-bases.md
+ #define WTF_EMPTY_BASE_CLASS __declspec(empty_bases)
+ #else
+--- a/Source/WTF/wtf/StackTrace.h
++++ b/Source/WTF/wtf/StackTrace.h
+@@ -47,8 +47,10 @@
+ 
+ #if OS(WINDOWS)
+ #include <windows.h>
++#if !PLATFORM(GTK)
+ #include <wtf/win/DbgHelperWin.h>
+ #endif
++#endif
+ 
+ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
+ 
+@@ -126,7 +128,7 @@
+         char** symbols = backtrace_symbols(m_stack.data(), m_stack.size());
+         if (!symbols)
+             return;
+-#elif OS(WINDOWS)
++#elif OS(WINDOWS) && !PLATFORM(GTK)
+         HANDLE hProc = GetCurrentProcess();
+         uint8_t symbolData[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)] = { 0 };
+         auto symbolInfo = reinterpret_cast<SYMBOL_INFO*>(symbolData);
+@@ -142,7 +144,7 @@
+ #if HAVE(BACKTRACE_SYMBOLS)
+             if (!name || !strcmp(name, "<redacted>"))
+                 name = symbols[i];
+-#elif OS(WINDOWS)
++#elif OS(WINDOWS) && !PLATFORM(GTK)
+             if (!name && DbgHelper::SymFromAddress(hProc, reinterpret_cast<DWORD64>(m_stack[i]), nullptr, symbolInfo))
+                 name = symbolInfo->Name;
+ #endif
+--- a/Source/WTF/wtf/MappedFileData.h
++++ b/Source/WTF/wtf/MappedFileData.h
+@@ -35,7 +35,7 @@
+ #include <wtf/MmapSpan.h>
+ #endif
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+ #include <wtf/win/Win32Handle.h>
+ #endif
+ 
+@@ -73,7 +73,7 @@
+     size_t size() const { return m_fileData.span().size(); }
+     std::span<const uint8_t> span() const LIFETIME_BOUND { return m_fileData.span(); }
+     std::span<uint8_t> mutableSpan() LIFETIME_BOUND { return m_fileData.mutableSpan(); }
+-#elif OS(WINDOWS)
++#elif OS(WINDOWS) && !PLATFORM(GTK)
+     MappedFileData(std::span<uint8_t>, Win32Handle&&);
+     
+     const Win32Handle& fileMapping() const LIFETIME_BOUND { return m_fileMapping; }
+@@ -85,7 +85,7 @@
+ private:
+ #if HAVE(MMAP)
+     MmapSpan<uint8_t> m_fileData;
+-#elif OS(WINDOWS)
++#elif OS(WINDOWS) && !PLATFORM(GTK)
+     std::span<uint8_t> m_fileData;
+     Win32Handle m_fileMapping;
+ #endif
