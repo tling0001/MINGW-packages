@@ -1,6 +1,6 @@
 --- a/Source/WTF/wtf/PlatformUse.h
 +++ b/Source/WTF/wtf/PlatformUse.h
-@@ -178,7 +178,7 @@
+@@ -178,3 +178,3 @@
 -#if PLATFORM(GTK) || PLATFORM(WPE)
 +#if (PLATFORM(GTK) || PLATFORM(WPE)) && !OS(WINDOWS)
  #define USE_UNIX_DOMAIN_SOCKETS 1
