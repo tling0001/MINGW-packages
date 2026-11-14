@@ -96,7 +96,7 @@
  std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
  {
      if (!m_handle)
-@@ -150,11 +150,24 @@
+@@ -150,10 +150,23 @@
      if (!m_handle)
          return false;
  
