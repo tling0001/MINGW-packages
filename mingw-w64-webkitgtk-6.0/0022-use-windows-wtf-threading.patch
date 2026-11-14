@@ -1,0 +1,44 @@
+--- a/Source/WTF/wtf/PlatformGTK.cmake
++++ b/Source/WTF/wtf/PlatformGTK.cmake
+@@ -23,7 +23,6 @@
+     posix/FileHandlePOSIX.cpp
+     posix/FileSystemPOSIX.cpp
+     posix/MappedFileDataPOSIX.cpp
+     posix/OSAllocatorPOSIX.cpp
+-    posix/ThreadingPOSIX.cpp
+ 
+     text/unix/TextBreakIteratorInternalICUUnix.cpp
+ 
+@@ -38,6 +37,16 @@
+     unix/LoggingUnix.cpp
+     unix/UniStdExtrasUnix.cpp
+ )
+ 
++if (WIN32)
++    list(APPEND WTF_SOURCES
++        win/ThreadingWin.cpp
++        win/SignalsWin.cpp
++        win/Win32Handle.cpp
++    )
++    list(APPEND WTF_LIBRARIES winmm)
++else ()
++    list(APPEND WTF_SOURCES posix/ThreadingPOSIX.cpp)
++endif ()
++
+ list(APPEND WTF_PUBLIC_HEADERS
+     PlatformEnableGlib.h
+ 
+--- a/Source/JavaScriptCore/interpreter/CallFrame.h
++++ b/Source/JavaScriptCore/interpreter/CallFrame.h
+@@ -392,7 +392,11 @@
+             : "rbp" /* clobber rbp */ \\
+         ); \\
+         ASSERT(JSC::isFromJSCode(removeCodePtrTag<void*>(__builtin_return_address(0)))); \\
+-        std::bit_cast<JSC::CallFrame*>(*((uintptr_t**) _AddressOfReturnAddress() - 1)); \\
++        std::bit_cast<JSC::CallFrame*>([]() { \\
++            uintptr_t* returnAddressLocation; \\
++            asm volatile("leaq 8(%%rbp), %0" : "=r"(returnAddressLocation)); \\
++            return *(returnAddressLocation - 1); \\
++        }()); \\
+     })
+ #else // !OS(WINDOWS) || !CPU(X86_64)
