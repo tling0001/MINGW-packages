@@ -404,12 +404,7 @@
  #include "pas_utils.h"
 --- a/Source/WTF/wtf/glib/GRefPtr.h
 +++ b/Source/WTF/wtf/glib/GRefPtr.h
-@@ -39,14 +39,4 @@
-     typedef struct _GDBusNodeInfo GDBusNodeInfo;
-
-     GDBusNodeInfo* g_dbus_node_info_ref(GDBusNodeInfo*);
-     void g_dbus_node_info_unref(GDBusNodeInfo*);
--
+@@ -47,10 +47,3 @@
 -    // Since GLib 2.56 a g_object_ref_sink() macro may be defined which propagates
 -    // the type of the parameter to the returned value, but it conflicts with the
 -    // declaration below, causing an error when glib-object.h is included before
@@ -419,13 +414,9 @@
 -    void g_object_unref(gpointer);
 -    gpointer g_object_ref_sink(gpointer);
 -#endif
- };
 --- a/Source/WTF/wtf/glib/GSpanExtras.h
 +++ b/Source/WTF/wtf/glib/GSpanExtras.h
-@@ -26,13 +26,3 @@
- #include <wtf/glib/GRefPtr.h>
- #include <wtf/glib/GUniquePtr.h>
-
+@@ -28,14 +28,3 @@
 -extern "C" {
 -void* g_malloc(size_t);
 -void* g_malloc0(size_t);
