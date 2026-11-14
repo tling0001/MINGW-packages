@@ -26,8 +26,7 @@
 -            $codeGen->ProcessDocument($targetDocument, $defines);
 -        }
 +        generateBindings(@files);
-@@ -249,0 +256,15 @@
-+}
+@@ -249,0 +256,14 @@
 +
 +sub generateBindings
 +{
