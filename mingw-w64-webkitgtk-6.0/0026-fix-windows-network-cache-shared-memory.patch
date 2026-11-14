@@ -14,7 +14,7 @@
  
  #if !PLATFORM(WIN)
  #include <gio/gfiledescriptorbased.h>
-@@ -130,6 +132,8 @@
+@@ -130,7 +132,9 @@
      size_t size = mappedFile.size();
      auto* map = mappedFile.span().data();
      ASSERT(map);
