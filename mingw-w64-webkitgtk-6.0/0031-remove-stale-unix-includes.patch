@@ -10,7 +10,7 @@
  using namespace WebCore;
 --- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/AcceleratedSurface.cpp
 +++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/AcceleratedSurface.cpp
-@@ -39,8 +39,6 @@
+@@ -39,7 +39,5 @@
  #include <WebCore/ShareableBitmap.h>
  #include <array>
 -#include <fcntl.h>
