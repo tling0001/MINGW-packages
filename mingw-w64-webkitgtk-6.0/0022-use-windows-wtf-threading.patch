@@ -1,15 +1,15 @@
 --- a/Source/WTF/wtf/PlatformGTK.cmake
 +++ b/Source/WTF/wtf/PlatformGTK.cmake
-@@ -23,7 +23,6 @@
+@@ -23,8 +23,6 @@
      posix/FileHandlePOSIX.cpp
      posix/FileSystemPOSIX.cpp
      posix/MappedFileDataPOSIX.cpp
      posix/OSAllocatorPOSIX.cpp
 -    posix/ThreadingPOSIX.cpp
- 
+-
      text/unix/TextBreakIteratorInternalICUUnix.cpp
  
-@@ -38,6 +37,16 @@
+@@ -32,6 +30,17 @@
      unix/LoggingUnix.cpp
      unix/UniStdExtrasUnix.cpp
  )
