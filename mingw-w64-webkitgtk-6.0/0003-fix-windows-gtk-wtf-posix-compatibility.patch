@@ -96,7 +96,7 @@
  std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
  {
      if (!m_handle)
-@@ -139,12 +148,25 @@
+@@ -139,12 +147,25 @@
  bool FileHandle::lock(OptionSet<FileLockMode> lockMode)
  {
      if (!m_handle)
