@@ -96,12 +96,10 @@
  std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
  {
      if (!m_handle)
-@@ -140,6 +153,19 @@
--    static_assert(LOCK_SH == std::to_underlying(FileLockMode::Shared), "LockSharedEncoding is as expected");
--    static_assert(LOCK_EX == std::to_underlying(FileLockMode::Exclusive), "LockExclusiveEncoding is as expected");
--    static_assert(LOCK_NB == std::to_underlying(FileLockMode::Nonblocking), "LockNonblockingEncoding is as expected");
--
--    return flock(*m_handle, lockMode.toRaw()) != -1;
+@@ -150,11 +150,24 @@
+     if (!m_handle)
+         return false;
+ 
 +#if OS(WINDOWS) && PLATFORM(GTK)
 +    auto nativeHandle = reinterpret_cast<HANDLE>(_get_osfhandle(*m_handle));
 +    if (nativeHandle == INVALID_HANDLE_VALUE)
@@ -114,11 +112,11 @@
 +        flags |= LOCKFILE_FAIL_IMMEDIATELY;
 +    return LockFileEx(nativeHandle, flags, 0, MAXDWORD, MAXDWORD, &overlapped);
 +#else
-+    static_assert(LOCK_SH == std::to_underlying(FileLockMode::Shared), "LockSharedEncoding is as expected");
-+    static_assert(LOCK_EX == std::to_underlying(FileLockMode::Exclusive), "LockExclusiveEncoding is as expected");
-+    static_assert(LOCK_NB == std::to_underlying(FileLockMode::Nonblocking), "LockNonblockingEncoding is as expected");
-+
-+    return flock(*m_handle, lockMode.toRaw()) != -1;
+     static_assert(LOCK_SH == std::to_underlying(FileLockMode::Shared), "LockSharedEncoding is as expected");
+     static_assert(LOCK_EX == std::to_underlying(FileLockMode::Exclusive), "LockExclusiveEncoding is as expected");
+     static_assert(LOCK_NB == std::to_underlying(FileLockMode::Nonblocking), "LockNonblockingEncoding is as expected");
+ 
+     return flock(*m_handle, lockMode.toRaw()) != -1;
 +#endif
+ }
  #endif // USE(FILE_LOCK)
-
