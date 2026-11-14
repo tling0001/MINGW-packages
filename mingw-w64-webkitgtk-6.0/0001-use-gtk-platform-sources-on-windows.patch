@@ -29,7 +29,7 @@
      target_compile_definitions(Skia PRIVATE SK_TYPEFACE_FACTORY_FREETYPE)
 --- a/Source/WTF/wtf/CMakeLists.txt
 +++ b/Source/WTF/wtf/CMakeLists.txt
-@@ -707,7 +707,7 @@
+@@ -707,6 +707,6 @@
      unicode/icu/ICUHelpers.cpp
  )
  
@@ -333,7 +333,7 @@
  typedef FILE_ID_128 PlatformFileID;
 --- a/Source/WTF/wtf/MemoryPressureHandler.h
 +++ b/Source/WTF/wtf/MemoryPressureHandler.h
-@@ -35,5 +35,5 @@
+@@ -35,7 +35,7 @@
  #include <wtf/Function.h>
  #include <wtf/RunLoop.h>
  
@@ -342,7 +342,7 @@
  #include <wtf/win/Win32Handle.h>
  #endif
  
-@@ -258,6 +258,6 @@
+@@ -258,7 +258,7 @@
  
      Configuration m_configuration;
  
@@ -362,7 +362,7 @@
      : m_windowsMeasurementTimer(RunLoop::mainSingleton(), "MemoryPressureHandler::WindowsMeasurementTimer"_s, this, &MemoryPressureHandler::windowsMeasurementTimerFired)
  #endif
  {
-@@ -367,7 +367,7 @@
+@@ -367,5 +367,5 @@
  }
  
 -#if !OS(WINDOWS)
