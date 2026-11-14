@@ -150,3 +150,26 @@
 +            __int64 tickCountLarge = tickCount + 0x100000000ULL;
              tickCountElapsed = tickCountLarge - tickCountLast;
          }
+--- a/Source/WTF/wtf/FileHandle.h
++++ b/Source/WTF/wtf/FileHandle.h
+@@ -32,8 +32,8 @@
+ #include <wtf/Forward.h>
+ #include <wtf/Markable.h>
+ #include <wtf/OptionSet.h>
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+ #include <wtf/win/Win32Handle.h>
+-#elif OS(UNIX)
++#elif OS(UNIX) || PLATFORM(GTK)
+ #include <sys/types.h>
+ #endif
+ 
+@@ -43,7 +43,7 @@ enum class FileOpenMode : uint8_t;
+ enum class MappedFileMode : bool;
+ 
+-#if OS(WINDOWS)
++#if OS(WINDOWS) && !PLATFORM(GTK)
+ typedef HANDLE PlatformFileHandle;
+ const PlatformFileHandle invalidPlatformFileHandle = INVALID_HANDLE_VALUE;
+ typedef FILE_ID_128 PlatformFileID;
