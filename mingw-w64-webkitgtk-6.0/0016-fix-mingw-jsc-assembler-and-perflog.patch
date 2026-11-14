@@ -1,14 +1,14 @@
 --- a/Source/JavaScriptCore/assembler/MacroAssemblerX86_64.cpp
 +++ b/Source/JavaScriptCore/assembler/MacroAssemblerX86_64.cpp
 @@ -231,7 +231,7 @@
-     "movaps " STRINGIZE_VALUE_OF(PROBE_CPU_XMM15_VECTOR_OFFSET) "(%rbp), %xmm15" "\\n"
+     "movaps " STRINGIZE_VALUE_OF(PROBE_CPU_XMM15_VECTOR_OFFSET) "(%rbp), %xmm15" "\n"
  #endif // !OS(DARWIN)
  
 -#if COMPILER(MSVC)
 +#if OS(WINDOWS)
  #define ASM_PREVIOUS_SECTION
  #else
- #define ASM_PREVIOUS_SECTION ".previous" "\\n"
+ #define ASM_PREVIOUS_SECTION ".previous" "\n"
 --- a/Source/JavaScriptCore/assembler/PerfLog.cpp
 +++ b/Source/JavaScriptCore/assembler/PerfLog.cpp
 @@ -52,15 +52,7 @@
