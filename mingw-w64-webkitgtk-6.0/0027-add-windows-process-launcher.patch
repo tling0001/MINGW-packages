@@ -135,7 +135,7 @@
 +} // namespace WebKit
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -251,7 +251,6 @@
+@@ -251,6 +251,5 @@
  UIProcess/Inspector/gtk/WebKitInspectorWindow.cpp
  
 -UIProcess/Launcher/glib/ProcessLauncherGLib.cpp @no-unify
