@@ -30,15 +30,13 @@
  
 --- a/Source/JavaScriptCore/interpreter/CallFrame.h
 +++ b/Source/JavaScriptCore/interpreter/CallFrame.h
-@@ -392,7 +392,11 @@
+@@ -392,7 +392,9 @@
              : "rbp" /* clobber rbp */ \
          ); \
          ASSERT(JSC::isFromJSCode(removeCodePtrTag<void*>(__builtin_return_address(0)))); \
 -        std::bit_cast<JSC::CallFrame*>(*((uintptr_t**) _AddressOfReturnAddress() - 1)); \
-+        std::bit_cast<JSC::CallFrame*>([]() { \
-+            uintptr_t* returnAddressLocation; \
-+            asm volatile("leaq 8(%%rbp), %0" : "=r"(returnAddressLocation)); \
-+            return *(returnAddressLocation - 1); \
-+        }()); \
++        uintptr_t* returnAddressLocation; \
++        asm volatile("leaq 8(%%rbp), %0" : "=r"(returnAddressLocation)); \
++        std::bit_cast<JSC::CallFrame*>(*(returnAddressLocation - 1)); \
      })
  #else // !OS(WINDOWS) || !CPU(X86_64)
