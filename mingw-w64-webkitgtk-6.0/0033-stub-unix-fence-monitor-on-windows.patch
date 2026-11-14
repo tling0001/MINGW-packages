@@ -26,7 +26,7 @@
 +
 +    void addFileDescriptor(WTF::UnixFileDescriptor&& fd)
 +    {
-+        ASSERT(!fd);
++        RELEASE_ASSERT(!fd);
 +        m_callback();
 +    }
 +    bool hasFileDescriptor() const { return false; }
