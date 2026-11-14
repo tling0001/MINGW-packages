@@ -1,0 +1,56 @@
+--- a/Source/WebKit/UIProcess/glib/FenceMonitor.h
++++ b/Source/WebKit/UIProcess/glib/FenceMonitor.h
+@@ -28,14 +28,35 @@
+ #if PLATFORM(GTK) || (PLATFORM(WPE) && ENABLE(WPE_PLATFORM))
+ 
+ #include <wtf/Function.h>
+-#include <wtf/glib/GRefPtr.h>
+ #include <wtf/unix/UnixFileDescriptor.h>
++#if !OS(WINDOWS)
++#include <wtf/glib/GRefPtr.h>
++#else
++#include <wtf/Assertions.h>
++#endif
+ 
+ namespace WebKit {
+ 
+ class FenceMonitor {
+     WTF_MAKE_NONCOPYABLE(FenceMonitor);
+ public:
++#if OS(WINDOWS)
++    explicit FenceMonitor(Function<void()>&& callback)
++        : m_callback(WTF::move(callback))
++    {
++    }
++    ~FenceMonitor() = default;
++
++    void addFileDescriptor(WTF::UnixFileDescriptor&& fd)
++    {
++        ASSERT(!fd);
++        m_callback();
++    }
++    bool hasFileDescriptor() const { return false; }
++
++private:
++    Function<void()> m_callback;
++#else
+     explicit FenceMonitor(Function<void()>&&);
+     ~FenceMonitor();
+ 
+@@ -48,6 +69,7 @@
+     Function<void()> m_callback;
+     WTF::UnixFileDescriptor m_fd;
+     GRefPtr<GSource> m_source;
++#endif
+ };
+ 
+ } // namespace WebKit
+--- a/Source/WebKit/UIProcess/glib/FenceMonitor.cpp
++++ b/Source/WebKit/UIProcess/glib/FenceMonitor.cpp
+@@ -26,7 +26,7 @@
+ #include "config.h"
+ #include "FenceMonitor.h"
+ 
+-#if PLATFORM(GTK) || (PLATFORM(WPE) && ENABLE(WPE_PLATFORM))
++#if !OS(WINDOWS) && (PLATFORM(GTK) || (PLATFORM(WPE) && ENABLE(WPE_PLATFORM)))
+ #include <glib-unix.h>
