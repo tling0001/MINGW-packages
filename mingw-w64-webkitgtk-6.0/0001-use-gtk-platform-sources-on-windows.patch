@@ -393,7 +393,7 @@
  
 --- a/Source/bmalloc/libpas/src/libpas/pas_thread.c
 +++ b/Source/bmalloc/libpas/src/libpas/pas_thread.c
-@@ -27,6 +27,6 @@
+@@ -27,7 +27,7 @@
  
  #include "pas_config.h"
  
@@ -711,7 +711,7 @@
  #define USE_VISIBILITY_ATTRIBUTE 1
 --- a/Source/WTF/wtf/ByteOrder.h
 +++ b/Source/WTF/wtf/ByteOrder.h
-@@ -27,7 +27,7 @@
+@@ -27,6 +27,6 @@
  #include <bit>
  #include <wtf/Platform.h>
  
