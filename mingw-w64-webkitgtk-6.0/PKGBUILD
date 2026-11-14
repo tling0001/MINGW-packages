@@ -20,7 +20,7 @@ depends=(
   "${MINGW_PACKAGE_PREFIX}-gdk-pixbuf2"
   "${MINGW_PACKAGE_PREFIX}-glib2"
   "${MINGW_PACKAGE_PREFIX}-gst-plugins-bad-libs"
-  "${MINGW_PACKAGE_PREFIX}-gst-plugins-base-libs"
+  "${MINGW_PACKAGE_PREFIX}-gst-plugins-base"
   "${MINGW_PACKAGE_PREFIX}-gstreamer"
   "${MINGW_PACKAGE_PREFIX}-gtk4"
   "${MINGW_PACKAGE_PREFIX}-harfbuzz"
