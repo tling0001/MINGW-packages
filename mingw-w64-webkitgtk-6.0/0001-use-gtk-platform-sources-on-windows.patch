@@ -1,3 +1,15 @@
+--- a/Source/ThirdParty/skia/CMakeLists.txt
++++ b/Source/ThirdParty/skia/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ set_property(DIRECTORY . PROPERTY FOLDER "skia")
+ 
+ # Skia dependencies not used directly in WebKit.
+-if (NOT WIN32 AND NOT PLAYSTATION)
++if ((NOT WIN32 OR PORT STREQUAL "GTK") AND NOT PLAYSTATION)
+     find_package(Freetype 2.9.0 REQUIRED)
+     find_package(Fontconfig 2.13.0 REQUIRED)
+ endif ()
+ 
 --- a/Source/WTF/wtf/CMakeLists.txt
 +++ b/Source/WTF/wtf/CMakeLists.txt
 @@ -707,7 +707,7 @@
