@@ -1,0 +1,68 @@
+--- a/Source/WebKit/Shared/glib/ArgumentCodersGLib.cpp
++++ b/Source/WebKit/Shared/glib/ArgumentCodersGLib.cpp
+@@ -29,0 +30 @@
++#if OS(UNIX)
+@@ -30,0 +32 @@
++#endif
+@@ -184,0 +187 @@
++#if OS(UNIX)
+@@ -222,0 +226,15 @@
++#else
++void ArgumentCoder<GRefPtr<GUnixFDList>>::encode(Encoder& encoder, const GRefPtr<GUnixFDList>& fdList)
++{
++    RELEASE_ASSERT(!fdList);
++    encoder << false;
++}
++
++std::optional<GRefPtr<GUnixFDList>> ArgumentCoder<GRefPtr<GUnixFDList>>::decode(Decoder& decoder)
++{
++    auto hasObject = decoder.decode<bool>();
++    if (!hasObject || *hasObject)
++        return std::nullopt;
++    return GRefPtr<GUnixFDList> { };
++}
++#endif // OS(UNIX)
+--- a/Source/WebKit/Shared/API/glib/WebKitUserMessage.cpp
++++ b/Source/WebKit/Shared/API/glib/WebKitUserMessage.cpp
+@@ -23,0 +24 @@
++#if OS(UNIX)
+@@ -24,0 +26 @@
++#endif
+@@ -111,0 +114 @@
++        #if OS(UNIX)
+@@ -112,0 +116,3 @@
++#else
++        message->priv->message.fileDescriptors = nullptr;
++#endif
+@@ -174,0 +181 @@
++            #if OS(UNIX)
+@@ -175,0 +183,3 @@
++#else
++            G_TYPE_OBJECT,
++#endif
+@@ -229,0 +240 @@
++    #if OS(UNIX)
+@@ -230,0 +242,3 @@
++#else
++    g_return_val_if_fail(!fdList, nullptr);
++#endif
+--- a/Source/WebKit/PlatformGTK.cmake
++++ b/Source/WebKit/PlatformGTK.cmake
+@@ -50,4 +50,4 @@
+-list(APPEND WebKit_LIBRARIES
+-    GLib::GioUnix
+-    GLib::Module
+-)
++if (NOT WIN32)
++    list(APPEND WebKit_LIBRARIES GLib::GioUnix)
++endif ()
++list(APPEND WebKit_LIBRARIES GLib::Module)
+--- a/Source/WebCore/platform/GStreamer.cmake
++++ b/Source/WebCore/platform/GStreamer.cmake
+@@ -4,3 +4,3 @@
+-    list(APPEND WebCore_LIBRARIES
+-        GLib::GioUnix
+-    )
++    if (NOT WIN32)
++        list(APPEND WebCore_LIBRARIES GLib::GioUnix)
++    endif ()
