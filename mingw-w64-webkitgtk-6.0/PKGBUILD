@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=51
+pkgrel=52
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -139,8 +139,8 @@ build() {
     -DUSE_VULKAN=ON
     -DUSE_SYSTEM_MALLOC=OFF
     -DUSE_MIMALLOC=ON
-    -DCMAKE_C_FLAGS=-Wno-ignored-attributes\ -Wno-unsafe-buffer-usage\ -Wno-unused-parameter
-    -DCMAKE_CXX_FLAGS=-Wno-ignored-attributes\ -Wno-unsafe-buffer-usage\ -Wno-unused-parameter
+    -DCMAKE_C_FLAGS=-Wno-ignored-attributes\ -Wno-unsafe-buffer-usage
+    -DCMAKE_CXX_FLAGS=-Wno-ignored-attributes\ -Wno-unsafe-buffer-usage
   )
 
   mkdir -p "${srcdir}/build-${MSYSTEM}"
