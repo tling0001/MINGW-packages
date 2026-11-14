@@ -140,3 +140,13 @@
      std::span<uint8_t> m_fileData;
      Win32Handle m_fileMapping;
  #endif
+--- a/Source/WTF/wtf/CurrentTime.cpp
++++ b/Source/WTF/wtf/CurrentTime.cpp
+@@ -118,7 +118,7 @@ static double highResUpTime()
+         if (tickCount >= tickCountLast)
+             tickCountElapsed = (tickCount - tickCountLast);
+         else {
+-            __int64 tickCountLarge = tickCount + 0x100000000I64;
++            __int64 tickCountLarge = tickCount + 0x100000000ULL;
+             tickCountElapsed = tickCountLarge - tickCountLast;
+         }
