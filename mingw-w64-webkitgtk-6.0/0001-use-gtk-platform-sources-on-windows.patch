@@ -380,3 +380,25 @@
      return path.utf8();
  }
  #endif
+--- a/Source/bmalloc/libpas/src/libpas/pas_thread.h
++++ b/Source/bmalloc/libpas/src/libpas/pas_thread.h
+@@ -24,7 +24,7 @@
+ 
+ #include "pas_platform.h"
+ 
+-#if !PAS_OS(WINDOWS)
++#if !PAS_OS(WINDOWS) || (defined(__MINGW32__) && !defined(__clang__))
+ #include <pthread.h>
+ #else
+ 
+--- a/Source/bmalloc/libpas/src/libpas/pas_thread.c
++++ b/Source/bmalloc/libpas/src/libpas/pas_thread.c
+@@ -27,7 +27,7 @@
+ 
+ #include "pas_config.h"
+ 
+-#if LIBPAS_ENABLED && PAS_OS(WINDOWS)
++#if LIBPAS_ENABLED && PAS_OS(WINDOWS) && !(defined(__MINGW32__) && !defined(__clang__))
+ #include "pas_thread.h"
+ #include "pas_log.h"
+ #include "pas_utils.h"
