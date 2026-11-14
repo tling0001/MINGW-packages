@@ -476,7 +476,7 @@
  Platform/glib/ModuleGlib.cpp
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -47,6 +47,20 @@
+@@ -47,6 +47,21 @@
      "SourcesGTK.txt"
  )
  
@@ -484,6 +484,7 @@
 +    list(APPEND WebKit_SOURCES
 +        Platform/IPC/win/ConnectionWin.cpp
 +        Platform/IPC/win/IPCSemaphoreWin.cpp
+        Platform/IPC/win/ArgumentCodersWin.cpp
 +    )
 +else ()
 +    list(APPEND WebKit_SOURCES
