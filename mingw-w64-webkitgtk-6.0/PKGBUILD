@@ -89,7 +89,7 @@ prepare() {
     "${srcdir}/0001-use-gtk-platform-sources-on-windows.patch" \
     "${srcdir}/0002-fix-glib-header-declarations.patch" \
     "${srcdir}/0003-fix-windows-gtk-wtf-posix-compatibility.patch" \
-    "${srcdir}/0004-add-win32-virtual-memory-support.patch" \\
+    "${srcdir}/0004-add-win32-virtual-memory-support.patch" \
     "${srcdir}/0005-fix-windows-gtk-posix-locale-and-cloexec.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
