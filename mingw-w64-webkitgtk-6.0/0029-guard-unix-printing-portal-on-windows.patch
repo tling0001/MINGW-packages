@@ -55,7 +55,7 @@
      return response;
 +#else
 +    UNUSED_PARAM(webFrame);
-+    webkitPrintOperationRunDialog(printOperation, parent);
++    notImplemented();
 +    return WEBKIT_PRINT_OPERATION_RESPONSE_CANCEL;
 +#endif
  }
