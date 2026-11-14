@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=76
+pkgrel=77
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -84,7 +84,7 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0017-fix-mingw-profiler-support-fdopen.patch"
         "0018-fix-clangarm64-llint-coff-alignment.patch"
         "0019-fix-mingw-executable-allocator-process-id.patch"
-        "0020-windows-fnmatch-compatibility.patch")
+        "0020-windows-fnmatch-compatibility.patch"\n        "0021-add-windows-wtf-threading-and-handles.patch"\n        "0022-use-windows-wtf-threading.patch"\n        "0023-fix-windows-inspector-resource-copy.patch")
 sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
@@ -120,7 +120,7 @@ prepare() {
     "${srcdir}/0017-fix-mingw-profiler-support-fdopen.patch" \
     "${srcdir}/0018-fix-clangarm64-llint-coff-alignment.patch" \
     "${srcdir}/0019-fix-mingw-executable-allocator-process-id.patch" \\
-    "${srcdir}/0020-windows-fnmatch-compatibility.patch"; do
+    "${srcdir}/0020-windows-fnmatch-compatibility.patch" \\\n    "${srcdir}/0021-add-windows-wtf-threading-and-handles.patch" \\\n    "${srcdir}/0022-use-windows-wtf-threading.patch" \\\n    "${srcdir}/0023-fix-windows-inspector-resource-copy.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
 
