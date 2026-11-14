@@ -1,0 +1,24 @@
+--- a/Source/JavaScriptCore/CMakeLists.txt
++++ b/Source/JavaScriptCore/CMakeLists.txt
+@@ -1830,14 +1830,22 @@
+ # Windows ARM64: Disable unwind tables to work around LLVM bug #47432
+ # (alignment directives in inline asm break SEH unwind info calculation)
+ if (WIN32 AND WTF_CPU_ARM64)
+-    target_compile_options(LowLevelInterpreterLib PRIVATE /clang:-fno-unwind-tables)
++    if (MSVC)
++        set(_jsc_no_unwind_tables_flag "/clang:-fno-unwind-tables")
++    else ()
++        # MinGW Clang uses the GNU driver, which does not accept clang-cl's
++        # /clang: forwarding syntax.
++        set(_jsc_no_unwind_tables_flag "-fno-unwind-tables")
++    endif ()
++    target_compile_options(LowLevelInterpreterLib PRIVATE "${_jsc_no_unwind_tables_flag}")
+ 
+     # Also disable for other files with alignment directives in inline asm
+     set_source_files_properties(
+         assembler/MacroAssemblerARM64.cpp
+         jit/ThunkGenerators.cpp
+-        PROPERTIES COMPILE_FLAGS "/clang:-fno-unwind-tables"
++        PROPERTIES COMPILE_FLAGS "${_jsc_no_unwind_tables_flag}"
+     )
+ endif ()
