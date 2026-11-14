@@ -151,7 +151,12 @@
 +if (WIN32)
 +    list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
 +else ()
-+    list(APPEND WebKit_SOURCES UIProcess/Launcher/glib/ProcessLauncherGLib.cpp)
++    list(APPEND WebKit_SOURCES
++        UIProcess/Launcher/glib/ProcessLauncherGLib.cpp
++        UIProcess/Launcher/glib/BubblewrapLauncher.cpp
++        UIProcess/Launcher/glib/FlatpakLauncher.cpp
++        UIProcess/Launcher/glib/XDGDBusProxy.cpp
++    )
 +endif ()
 +
  list(APPEND WebKit_LIBRARIES
