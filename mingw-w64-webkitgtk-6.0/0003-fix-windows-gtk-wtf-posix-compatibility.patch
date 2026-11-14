@@ -96,7 +96,7 @@
  std::optional<uint64_t> FileHandle::seek(int64_t offset, FileSeekOrigin origin)
  {
      if (!m_handle)
-@@ -150,10 +150,23 @@
+@@ -150,12 +150,25 @@
      if (!m_handle)
          return false;
  
@@ -120,3 +120,5 @@
 +#endif
  }
  #endif // USE(FILE_LOCK)
+ 
+ #if HAVE(MMAP)
