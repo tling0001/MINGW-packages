@@ -29,7 +29,7 @@
  #include <unistd.h>
  #include <errno.h>
 +#endif
- #include <fnmatch.h>
+ #include <wtf/Fnmatch.h>
  #include <assert.h>
  
 @@ -105 +107 @@
