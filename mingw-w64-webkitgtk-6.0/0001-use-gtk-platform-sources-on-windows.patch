@@ -261,17 +261,18 @@
  } // WTF::FileSystemImpl
 --- a/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
 +++ b/Source/WTF/wtf/posix/MappedFileDataPOSIX.cpp
-@@ -25,6 +25,11 @@
+@@ -25,6 +25,10 @@
  
  #include "config.h"
  #include <wtf/MappedFileData.h>
 +#if OS(WINDOWS) && PLATFORM(GTK)
 +#include <windows.h>
 +#endif
++#include <utility>
  
  namespace WTF::FileSystemImpl {
  
-@@ -35,6 +38,32 @@
+@@ -35,4 +38,31 @@
  { }
  
  MappedFileData::~MappedFileData() = default;
