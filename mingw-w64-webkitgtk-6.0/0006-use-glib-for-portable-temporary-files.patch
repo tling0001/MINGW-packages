@@ -1,6 +1,6 @@
 --- a/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
 +++ b/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
-@@ -188,11 +188,26 @@ std::pair<String, FileHandle> openTemporaryFile(StringView prefix, StringView su
+@@ -196,11 +196,26 @@
      snprintf(buffer.mutableSpan().data(), length, "%s/%s-XXXXXX", directory, prefixUTF8.data());
      IGNORE_CLANG_WARNINGS_END
  
