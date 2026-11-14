@@ -512,3 +512,182 @@
 +#if PLATFORM(COCOA) || ((PLATFORM(GTK) || PLATFORM(WPE)) && !OS(WINDOWS))
  #define USE_FILE_LOCK 1
  #endif
+--- a/Source/WTF/wtf/PlatformGTK.cmake
++++ b/Source/WTF/wtf/PlatformGTK.cmake
+@@ -22,7 +22,6 @@
+     posix/FileHandlePOSIX.cpp
+     posix/FileSystemPOSIX.cpp
+     posix/MappedFileDataPOSIX.cpp
+-    posix/OSAllocatorPOSIX.cpp
+     posix/ThreadingPOSIX.cpp
+ 
+     text/unix/TextBreakIteratorInternalICUUnix.cpp
+@@ -32,6 +31,12 @@
+     unix/UniStdExtrasUnix.cpp
+ )
+ 
++if (WIN32)
++    list(APPEND WTF_SOURCES OSAllocatorWinGTK.cpp)
++else ()
++    list(APPEND WTF_SOURCES posix/OSAllocatorPOSIX.cpp)
++endif ()
++
+ list(APPEND WTF_PUBLIC_HEADERS
+     PlatformEnableGlib.h
+ 
+--- a/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
++++ b/Source/WTF/wtf/posix/FileSystemPOSIX.cpp
+@@ -33,9 +33,14 @@
+ #include <fcntl.h>
+ #include <stdio.h>
+ #include <sys/stat.h>
++#if !OS(WINDOWS)
+ #include <sys/statvfs.h>
++#else
++#include <windows.h>
++#endif
+ #include <unistd.h>
+ #include <wtf/FileHandle.h>
++#include <wtf/Vector.h>
+ #include <wtf/SafeStrerror.h>
+ #include <wtf/text/CString.h>
+ #include <wtf/text/MakeString.h>
+@@ -127,11 +132,25 @@
+ 
+ std::optional<uint32_t> volumeFileBlockSize(const String& path)
+ {
++#if OS(WINDOWS)
++    auto utf8Path = fileSystemRepresentation(path);
++    if (utf8Path.isNull())
++        return std::nullopt;
++    int length = MultiByteToWideChar(CP_UTF8, 0, utf8Path.data(), -1, nullptr, 0);
++    if (!length)
++        return std::nullopt;
++    Vector<wchar_t> widePath(length);
++    if (!MultiByteToWideChar(CP_UTF8, 0, utf8Path.data(), -1, widePath.data(), length))
++        return std::nullopt;
++    DWORD sectorsPerCluster = 0, bytesPerSector = 0;
++    if (!GetDiskFreeSpaceW(widePath.data(), &sectorsPerCluster, &bytesPerSector, nullptr, nullptr))
++        return std::nullopt;
++    return sectorsPerCluster * bytesPerSector;
++#else
+     struct statvfs fileStat;
+     if (!statvfs(fileSystemRepresentation(path).data(), &fileStat))
+         return fileStat.f_frsize;
+-
+     return std::nullopt;
++#endif
+ }
+ 
+ #if !USE(CF)
+--- /dev/null
++++ b/Source/WTF/wtf/OSAllocatorWinGTK.cpp
+@@ -0,0 +1,120 @@
++/* Windows virtual-memory implementation for the GTK port. */
++#include "config.h"
++#include <wtf/OSAllocator.h>
++
++#include <windows.h>
++#include <cstring>
++#include <wtf/Assertions.h>
++#include <wtf/PageBlock.h>
++
++namespace WTF {
++
++static DWORD pageProtection(bool writable, bool executable)
++{
++    if (executable)
++        return writable ? PAGE_EXECUTE_READWRITE : PAGE_EXECUTE_READ;
++    return writable ? PAGE_READWRITE : PAGE_READONLY;
++}
++
++void* OSAllocator::tryReserveAndCommit(size_t bytes, Usage, void* address, bool writable, bool executable, bool, unsigned guardPages)
++{
++    size_t guardSize = guardPages * pageSize();
++    size_t totalSize = bytes + guardSize * 2;
++    auto* base = static_cast<uint8_t*>(VirtualAlloc(address ? static_cast<uint8_t*>(address) - guardSize : nullptr, totalSize, MEM_RESERVE, PAGE_NOACCESS));
++    if (!base)
++        return nullptr;
++    auto* result = base + guardSize;
++    if (!VirtualAlloc(result, bytes, MEM_COMMIT, pageProtection(writable, executable))) {
++        VirtualFree(base, 0, MEM_RELEASE);
++        return nullptr;
++    }
++    return result;
++}
++
++void* OSAllocator::tryReserveAndCommitImpl(size_t bytes, Usage usage, void* address, bool writable, bool executable, bool jitCageEnabled, unsigned guards, bool uncommitted)
++{
++    UNUSED_PARAM(jitCageEnabled);
++    if (uncommitted)
++        return tryReserveUncommitted(bytes, usage, address, writable, executable, jitCageEnabled, guards);
++    return tryReserveAndCommit(bytes, usage, address, writable, executable, jitCageEnabled, guards);
++}
++
++void* OSAllocator::tryReserveUncommitted(size_t bytes, Usage, void* address, bool, bool, bool, unsigned guards)
++{
++    size_t guardSize = guards * pageSize();
++    size_t totalSize = bytes + guardSize * 2;
++    auto* base = static_cast<uint8_t*>(VirtualAlloc(address ? static_cast<uint8_t*>(address) - guardSize : nullptr, totalSize, MEM_RESERVE, PAGE_NOACCESS));
++    return base ? base + guardSize : nullptr;
++}
++
++void* OSAllocator::reserveUncommitted(size_t bytes, Usage usage, void* address, bool writable, bool executable, bool jitCageEnabled, unsigned guards)
++{
++    void* result = tryReserveUncommitted(bytes, usage, address, writable, executable, jitCageEnabled, guards);
++    RELEASE_ASSERT(result);
++    return result;
++}
++
++void* OSAllocator::tryReserveUncommittedAligned(size_t bytes, size_t alignment, Usage usage, void* address, bool writable, bool executable, bool jitCageEnabled, unsigned guards)
++{
++    UNUSED_PARAM(alignment);
++    return tryReserveUncommitted(bytes, usage, address, writable, executable, jitCageEnabled, guards);
++}
++
++void* OSAllocator::reserveAndCommit(size_t bytes, Usage usage, void* address, bool writable, bool executable, bool jitCageEnabled, unsigned guards)
++{
++    void* result = tryReserveAndCommit(bytes, usage, address, writable, executable, jitCageEnabled, guards);
++    RELEASE_ASSERT(result);
++    return result;
++}
++
++void OSAllocator::commit(void* address, size_t bytes, bool writable, bool executable)
++{
++    RELEASE_ASSERT(VirtualAlloc(address, bytes, MEM_COMMIT, pageProtection(writable, executable)));
++}
++
++void OSAllocator::decommit(void* address, size_t bytes)
++{
++    RELEASE_ASSERT(VirtualFree(address, bytes, MEM_DECOMMIT));
++}
++
++void OSAllocator::releaseDecommitted(void* address, size_t, unsigned guards)
++{
++    auto* base = static_cast<uint8_t*>(address) - guards * pageSize();
++    RELEASE_ASSERT(VirtualFree(base, 0, MEM_RELEASE));
++}
++
++void OSAllocator::hintMemoryNotNeededSoon(void* address, size_t bytes)
++{
++    decommit(address, bytes);
++}
++
++bool OSAllocator::tryProtect(void* address, size_t bytes, bool readable, bool writable)
++{
++    DWORD oldProtection;
++    DWORD protection = !readable ? PAGE_NOACCESS : writable ? PAGE_READWRITE : PAGE_READONLY;
++    return VirtualProtect(address, bytes, protection, &oldProtection);
++}
++
++void OSAllocator::protect(void* address, size_t bytes, bool readable, bool writable)
++{
++    RELEASE_ASSERT(tryProtect(address, bytes, readable, writable));
++}
++
++void OSAllocator::zeroFill(void* base, size_t size)
++{
++    std::memset(base, 0, size);
++}
++
++} // namespace WTF
