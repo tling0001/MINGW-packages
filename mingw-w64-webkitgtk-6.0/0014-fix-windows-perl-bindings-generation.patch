@@ -21,7 +21,7 @@
  spawnGenerateBindingsIfNeeded() for (1 .. $numOfJobs);
  while (waitpid(-1, 0) != -1) {
      if ($?) {
-@@ -235,20 +249,26 @@
+@@ -235,18 +249,24 @@
      }
      my $pid = fork();
      if ($pid == 0) {
