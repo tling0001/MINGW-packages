@@ -1,15 +1,12 @@
 --- a/Source/WTF/wtf/Fnmatch.h
 +++ b/Source/WTF/wtf/Fnmatch.h
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,83 @@
 +/* Minimal POSIX fnmatch(3) compatibility for Windows builds.
-+ * Supports the patterns used by WebKit and xdgmime (wildcards, escapes,
-+ * bracket expressions, negation, and ranges). Flags are currently zero.
++ * Supports the wildcard syntax used by WebKit and xdgmime.
 + */
 +#pragma once
 +
 +#if defined(_WIN32)
-+#include <stddef.h>
-+
 +static inline int wtfFnmatchMatchBracket(const char** pattern, unsigned char character)
 +{
 +    const char* p = *pattern;
@@ -43,7 +40,7 @@
 +    return negate ? !matched : matched;
 +}
 +
-+static inline int wtfFnmatch(const char* pattern, const char* string, int flags)
++static inline int fnmatch(const char* pattern, const char* string, int flags)
 +{
 +    (void)flags;
 +    while (*pattern) {
@@ -53,7 +50,7 @@
 +            if (!*pattern)
 +                return 0;
 +            do {
-+                if (!wtfFnmatch(pattern, string, 0))
++                if (!fnmatch(pattern, string, 0))
 +                    return 0;
 +            } while (*string++);
 +            return 1;
@@ -83,7 +80,6 @@
 +}
 +#else
 +#include <fnmatch.h>
-+#define wtfFnmatch(pattern, string, flags) fnmatch((pattern), (string), (flags))
 +#endif
 --- a/Source/ThirdParty/xdgmime/src/xdgmimealias.c
 +++ b/Source/ThirdParty/xdgmime/src/xdgmimealias.c
@@ -107,15 +103,6 @@
  #include <assert.h>
  
  #include <netinet/in.h> /* for ntohl/ntohs */
-@@ -435,7 +435,7 @@
- 	      if (case_sensitive_check || !case_sensitive)
- 	        {
- 	          /* FIXME: Not UTF-8 safe */
--	          if (fnmatch (ptr, file_name, 0) == 0)
-+	          if (wtfFnmatch(ptr, file_name, 0) == 0)
- 	            {
- 	              mime_types[n].mime = mime_type;
- 	              mime_types[n].weight = weight;
 --- a/Source/ThirdParty/xdgmime/src/xdgmimeglob.c
 +++ b/Source/ThirdParty/xdgmime/src/xdgmimeglob.c
 @@ -35,7 +35,7 @@
@@ -127,15 +114,6 @@
  
  #ifndef	FALSE
  #define	FALSE	(0)
-@@ -454,7 +454,7 @@
-     {
-       for (list = glob_hash->full_list; list && n < n_mime_types; list = list->next)
-         {
--	          if (fnmatch ((const char *)list->data, file_name, 0) == 0)
-+	          if (wtfFnmatch((const char *)list->data, file_name, 0) == 0)
- 	    {
- 	      mimes[n].mime = list->mime_type;
- 	      mimes[n].weight = list->weight;
 --- a/Source/ThirdParty/xdgmime/src/xdgmimeparent.c
 +++ b/Source/ThirdParty/xdgmime/src/xdgmimeparent.c
 @@ -35,7 +35,7 @@
@@ -169,15 +147,6 @@
  #include <mutex>
  #include <wtf/FileSystem.h>
  #include <wtf/HashMap.h>
-@@ -2040,7 +2040,7 @@
-         return gstObjectHasProperty(element, propertyName);
- 
-     auto nameView = CStringView::unsafeFromUTF8(GST_OBJECT_NAME(factory));
--    if (fnmatch(factoryNamePattern.characters(), nameView.utf8(), 0))
-+    if (wtfFnmatch(factoryNamePattern.characters(), nameView.utf8(), 0))
-         return false;
- 
-     return gstObjectHasProperty(element, propertyName);
 --- a/Source/WebCore/platform/graphics/gstreamer/GStreamerRegistryScanner.cpp
 +++ b/Source/WebCore/platform/graphics/gstreamer/GStreamerRegistryScanner.cpp
 @@ -27,7 +27,7 @@
@@ -189,30 +158,6 @@
  #include <gst/pbutils/codec-utils.h>
  #include <wtf/NeverDestroyed.h>
  #include <wtf/PrintStream.h>
-@@ -850,7 +850,7 @@
-     else {
-         auto& codecMap = configuration == Configuration::Decoding ? m_decoderCodecMap : m_encoderCodecMap;
-         for (const auto& [codecId, lookupResult] : codecMap) {
--            if (!fnmatch(codecId.utf8().data(), codecName.utf8().data(), 0)) {
-+            if (!wtfFnmatch(codecId.utf8().data(), codecName.utf8().data(), 0)) {
-                 bool isSupported = shouldCheckForHardwareUse ? lookupResult.isUsingHardware : true;
-                 if (isSupported) {
-                     result.isSupported = true;
-@@ -969,12 +969,12 @@
-             .findIf([containerType, codec](auto& hardwareContentType) -> bool {
-             auto hardwareContainer = hardwareContentType.containerType();
-             if (!hardwareContainer.isEmpty()
--                && fnmatch(hardwareContainer.utf8().data(), containerType.utf8().data(), 0))
-+                && wtfFnmatch(hardwareContainer.utf8().data(), containerType.utf8().data(), 0))
-                 return false;
-             auto hardwareCodecs = hardwareContentType.codecs();
-             return hardwareCodecs.isEmpty()
-                 || hardwareCodecs.findIf([codec](auto& hardwareCodec) -> bool {
--                    return !fnmatch(hardwareCodec.utf8().data(), codec.utf8().data(), 0);
-+                    return !wtfFnmatch(hardwareCodec.utf8().data(), codec.utf8().data(), 0);
-             }) != notFound;
-         }) != notFound;
-         if (!isCodecSupported(configuration, codec, requiresHardwareSupport, caseSensitive))
 --- a/Source/ThirdParty/xdgmime/CMakeLists.txt
 +++ b/Source/ThirdParty/xdgmime/CMakeLists.txt
 @@ -3,6 +3,7 @@
@@ -221,5 +166,3 @@
      "${CMAKE_BINARY_DIR}"
 +    "${WTF_DIR}"
  )
- 
- set(XDGMIME_SOURCES
