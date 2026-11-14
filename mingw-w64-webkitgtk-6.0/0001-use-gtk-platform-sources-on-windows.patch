@@ -369,3 +369,14 @@
 +#if !OS(WINDOWS) || PLATFORM(GTK)
  void MemoryPressureHandler::platformInitialize() { }
  #endif
+--- a/Source/WTF/wtf/glib/FileSystemGlib.cpp
++++ b/Source/WTF/wtf/glib/FileSystemGlib.cpp
+@@ -109,7 +109,7 @@
+     if (!length || (length == MAX_PATH && GetLastError() == ERROR_INSUFFICIENT_BUFFER))
+         return { };
+
+-    String path(buffer, length);
++    String path(unsafeMakeSpan(reinterpret_cast<const char16_t*>(buffer), length));
+     return path.utf8();
+ }
+ #endif
