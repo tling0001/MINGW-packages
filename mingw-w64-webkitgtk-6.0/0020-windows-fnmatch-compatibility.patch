@@ -82,87 +82,87 @@
 +#include <fnmatch.h>
 +#endif
 --- a/Source/ThirdParty/xdgmime/src/xdgmimealias.c
-+++ b/Source/ThirdParty/xdgmime/src/xdgmimealias.c
+++ b/Source/ThirdParty/xdgmime/src/xdgmimealias.c
 @@ -35,7 +35,7 @@
  #include <stdio.h>
  #include <assert.h>
  #include <string.h>
 -#include <fnmatch.h>
-+#include <wtf/Fnmatch.h>
+#include <wtf/Fnmatch.h>
  
  #ifndef	FALSE
  #define	FALSE	(0)
 --- a/Source/ThirdParty/xdgmime/src/xdgmimecache.c
-+++ b/Source/ThirdParty/xdgmime/src/xdgmimecache.c
+++ b/Source/ThirdParty/xdgmime/src/xdgmimecache.c
 @@ -35,7 +35,7 @@
  #include <fcntl.h>
  #include <unistd.h>
  #include <errno.h>
 -#include <fnmatch.h>
-+#include <wtf/Fnmatch.h>
+#include <wtf/Fnmatch.h>
  #include <assert.h>
  
  #include <netinet/in.h> /* for ntohl/ntohs */
 --- a/Source/ThirdParty/xdgmime/src/xdgmimeglob.c
-+++ b/Source/ThirdParty/xdgmime/src/xdgmimeglob.c
+++ b/Source/ThirdParty/xdgmime/src/xdgmimeglob.c
 @@ -35,7 +35,7 @@
  #include <stdio.h>
  #include <assert.h>
  #include <string.h>
 -#include <fnmatch.h>
-+#include <wtf/Fnmatch.h>
+#include <wtf/Fnmatch.h>
  
  #ifndef	FALSE
  #define	FALSE	(0)
 --- a/Source/ThirdParty/xdgmime/src/xdgmimeparent.c
-+++ b/Source/ThirdParty/xdgmime/src/xdgmimeparent.c
+++ b/Source/ThirdParty/xdgmime/src/xdgmimeparent.c
 @@ -35,7 +35,7 @@
  #include <stdio.h>
  #include <assert.h>
  #include <string.h>
 -#include <fnmatch.h>
-+#include <wtf/Fnmatch.h>
+#include <wtf/Fnmatch.h>
  
  #ifndef	FALSE
  #define	FALSE	(0)
 --- a/Source/ThirdParty/xdgmime/src/xdgmimeicon.c
-+++ b/Source/ThirdParty/xdgmime/src/xdgmimeicon.c
+++ b/Source/ThirdParty/xdgmime/src/xdgmimeicon.c
 @@ -34,7 +34,7 @@
  #include <stdio.h>
  #include <assert.h>
  #include <string.h>
 -#include <fnmatch.h>
-+#include <wtf/Fnmatch.h>
+#include <wtf/Fnmatch.h>
  
  #ifndef	FALSE
  #define	FALSE	(0)
 --- a/Source/WebCore/platform/graphics/gstreamer/GStreamerCommon.cpp
-+++ b/Source/WebCore/platform/graphics/gstreamer/GStreamerCommon.cpp
+++ b/Source/WebCore/platform/graphics/gstreamer/GStreamerCommon.cpp
 @@ -38,7 +38,7 @@
  #include "SharedBuffer.h"
  #include "VideoSinkGStreamer.h"
  #include "WebKitAudioSinkGStreamer.h"
 -#include <fnmatch.h>
-+#include <wtf/Fnmatch.h>
+#include <wtf/Fnmatch.h>
  #include <mutex>
  #include <wtf/FileSystem.h>
  #include <wtf/HashMap.h>
 --- a/Source/WebCore/platform/graphics/gstreamer/GStreamerRegistryScanner.cpp
-+++ b/Source/WebCore/platform/graphics/gstreamer/GStreamerRegistryScanner.cpp
+++ b/Source/WebCore/platform/graphics/gstreamer/GStreamerRegistryScanner.cpp
 @@ -27,7 +27,7 @@
  #include "GStreamerCommon.h"
  #include "PlatformScreen.h"
  #include "ScreenProperties.h"
 -#include <fnmatch.h>
-+#include <wtf/Fnmatch.h>
+#include <wtf/Fnmatch.h>
  #include <gst/pbutils/codec-utils.h>
  #include <wtf/NeverDestroyed.h>
  #include <wtf/PrintStream.h>
 --- a/Source/ThirdParty/xdgmime/CMakeLists.txt
-+++ b/Source/ThirdParty/xdgmime/CMakeLists.txt
+++ b/Source/ThirdParty/xdgmime/CMakeLists.txt
 @@ -3,6 +3,7 @@
  set(XDGMIME_INCLUDE_DIRECTORIES
      "${XDGMIME_DIR}/src"
      "${CMAKE_BINARY_DIR}"
-+    "${WTF_DIR}"
+    "${WTF_DIR}"
  )
