@@ -1,0 +1,25 @@
+--- a/Source/WebKit/NetworkProcess/cache/NetworkCacheDataGLib.cpp
++++ b/Source/WebKit/NetworkProcess/cache/NetworkCacheDataGLib.cpp
+@@ -29,11 +29,6 @@
+ #if USE(GLIB)
+ 
+ #include <WebCore/SharedMemory.h>
+-#include <fcntl.h>
+-#include <sys/mman.h>
+-#include <sys/stat.h>
+-#include <sys/types.h>
+-#include <unistd.h>
+ 
+ #if !PLATFORM(WIN)
+ #include <gio/gfiledescriptorbased.h>
+@@ -128,9 +123,9 @@
+ Data Data::adoptMap(FileSystem::MappedFileData&& mappedFile, FileSystem::FileHandle&& fileHandle)
+ {
+     size_t size = mappedFile.size();
++    ASSERT(mappedFile);
+     auto* map = mappedFile.span().data();
+     ASSERT(map);
+-    ASSERT(map != MAP_FAILED);
+     MapWrapper* wrapper = new MapWrapper { WTF::move(mappedFile) };
+     return { adoptGRef(g_bytes_new_with_free_func(map, size, reinterpret_cast<GDestroyNotify>(deleteMapWrapper), wrapper)), WTF::move(fileHandle) };
+ }
