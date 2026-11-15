@@ -6,5 +6,5 @@
 +        win/Win32Handle.h
 +    )
 +endif ()
-
++
  if (CMAKE_SYSTEM_NAME MATCHES "Linux")
