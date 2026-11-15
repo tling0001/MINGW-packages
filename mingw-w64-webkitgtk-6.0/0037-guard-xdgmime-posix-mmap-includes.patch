@@ -38,7 +38,7 @@
 @@ -117 +119 @@
 -#ifdef HAVE_MMAP
 +#if HAVE_MMAP
-@@ -43,5 +43,5 @@
+@@ -43 +43 @@
 -#ifdef HAVE_MMAP
 +#if HAVE_MMAP
  #include <sys/mman.h>
