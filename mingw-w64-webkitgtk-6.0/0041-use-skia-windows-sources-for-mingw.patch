@@ -2,4 +2,10 @@
 +++ b/Source/ThirdParty/skia/CMakeLists.txt
 @@ -814 +814 @@
 -if (WIN32)
-+if (WIN32 OR MINGW)
++if (WIN32 OR MINGW OR CMAKE_HOST_WIN32)
+@@ -994 +994 @@
+-if (WIN32)
++if (WIN32 OR MINGW OR CMAKE_HOST_WIN32)
+@@ -1085 +1085 @@
+-if (WIN32)
++if (WIN32 OR MINGW OR CMAKE_HOST_WIN32)
