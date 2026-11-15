@@ -1,0 +1,22 @@
+--- a/Source/WebCore/platform/graphics/GraphicsContextGL.h
++++ b/Source/WebCore/platform/graphics/GraphicsContextGL.h
+@@ -54,7 +54,7 @@
+ #include <wtf/MachSendRight.h>
+ #endif
+ 
+-#if USE(UNIX_DOMAIN_SOCKETS)
++#if USE(UNIX_DOMAIN_SOCKETS) || (PLATFORM(GTK) && OS(WINDOWS))
+ #include <wtf/unix/UnixFileDescriptor.h>
+ #endif
+ 
+--- a/Source/WebCore/platform/xr/PlatformXR.h
++++ b/Source/WebCore/platform/xr/PlatformXR.h
+@@ -34,7 +34,7 @@
+ #include <wtf/UniqueRef.h>
+ #include <wtf/Vector.h>
+ #include <wtf/WeakPtr.h>
+-#if USE(UNIX_DOMAIN_SOCKETS)
++#if USE(UNIX_DOMAIN_SOCKETS) || (PLATFORM(GTK) && OS(WINDOWS))
+ #include <wtf/unix/UnixFileDescriptor.h>
+ #endif
+ 
