@@ -232,7 +232,7 @@ build() {
     -DUSE_LIBDRM=OFF
     -DUSE_SYSTEM_SYSPROF_CAPTURE=NO
     -DUSE_SYSPROF_CAPTURE=OFF
-    # Keep the GTK Vulkan backend enabled; Windows-specific DRM probing is patched out.\n    -DUSE_VULKAN=ON
+    -DUSE_VULKAN=ON
     -DUSE_SYSTEM_MALLOC=OFF
     -DUSE_MIMALLOC=ON
     "-DCMAKE_C_FLAGS=${compiler_warning_flags}"
