@@ -1,6 +1,6 @@
 --- a/Source/ThirdParty/skia/CMakeLists.txt
 +++ b/Source/ThirdParty/skia/CMakeLists.txt
-@@ -812,7 +812,7 @@
+@@ -812,6 +812,6 @@
  )
  
 -if (WIN32)
