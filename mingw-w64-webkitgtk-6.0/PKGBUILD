@@ -159,7 +159,8 @@ prepare() {
     "${srcdir}/0036-guard-gio-unix-apis-on-windows.patch" \
     "${srcdir}/0037-guard-xdgmime-posix-mmap-includes.patch" \
     "${srcdir}/0038-link-winsock-for-wtf.patch" \
-    "${srcdir}/0039-use-winsock-byte-order-functions-on-windows.patch"; do
+    "${srcdir}/0039-use-winsock-byte-order-functions-on-windows.patch" \\
+    "${srcdir}/0040-fix-skia-inline-attributes-for-mingw.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
 
