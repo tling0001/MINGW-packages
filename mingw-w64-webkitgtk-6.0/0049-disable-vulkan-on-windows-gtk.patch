@@ -8,7 +8,7 @@
 +# The GTK Vulkan backend currently relies on Unix file descriptors and DRM
 +# device discovery. It is not implemented for the Windows GTK port.
 +if (WIN32)
-+    set(USE_VULKAN OFF)
++    set(USE_VULKAN OFF CACHE BOOL "Whether to build support to use Vulkan." FORCE)
 +    message(STATUS "Disabling Vulkan for the Windows GTK port")
 +endif ()
 +
