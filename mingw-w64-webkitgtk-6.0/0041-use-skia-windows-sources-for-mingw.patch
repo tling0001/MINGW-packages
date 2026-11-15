@@ -1,19 +1,8 @@
 --- a/Source/ThirdParty/skia/CMakeLists.txt
 +++ b/Source/ThirdParty/skia/CMakeLists.txt
-@@ -812,6 +812,6 @@
- )
- 
--if (WIN32)
+@@ -815,1 +815,1 @@
+-if (WIN32 AND NOT PORT STREQUAL "GTK")
 +if (WIN32 OR MINGW)
-     target_sources(Skia PRIVATE
-         src/ports/SkFontHost_win.cpp
-         src/ports/SkFontMgr_win_dw.cpp
-@@ -1082,7 +1082,7 @@
-     SK_ASSUME_WEBGL=0
- )
- 
--if (WIN32)
+@@ -1085,1 +1085,1 @@
+-if (WIN32 AND NOT PORT STREQUAL "GTK")
 +if (WIN32 OR MINGW)
-     target_compile_definitions(Skia PRIVATE SK_TYPEFACE_FACTORY_DIRECTWRITE)
- else ()
-     target_compile_definitions(Skia PRIVATE SK_TYPEFACE_FACTORY_FREETYPE)
