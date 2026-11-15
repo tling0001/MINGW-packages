@@ -1,13 +1,15 @@
 --- a/Source/ThirdParty/skia/CMakeLists.txt
 +++ b/Source/ThirdParty/skia/CMakeLists.txt
-@@ -828,9 +828,11 @@
+@@ -828,9 +828,13 @@
      target_sources(Skia PRIVATE
          src/ports/SkFontHost_FreeType.cpp
          src/ports/SkFontHost_FreeType_common.cpp
 -        src/ports/SkOSFile_posix.cpp
          src/ports/SkTypeface_proxy.cpp
      )
-+    if (NOT WIN32)
++    if (WIN32)
++        target_sources(Skia PRIVATE src/ports/SkOSFile_win.cpp)
++    else ()
 +        target_sources(Skia PRIVATE src/ports/SkOSFile_posix.cpp)
 +    endif ()
      target_link_libraries(Skia PRIVATE Freetype::Freetype)
