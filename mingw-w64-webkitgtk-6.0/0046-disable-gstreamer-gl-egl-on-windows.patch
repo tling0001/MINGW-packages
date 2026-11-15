@@ -1,7 +1,6 @@
 --- a/Source/cmake/GStreamerDefinitions.cmake
 +++ b/Source/cmake/GStreamerDefinitions.cmake
 @@ -4,7 +4,11 @@
- 
  WEBKIT_OPTION_DEFAULT_PORT_VALUE(ENABLE_MEDIA_SOURCE PRIVATE ON)
  
  WEBKIT_OPTION_DEFINE(USE_GSTREAMER "Whether to enable features that require GStreamer" PUBLIC ON)
