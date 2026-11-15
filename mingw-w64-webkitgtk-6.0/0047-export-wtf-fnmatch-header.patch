@@ -1,0 +1,10 @@
+--- a/Source/WTF/wtf/PlatformGTK.cmake
++++ b/Source/WTF/wtf/PlatformGTK.cmake
+@@ -64,6 +64,7 @@
+ 
+ if (WIN32)
+     list(APPEND WTF_PUBLIC_HEADERS
++        Fnmatch.h
+         win/Win32Handle.h
+     )
+ endif ()
