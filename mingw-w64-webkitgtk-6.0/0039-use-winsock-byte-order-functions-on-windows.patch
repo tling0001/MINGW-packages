@@ -1,0 +1,14 @@
+--- a/Source/ThirdParty/xdgmime/src/xdgmimecache.c
++++ b/Source/ThirdParty/xdgmime/src/xdgmimecache.c
+@@ -38,7 +38,11 @@
+ #include <fnmatch.h>
+ #include <assert.h>
+ 
++#if defined(_WIN32)
++#include <winsock2.h>
++#else
+ #include <netinet/in.h> /* for ntohl/ntohs */
++#endif
+ 
+ #ifdef HAVE_MMAP
+ #include <sys/mman.h>
