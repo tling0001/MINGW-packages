@@ -10,5 +10,5 @@
  #include <netinet/in.h> /* for ntohl/ntohs */
 +#endif
  
- #ifdef HAVE_MMAP
+ #if HAVE_MMAP
  #include <sys/mman.h>
