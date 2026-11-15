@@ -1,0 +1,17 @@
+--- a/Source/WebCore/platform/audio/glib/MediaSessionGLib.cpp
++++ b/Source/WebCore/platform/audio/glib/MediaSessionGLib.cpp
+@@ -27,6 +27,7 @@
+ #include <wtf/SortedArrayMap.h>
+ #include <wtf/TZoneMallocInlines.h>
+ #include <wtf/glib/GUniquePtr.h>
++#include <wtf/ProcessID.h>
+ #include <wtf/text/MakeString.h>
+ 
+ namespace WebCore {
+@@ -246,7 +247,7 @@
+ 
+     const auto& applicationID = getApplicationID();
+-    m_instanceId = applicationID.isEmpty() ? makeString("org.mpris.MediaPlayer2.webkit.instance"_s, getpid(), '-', m_identifier.toUInt64()) : makeString("org.mpris.MediaPlayer2."_s, applicationID.ascii().span(), ".Sandboxed.instance-"_s, m_identifier.toUInt64());
++    m_instanceId = applicationID.isEmpty() ? makeString("org.mpris.MediaPlayer2.webkit.instance"_s, getCurrentProcessID(), '-', m_identifier.toUInt64()) : makeString("org.mpris.MediaPlayer2."_s, applicationID.ascii().span(), ".Sandboxed.instance-"_s, m_identifier.toUInt64());
+ 
+     m_ownerId = g_bus_own_name_on_connection(m_connection.get(), m_instanceId.ascii().data(), G_BUS_NAME_OWNER_FLAGS_NONE, nullptr, nullptr, this, nullptr);
