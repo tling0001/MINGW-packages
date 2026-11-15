@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=141
+pkgrel=142
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -173,7 +173,7 @@ prepare() {
     "${srcdir}/0043-include-unix-file-descriptor-for-windows-gtk.patch" \
     "${srcdir}/0044-export-win32-handle-public-header.patch" \
     "${srcdir}/0045-use-wtf-process-id-in-glib-media-session.patch" \
-    "${srcdir}/0046-disable-gstreamer-gl-egl-on-windows.patch" \\
+    "${srcdir}/0046-disable-gstreamer-gl-egl-on-windows.patch" \
     "${srcdir}/0047-export-wtf-fnmatch-header.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
