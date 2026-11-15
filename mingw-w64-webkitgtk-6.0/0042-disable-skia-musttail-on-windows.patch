@@ -1,0 +1,8 @@
+--- a/Source/ThirdParty/skia/src/opts/SkRasterPipeline_opts.h
++++ b/Source/ThirdParty/skia/src/opts/SkRasterPipeline_opts.h
+@@ -1830,7 +1830,7 @@
+-#if SK_HAS_MUSTTAIL
++#if SK_HAS_MUSTTAIL && !defined(SK_BUILD_FOR_WIN)
+     #define SKRP_MUSTTAIL [[clang::musttail]]
+ #else
+     #define SKRP_MUSTTAIL
