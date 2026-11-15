@@ -38,3 +38,9 @@
 @@ -117 +119 @@
 -#ifdef HAVE_MMAP
 +#if HAVE_MMAP
+@@ -43,5 +43,5 @@
+-#ifdef HAVE_MMAP
++#if HAVE_MMAP
+ #include <sys/mman.h>
+ #else
+ #warning Building xdgmime without MMAP support. Binary "mime.cache" files will not be used.
