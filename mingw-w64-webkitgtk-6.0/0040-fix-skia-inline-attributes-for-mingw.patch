@@ -1,0 +1,10 @@
+--- a/Source/ThirdParty/skia/include/private/SkAttributes.h
++++ b/Source/ThirdParty/skia/include/private/SkAttributes.h
+@@ -27,2 +27,2 @@
+-#  if defined(SK_BUILD_FOR_WIN)
++#  if defined(SK_BUILD_FOR_WIN) && defined(_MSC_VER)
+ #    define SK_ALWAYS_INLINE __forceinline
+@@ -39,2 +39,2 @@
+-#  if defined(SK_BUILD_FOR_WIN)
++#  if defined(SK_BUILD_FOR_WIN) && defined(_MSC_VER)
+ #    define SK_NEVER_INLINE __declspec(noinline)
