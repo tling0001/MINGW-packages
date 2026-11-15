@@ -40,3 +40,16 @@
 +        std::bit_cast<JSC::CallFrame*>(*(returnAddressLocation - 1)); \
      })
  #else // !OS(WINDOWS) || !CPU(X86_64)
+
+--- a/Source/WTF/wtf/PlatformGTK.cmake
++++ b/Source/WTF/wtf/PlatformGTK.cmake
+@@ -63,3 +63,9 @@
+ )
+ 
++if (WIN32)
++    list(APPEND WTF_PUBLIC_HEADERS
++        win/Win32Handle.h
++    )
++endif ()
++
+ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
