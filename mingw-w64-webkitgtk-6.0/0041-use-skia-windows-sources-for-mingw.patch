@@ -13,3 +13,5 @@
 +        target_sources(Skia PRIVATE src/ports/SkOSFile_posix.cpp)
 +    endif ()
      target_link_libraries(Skia PRIVATE Freetype::Freetype)
+ 
+     if (ANDROID)
