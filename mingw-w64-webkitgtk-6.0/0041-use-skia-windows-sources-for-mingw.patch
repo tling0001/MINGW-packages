@@ -1,11 +1,10 @@
 --- a/Source/ThirdParty/skia/CMakeLists.txt
 +++ b/Source/ThirdParty/skia/CMakeLists.txt
 @@ -811,7 +811,7 @@
-     modules/skcms/skcms_TransformSkx.cc
+     src/modules/skcms/skcms_TransformSkx.cc
  )
  
 -if (WIN32)
 +if (WIN32 OR MINGW)
      target_sources(Skia PRIVATE
          src/ports/SkFontHost_win.cpp
-         src/ports/SkFontMgr_win_dw.cpp
