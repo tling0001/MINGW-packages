@@ -1,1 +1,90 @@
-diff
+--- a/Source/WebCore/platform/graphics/vulkan/VulkanTypes.cpp
++++ b/Source/WebCore/platform/graphics/vulkan/VulkanTypes.cpp
+@@ -33,13 +33,16 @@
+ #include "VulkanUtilities.h"
+ #include <epoxy/egl.h>
+ #include <epoxy/gl.h>
++#if OS(UNIX)
+ #include <sys/stat.h>
+ #include <sys/sysmacros.h>
++#include <wtf/unix/UnixFileDescriptor.h>
++#endif
+ #include <wtf/Scope.h>
+ #include <wtf/text/CStringView.h>
+ #include <wtf/text/StringBuilder.h>
+ 
+-#if USE(GBM)
++#if OS(UNIX) && USE(GBM)
+ #include "DRMDeviceManager.h"
+ #include "GBMDevice.h"
+ #include "PlatformDisplayGBM.h"
+@@ -47,7 +50,7 @@
+ #include <gbm.h>
+ #endif
+ 
+-#if USE(LIBDRM)
++#if OS(UNIX) && USE(LIBDRM)
+ #include <xf86drm.h>
+ #endif
+ 
+@@ -314,7 +317,7 @@
+     return devices;
+ }
+ 
+-#if USE(GBM)
++#if OS(UNIX) && USE(GBM)
+ static UnixFileDescriptor drmFileDescriptorForGBMDisplay()
+ {
+     auto& deviceManager = DRMDeviceManager::singleton();
+@@ -331,7 +334,7 @@
+ }
+ #endif // USE(GBM)
+ 
+-#if USE(LIBDRM)
++#if OS(UNIX) && USE(LIBDRM)
+ static UnixFileDescriptor drmFileDescriptorForDisplay(const PlatformDisplay& display)
+ {
+     auto eglDisplay = display.eglDisplay();
+@@ -408,8 +411,9 @@
+     // The next best option is to obtain the PCI bus vendor and device identifiers,
+     // and match those to the identifiers reported by Vulkan.
+     //
++#if OS(UNIX)
+     UnixFileDescriptor drmFileDescriptor;
+-#if USE(GBM)
++#if OS(UNIX) && USE(GBM)
+     if (is<PlatformDisplayGBM>(display))
+         drmFileDescriptor = drmFileDescriptorForGBMDisplay();
+ #endif
+@@ -417,7 +421,7 @@
+     if (!drmFileDescriptor)
+         drmFileDescriptor = drmFileDescriptorForDisplay(display);
+ 
+-#if USE(LIBDRM)
++#if OS(UNIX) && USE(LIBDRM)
+     if (drmFileDescriptor) {
+         drmDevice* device { nullptr };
+         auto deviceScope = makeScopeExit([&device]() {
+@@ -459,6 +463,8 @@
+         }
+     }
+ 
++#endif // OS(UNIX)
++
+     //
+     // As a last resort, try to split the list of devices in software renderers (CPU based)
+     // and hardware ones (the rest)
+@@ -546,12 +552,14 @@
+     createInfo->pfnUserCallback = debugUtilsMessengerHandleMessage;
+     createInfo->messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+     createInfo->messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
++#if !LOG_DISABLED || !RELEASE_LOG_DISABLED
+     if (LOG_CHANNEL(Vulkan).level >= WTFLogLevel::Info)
+         createInfo->messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+     if (LOG_CHANNEL(Vulkan).level >= WTFLogLevel::Warning)
+         createInfo->messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+     if (LOG_CHANNEL(Vulkan).level >= WTFLogLevel::Debug)
+         createInfo->messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
++#endif // !LOG_DISABLED || !RELEASE_LOG_DISABLED
+ 
+     return vkCreateDebugUtilsMessengerEXT(ptr(), createInfo.ptr(), nullptr, &m_debugMessenger);
