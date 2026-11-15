@@ -1,0 +1,13 @@
+--- a/Source/WTF/wtf/PlatformGTK.cmake
++++ b/Source/WTF/wtf/PlatformGTK.cmake
+@@ -66,6 +66,10 @@
+     Threads::Threads
+     ZLIB::ZLIB
+ )
++
++if (WIN32)
++    list(APPEND WTF_LIBRARIES ws2_32)
++endif ()
+ 
+ if (ENABLE_JOURNALD_LOG)
+     list(APPEND WTF_LIBRARIES Journald::Journald)
