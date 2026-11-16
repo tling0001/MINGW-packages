@@ -1,0 +1,22 @@
+--- a/Source/WebKit/PlatformGTK.cmake
++++ b/Source/WebKit/PlatformGTK.cmake
+@@ -34,7 +34,7 @@
+ 
+ add_definitions(-DPKGLIBEXECDIR="${LIBEXEC_INSTALL_DIR}")
+ add_definitions(-DLOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
+-add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
++add_definitions(-DWEBKIT_DATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
+ add_definitions(-DLIBDIR="${LIB_INSTALL_DIR}")
+ add_definitions(-DPKGLIBDIR="${LIB_INSTALL_DIR}/webkit${WEBKITGTK_API_INFIX}gtk-${WEBKITGTK_API_VERSION}")
+ 
+--- a/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
++++ b/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
+@@ -821,7 +821,7 @@
+ 
+         "--ro-bind-try", "/usr/share", "/usr/share",
+         "--ro-bind-try", "/usr/local/share", "/usr/local/share",
+-        "--ro-bind-try", DATADIR, DATADIR,
++        "--ro-bind-try", WEBKIT_DATADIR, WEBKIT_DATADIR,
+ 
+         // We only grant access to the libdirs webkit is built with and
+         // guess system libdirs. This will always have some edge cases.
