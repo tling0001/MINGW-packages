@@ -88,4 +88,4 @@
 +#endif // !LOG_DISABLED || !RELEASE_LOG_DISABLED
  
      return vkCreateDebugUtilsMessengerEXT(ptr(), createInfo.ptr(), nullptr, &m_debugMessenger);
-}
+ }
