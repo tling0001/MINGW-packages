@@ -1,14 +1,12 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -62,3 +62,7 @@
- endif ()
- 
+@@ -1 +1,5 @@
 +list(APPEND WebKit_SERIALIZATION_IN_FILES
 +    Shared/win/WTFArgumentCodersWin.serialization.in
 +)
 +
  list(APPEND WebKit_LIBRARIES
---- /dev/null
+--- a/Source/WebKit/Shared/win/WTFArgumentCodersWin.serialization.in
 +++ b/Source/WebKit/Shared/win/WTFArgumentCodersWin.serialization.in
 @@ -0,0 +1,31 @@
 +# Copyright (C) 2024 Sony Interactive Entertainment Inc.
