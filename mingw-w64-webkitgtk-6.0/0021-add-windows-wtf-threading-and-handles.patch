@@ -1,6 +1,6 @@
 --- a/Source/WTF/wtf/win/ThreadingWin.cpp
 +++ b/Source/WTF/wtf/win/ThreadingWin.cpp
-@@ -0,0 +1,418 @@
+@@ -0,0 +1,420 @@
 +/*
 + * Copyright (C) 2007, 2008, 2015 Apple Inc. All rights reserved.
 + * Copyright (C) 2009 Google Inc. All rights reserved.
@@ -116,7 +116,9 @@
 +}
 +
 +// MS_VC_EXCEPTION, THREADNAME_INFO, and setThreadNameInternal all come from <http://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx>.
++#if defined(_MSC_VER)
 +static const DWORD MS_VC_EXCEPTION = 0x406D1388;
++#endif
 +
 +#pragma pack(push, 8)
 +typedef struct tagTHREADNAME_INFO {
