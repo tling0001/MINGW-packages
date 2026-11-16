@@ -1,0 +1,51 @@
+--- a/Source/WebCore/platform/network/soup/WebKitAutoconfigProxyResolver.cpp
++++ b/Source/WebCore/platform/network/soup/WebKitAutoconfigProxyResolver.cpp
+@@ -97,9 +97,9 @@
+     return static_cast<char**>(g_task_propagate_pointer(G_TASK(result), error));
+ }
+ 
+-static void webkitAutoconfigProxyResolverInterfaceInit(GProxyResolverInterface* interface)
++static void webkitAutoconfigProxyResolverInterfaceInit(GProxyResolverInterface* iface)
+ {
+-    interface->lookup = webkitAutoconfigProxyResolverLookup;
+-    interface->lookup_async = webkitAutoconfigProxyResolverLookupAsync;
+-    interface->lookup_finish = webkitAutoconfigProxyResolverLookupFinish;
++    iface->lookup = webkitAutoconfigProxyResolverLookup;
++    iface->lookup_async = webkitAutoconfigProxyResolverLookupAsync;
++    iface->lookup_finish = webkitAutoconfigProxyResolverLookupFinish;
+ }
+--- a/Source/WebCore/WebCorePrefix.h
++++ b/Source/WebCore/WebCorePrefix.h
+@@ -124,6 +124,11 @@
+ #endif
+ #endif
+ 
++#if OS(WINDOWS)
++#include <winsock2.h>
++#include <ws2tcpip.h>
++#endif
++
+ #if PLATFORM(WIN)
+ #include <windows.h>
+ #else
+--- a/Source/WebCore/platform/graphics/vulkan/VulkanTypes.cpp
++++ b/Source/WebCore/platform/graphics/vulkan/VulkanTypes.cpp
+@@ -182,8 +182,10 @@
+             return { };
+         }
+ 
++#if !LOG_DISABLED || !RELEASE_LOG_DISABLED
+         for (const auto& item : result)
+             RELEASE_LOG_DEBUG(Vulkan, "Available layer: %s (spec %" PRIu32 ", version %" PRIu32 ")", item.layerName, item.specVersion, item.implementationVersion);
++#endif // !LOG_DISABLED || !RELEASE_LOG_DISABLED
+ 
+         return result;
+     })();
+@@ -518,6 +520,7 @@
+             RELEASE_ASSERT_NOT_REACHED();
+         }
+     }();
++    UNUSED_PARAM(logLevel);
+ 
+     StringBuilder messageTypeString;
+     if (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
