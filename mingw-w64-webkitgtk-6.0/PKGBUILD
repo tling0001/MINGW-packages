@@ -133,6 +133,8 @@ prepare() {
   tar --exclude="*/Source/ThirdParty/skia/src/ports/fontations/Cargo.toml" \
     -xf "${srcdir}/webkitgtk-${pkgver}.tar.xz" -C "${srcdir}" || true
 
+  mkdir -p "${source_dir}/Source/WebKit/Shared/win"
+
   for patch_file in \
     "${srcdir}/0001-use-gtk-platform-sources-on-windows.patch" \
     "${srcdir}/0002-fix-glib-header-declarations.patch" \
