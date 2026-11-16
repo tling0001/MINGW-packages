@@ -9,6 +9,7 @@
 +    GTK::GTK
      GLib::GioUnix
      GLib::Module
+ )
 --- a/Source/WebKit/Shared/win/WTFArgumentCodersWin.serialization.in
 +++ b/Source/WebKit/Shared/win/WTFArgumentCodersWin.serialization.in
 @@ -0,0 +1,31 @@
