@@ -1,6 +1,6 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -55,20 +55,31 @@
+@@ -55,20 +55,35 @@
      )
  else ()
      list(APPEND WebKit_SOURCES
@@ -22,10 +22,10 @@
 +    )
 +endif ()
 +
- if (WIN32)
-     list(APPEND WebKit_LIBRARIES shlwapi)
- endif ()
-
++if (WIN32)
++    list(APPEND WebKit_LIBRARIES shlwapi)
++endif ()
++
  list(APPEND WebKit_LIBRARIES
      GLib::GioUnix
      GLib::Module
