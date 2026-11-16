@@ -1,9 +1,17 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -76,3 +76,8 @@
+@@ -61,16 +61,22 @@
+ if (WIN32)
+     list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
+ else ()
+     list(APPEND WebKit_SOURCES
+         UIProcess/Launcher/glib/ProcessLauncherGLib.cpp
+         UIProcess/Launcher/glib/BubblewrapLauncher.cpp
+         UIProcess/Launcher/glib/FlatpakLauncher.cpp
          UIProcess/Launcher/glib/XDGDBusProxy.cpp
      )
  endif ()
+ 
 +if (WIN32)
 +    list(APPEND WebKit_SOURCES Shared/win/AuxiliaryProcessMainWin.cpp)
 +else ()
