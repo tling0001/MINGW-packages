@@ -482,4 +482,6 @@
 +
  list(APPEND WebKit_LIBRARIES
      GLib::GioUnix
-     GLib::Module
+-    GLib::Module
++    GLib::Module
+ )
