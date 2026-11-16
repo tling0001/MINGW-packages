@@ -460,7 +460,7 @@
 +} // namespace IPC
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -14,8 +14,22 @@
+@@ -14,8 +14,23 @@
  list(APPEND WebKit_UNIFIED_SOURCE_LIST_FILES
      "SourcesGTK.txt"
  )
@@ -469,6 +469,7 @@
 +    list(APPEND WebKit_SOURCES
 +        Platform/IPC/win/ConnectionWin.cpp
 +        Platform/IPC/win/IPCSemaphoreWin.cpp
++        Platform/IPC/win/ArgumentCodersWin.cpp
 +    )
 +else ()
 +    list(APPEND WebKit_SOURCES
