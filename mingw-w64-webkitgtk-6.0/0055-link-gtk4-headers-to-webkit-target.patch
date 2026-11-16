@@ -1,5 +1,5 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -1 +1,2 @@
+@@ -185 +185,2 @@
  list(APPEND WebKit_LIBRARIES
 +    GTK::GTK
