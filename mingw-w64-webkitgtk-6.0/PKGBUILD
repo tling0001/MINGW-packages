@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=176
+pkgrel=177
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -191,11 +191,14 @@ prepare() {
     "${srcdir}/0053-avoid-windows-datadir-macro-collision.patch" \
     "${srcdir}/0054-use-generated-win32-handle-ipc-serializer.patch" \
     ; do
-    if [[ "${patch_file}" == *0054-* ]]; then
-      patch --fuzz=0 -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
-    else
-      patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
-    fi
+    case "${patch_file}" in
+      *0025-*|*0027-*|*0030-*|*0036-*|*0053-*)
+        patch --fuzz=0 -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
+        ;;
+      *)
+        patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
+        ;;
+    esac
   done
 
   [[ -f "${source_dir}/CMakeLists.txt" ]] || {
