@@ -1,6 +1,6 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -29,3 +29,7 @@
+@@ -62,3 +62,7 @@
  endif ()
  
 +list(APPEND WebKit_SERIALIZATION_IN_FILES
