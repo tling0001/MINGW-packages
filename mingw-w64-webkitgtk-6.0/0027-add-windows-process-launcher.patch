@@ -1,10 +1,9 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -61,4 +61,15 @@
+@@ -61,3 +61,13 @@
          Platform/IPC/unix/IPCUtilitiesUnix.cpp
      )
  endif ()
- 
 +if (WIN32)
 +    list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
 +else ()
@@ -15,4 +14,3 @@
 +        UIProcess/Launcher/glib/XDGDBusProxy.cpp
 +    )
 +endif ()
-
