@@ -1,8 +1,6 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -46,8 +46,9 @@
- list(APPEND WebKit_UNIFIED_SOURCE_LIST_FILES
-     "SourcesGTK.txt"
+@@ -48,6 +48,7 @@
  )
  
  list(APPEND WebKit_LIBRARIES
