@@ -1,5 +1,8 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -1 +1,2 @@
+@@ -1,4 +1,5 @@
+ list(APPEND WebKit_LIBRARIES
      GLib::GioUnix
 +    GTK::GTK
+     GLib::Module
+ )
