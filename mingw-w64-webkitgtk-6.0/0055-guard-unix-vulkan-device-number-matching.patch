@@ -11,7 +11,7 @@
  #include <wtf/Scope.h>
  #include <wtf/text/CStringView.h>
  #include <wtf/text/StringBuilder.h>
-@@ -444,17 +446,19 @@
+@@ -444,19 +446,21 @@
      //
      // Try to match the major+minor device numbers.
      //
