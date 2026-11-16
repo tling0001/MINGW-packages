@@ -1,0 +1,40 @@
+--- a/Source/WebCore/Modules/webtransport/WebTransport.cpp
++++ b/Source/WebCore/Modules/webtransport/WebTransport.cpp
+@@ -507,12 +507,12 @@
+     } ();
+ 
+     // https://www.w3.org/TR/webtransport/#webtransport-cleanup
+-    std::exchange(m_sendStreams, { });
++    (void)std::exchange(m_sendStreams, { });
+     auto sendStreamSinks = std::exchange(m_sendStreamSinks, { });
+     for (auto& sink : sendStreamSinks.values())
+         sink->sendError(jsDOMGlobalObject, jsException);
+ 
+-    std::exchange(m_receiveStreams, { });
++    (void)std::exchange(m_receiveStreams, { });
+     auto readStreamSources = std::exchange(m_readStreamSources, { });
+     for (auto& source : readStreamSources.values())
+         source->receiveError(jsDOMGlobalObject, jsException);
+--- a/Source/WebCore/fileapi/FileReaderLoader.cpp
++++ b/Source/WebCore/fileapi/FileReaderLoader.cpp
+@@ -124,7 +124,7 @@
+         auto loader = ThreadableLoader::create(*scriptExecutionContext, *this, WTF::move(request), options);
+         if (!loader)
+             return;
+-        std::exchange(m_loader, loader);
++        (void)std::exchange(m_loader, loader);
+     } else
+         ThreadableLoader::loadResourceSynchronously(*scriptExecutionContext, WTF::move(request), *this, options);
+ }
+--- a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
++++ b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
+@@ -107,7 +107,9 @@
+ {
+     const auto& sample = m_videoFrame->sample();
+     auto buffer = gst_sample_get_buffer(sample.get());
++#if USE(GBM) || USE(GSTREAMER_GL)
+     auto memory = gst_buffer_peek_memory(buffer, 0);
++#endif
+ 
+ #if USE(GBM)
+     if (gst_is_fd_memory(memory) && m_videoDecoderPlatform && *m_videoDecoderPlatform == GstVideoDecoderPlatform::Qualcomm) {
