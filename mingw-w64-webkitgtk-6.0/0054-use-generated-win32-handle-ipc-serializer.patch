@@ -1,16 +1,3 @@
---- a/Source/WebKit/PlatformGTK.cmake
-+++ b/Source/WebKit/PlatformGTK.cmake
-@@ -84,3 +84,7 @@
-     Shared/soup/WebCoreArgumentCodersSoup.serialization.in
- )
- 
-+list(APPEND WebKit_SERIALIZATION_IN_FILES
-+    Shared/win/WTFArgumentCodersWin.serialization.in
-+)
-+
-@@ -52,1 +56,2 @@
- list(APPEND WebKit_LIBRARIES GLib::Module)
-+list(APPEND WebKit_LIBRARIES GTK::GTK)
 --- a/Source/WebKit/Shared/win/WTFArgumentCodersWin.serialization.in
 +++ b/Source/WebKit/Shared/win/WTFArgumentCodersWin.serialization.in
 @@ -0,0 +1,31 @@
