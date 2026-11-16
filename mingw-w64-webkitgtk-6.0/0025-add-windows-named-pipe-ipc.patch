@@ -1,9 +1,15 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -46,3 +46,17 @@
+@@ -41,9 +41,24 @@
+ if (NOT DEVELOPER_MODE AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
+     WEBKIT_ADD_TARGET_PROPERTIES(WebKit LINK_FLAGS "-Wl,--version-script,${CMAKE_CURRENT_SOURCE_DIR}/webkitglib-symbols.map")
+     set_property(TARGET WebKit APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/webkitglib-symbols.map")
+ endif ()
+ 
  list(APPEND WebKit_UNIFIED_SOURCE_LIST_FILES
      "SourcesGTK.txt"
  )
++
 +if (WIN32)
 +    list(APPEND WebKit_SOURCES
 +        Platform/IPC/win/ConnectionWin.cpp
