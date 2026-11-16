@@ -1,6 +1,16 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -50,4 +50,6 @@
+@@ -72,24 +72,24 @@
+         UIProcess/Launcher/glib/XDGDBusProxy.cpp
+     )
+ endif ()
+ 
+ if (WIN32)
+     list(APPEND WebKit_SOURCES Shared/win/AuxiliaryProcessMainWin.cpp)
+ else ()
+     list(APPEND WebKit_SOURCES Shared/unix/AuxiliaryProcessMain.cpp)
+ endif ()
+ 
 -list(APPEND WebKit_LIBRARIES
 -    GLib::GioUnix
 -    GLib::Module
@@ -9,9 +19,35 @@
 +    list(APPEND WebKit_LIBRARIES GLib::GioUnix)
 +endif ()
 +list(APPEND WebKit_LIBRARIES GLib::Module GTK::GTK)
-@@ -82,4 +84,5 @@
+ 
+ list(APPEND WebKit_MESSAGES_IN_FILES
+     UIProcess/ViewGestureController
+ 
+     UIProcess/glib/AcceleratedBackingStore
+ 
+     WebProcess/WebPage/ViewGestureGeometryCollector
+ 
+     WebProcess/WebPage/CoordinatedGraphics/AcceleratedSurface
+ 
+@@ -107,20 +107,21 @@
+     Shared/glib/DMABufBufferAttributes.serialization.in
+     Shared/glib/InputMethodState.serialization.in
+     Shared/glib/RenderProcessInfo.serialization.in
+     Shared/glib/RendererBufferFormat.serialization.in
+     Shared/glib/RendererBufferTransportMode.serialization.in
+     Shared/glib/SelectionData.serialization.in
+     Shared/glib/SystemSettings.serialization.in
      Shared/glib/UserMessage.serialization.in
  
      Shared/soup/WebCoreArgumentCodersSoup.serialization.in
 +    Shared/win/WTFArgumentCodersWin.serialization.in
  )
+ 
+ list(APPEND WebKit_DERIVED_SOURCES
+     ${WebKitGTK_DERIVED_SOURCES_DIR}/InspectorGResourceBundle.c
+     ${WebKitGTK_DERIVED_SOURCES_DIR}/ModernMediaControlsGResourceBundle.c
+     ${WebKitGTK_DERIVED_SOURCES_DIR}/WebKitDirectoryInputStreamData.cpp
+     ${WebKitGTK_DERIVED_SOURCES_DIR}/WebKitResourcesGResourceBundle.c
+ 
+     ${WebKitGTK_DERIVED_SOURCES_DIR}/webkit/WebKitEnumTypes.cpp
+     ${WebKitGTK_DERIVED_SOURCES_DIR}/webkit/WebKitWebProcessEnumTypes.cpp
