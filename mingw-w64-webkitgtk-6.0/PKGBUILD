@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=146
+pkgrel=147
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -113,7 +113,8 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0046-disable-gstreamer-gl-egl-on-windows.patch"
         "0047-export-wtf-fnmatch-header.patch"
         "0048-fix-skia-font-cache-platform-guard.patch"
-        "0050-fix-vulkan-windows-gtk-support.patch")
+        "0050-fix-vulkan-windows-gtk-support.patch"
+        "0051-fix-windows-gtk-network-and-vulkan-warnings.patch")
 sha256sums=('a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
@@ -178,7 +179,8 @@ prepare() {
     "${srcdir}/0046-disable-gstreamer-gl-egl-on-windows.patch" \
     "${srcdir}/0047-export-wtf-fnmatch-header.patch" \
     "${srcdir}/0048-fix-skia-font-cache-platform-guard.patch" \
-    "${srcdir}/0050-fix-vulkan-windows-gtk-support.patch"; do
+    "${srcdir}/0050-fix-vulkan-windows-gtk-support.patch" \
+    "${srcdir}/0051-fix-windows-gtk-network-and-vulkan-warnings.patch"; do
     patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
   done
 
