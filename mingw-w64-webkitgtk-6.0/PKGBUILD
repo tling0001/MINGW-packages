@@ -193,7 +193,11 @@ prepare() {
     "${srcdir}/0054-use-generated-win32-handle-ipc-serializer.patch" \
     "${srcdir}/0055-link-gtk4-headers-to-webkit-target.patch" \
     ; do
-    patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
+    if [[ "${patch_file}" == *0054-* || "${patch_file}" == *0055-* ]]; then
+      patch --fuzz=0 -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
+    else
+      patch -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
+    fi
   done
 
   [[ -f "${source_dir}/CMakeLists.txt" ]] || {
