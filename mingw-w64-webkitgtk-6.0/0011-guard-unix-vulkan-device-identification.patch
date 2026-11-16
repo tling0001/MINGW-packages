@@ -65,7 +65,8 @@
      if (drmFileDescriptor) {
          drmDevice* device { nullptr };
          auto deviceScope = makeScopeExit([&device]() {
-@@ -460,6 +464,8 @@
+@@ -459,6 +463,8 @@
+         }
      }
  
 +#endif // OS(UNIX)
@@ -87,3 +88,4 @@
 +#endif // !LOG_DISABLED || !RELEASE_LOG_DISABLED
  
      return vkCreateDebugUtilsMessengerEXT(ptr(), createInfo.ptr(), nullptr, &m_debugMessenger);
+}
