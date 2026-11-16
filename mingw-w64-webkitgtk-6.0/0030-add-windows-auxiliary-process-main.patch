@@ -1,7 +1,6 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -61,16 +61,22 @@
- if (WIN32)
+@@ -66,20 +66,26 @@
      list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
  else ()
      list(APPEND WebKit_SOURCES
@@ -17,3 +16,14 @@
 +else ()
 +    list(APPEND WebKit_SOURCES Shared/unix/AuxiliaryProcessMain.cpp)
 +endif ()
++
+ list(APPEND WebKit_LIBRARIES
+     GLib::GioUnix
+     GLib::Module
+ )
+ 
+ list(APPEND WebKit_MESSAGES_IN_FILES
+     UIProcess/ViewGestureController
+ 
+     UIProcess/glib/AcceleratedBackingStore
+ 
