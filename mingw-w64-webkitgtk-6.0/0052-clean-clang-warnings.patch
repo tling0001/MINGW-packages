@@ -28,17 +28,13 @@
  }
 --- a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
 +++ b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
-@@ -107,6 +107,7 @@
+@@ -107,5 +107,7 @@
  {
 +#if USE(GBM) || USE(GSTREAMER_GL)
      const auto& sample = m_videoFrame->sample();
      auto buffer = gst_sample_get_buffer(sample.get());
--#if USE(GBM) || USE(GSTREAMER_GL)
      auto memory = gst_buffer_peek_memory(buffer, 0);
- #endif
- 
- #if USE(GBM)
-     if (gst_is_fd_memory(memory) && m_videoDecoderPlatform && *m_videoDecoderPlatform == GstVideoDecoderPlatform::Qualcomm) {
++#endif
 --- a/Source/WebCore/platform/graphics/gstreamer/mse/AppendPipeline.cpp
 +++ b/Source/WebCore/platform/graphics/gstreamer/mse/AppendPipeline.cpp
 @@ -124,7 +124,7 @@
