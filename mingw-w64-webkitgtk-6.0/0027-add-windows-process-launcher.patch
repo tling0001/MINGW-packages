@@ -153,7 +153,7 @@
  #include <wtf/text/WTFString.h>
  
 -#if PLATFORM(WIN)
-+#if OS(WINDOWS)
++#if defined(_WIN32) || defined(WIN32)
  #include <wtf/win/Win32Handle.h>
  #endif
  
