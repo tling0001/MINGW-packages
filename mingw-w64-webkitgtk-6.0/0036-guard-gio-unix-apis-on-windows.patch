@@ -1,6 +1,6 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -72,24 +72,24 @@
+@@ -72,28 +72,28 @@
          UIProcess/Launcher/glib/XDGDBusProxy.cpp
      )
  endif ()
@@ -9,6 +9,10 @@
      list(APPEND WebKit_SOURCES Shared/win/AuxiliaryProcessMainWin.cpp)
  else ()
      list(APPEND WebKit_SOURCES Shared/unix/AuxiliaryProcessMain.cpp)
+ endif ()
+ 
+ if (WIN32)
+     list(APPEND WebKit_LIBRARIES shlwapi)
  endif ()
  
 -list(APPEND WebKit_LIBRARIES
