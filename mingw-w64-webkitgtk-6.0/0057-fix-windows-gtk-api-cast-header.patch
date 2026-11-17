@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+Subject: [PATCH] WebKit: do not include Windows API casts in GTK builds
+
+The WebKitGTK 2.54.2 source distribution provides WKAPICastGtk.h but does
+not contain WKAPICastWin.h. MinGW defines WIN32/_WIN32 for the target OS,
+which must not select the Windows port's API-cast header when building the
+GTK port. Keep the Windows-specific cast header for non-GTK Windows ports.
+
+--- a/Source/WebKit/UIProcess/API/C/WKAPICast.h
++++ b/Source/WebKit/UIProcess/API/C/WKAPICast.h
+@@ -440,7 +440,7 @@
+ #include "WKAPICastWPE.h"
+ #endif
+ 
+-#if defined(WIN32) || defined(_WIN32)
++#if (defined(WIN32) || defined(_WIN32)) && !defined(BUILDING_GTK__)
+ #include "WKAPICastWin.h"
+ #endif
+ 
