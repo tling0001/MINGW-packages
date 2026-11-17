@@ -104,7 +104,7 @@
 +    }
 +    auto commandLine = WTF::move(commandLineCharacters.value());
 +
-+    STARTUPINFO startupInfo { };
++    STARTUPINFOW startupInfo { };
 +    startupInfo.cb = sizeof(startupInfo);
 +    startupInfo.dwFlags = STARTF_USESHOWWINDOW;
 +    startupInfo.wShowWindow = SW_HIDE;
