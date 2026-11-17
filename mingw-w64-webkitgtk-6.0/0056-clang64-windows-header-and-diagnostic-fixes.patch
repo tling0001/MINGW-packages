@@ -113,7 +113,7 @@
  {
      // Always emit signals if we couldn't connect to the registry.
      if (!m_registry)
-@@ -290,7 +290,7 @@
+@@ -290,4 +290,4 @@
      if (m_eventListeners.isEmpty())
          return false;
  
