@@ -28,15 +28,36 @@
  }
 --- a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
 +++ b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
-@@ -107,4 +107,6 @@
+@@ -103,13 +103,15 @@
+ }
+ #endif
+ 
+ std::unique_ptr<CoordinatedPlatformLayerBuffer> CoordinatedPlatformLayerBufferVideo::createBufferIfNeeded(bool gstGLEnabled)
  {
 +#if USE(GBM) || USE(GSTREAMER_GL)
      const auto& sample = m_videoFrame->sample();
      auto buffer = gst_sample_get_buffer(sample.get());
      auto memory = gst_buffer_peek_memory(buffer, 0);
 +#endif
+ 
+ #if USE(GBM)
+     if (gst_is_fd_memory(memory) && m_videoDecoderPlatform && *m_videoDecoderPlatform == GstVideoDecoderPlatform::Qualcomm) {
+         // The buffers produced by the Qualcomm decoder contain a single GstMemory which stores the
+         // GBM FD pointing to the decoded frame. The frame format is YUV (NV12). As this is stored
 --- a/Source/WebCore/platform/graphics/gstreamer/mse/AppendPipeline.cpp
 +++ b/Source/WebCore/platform/graphics/gstreamer/mse/AppendPipeline.cpp
+@@ -122,11 +122,11 @@
+     GST_DEBUG_OBJECT(pipeline(), "SourceBuffer containerType: %s", type.utf8().data());
+ 
+     if (type.endsWith("mp4"_s) || type.endsWith("aac"_s)) {
+         m_demux = makeGStreamerElement("qtdemux"_s);
+         m_typefind = makeGStreamerElement("identity"_s);
+-        GRefPtr<GstCaps> caps = adoptGRef(gst_caps_new_simple("video/quicktime", "variant", G_TYPE_STRING, "mse-bytestream", NULL));
++        GRefPtr<GstCaps> caps = adoptGRef(gst_caps_new_simple("video/quicktime", "variant", G_TYPE_STRING, "mse-bytestream", nullptr));
+         gst_app_src_set_caps(GST_APP_SRC(m_appsrc.get()), caps.get());
+     } else if (type.endsWith("webm"_s)) {
+         m_demux = makeGStreamerElement("matroskademux"_s);
+         m_typefind = makeGStreamerElement("identity"_s);
 @@ -124,7 +124,7 @@
      if (type.endsWith("mp4"_s) || type.endsWith("aac"_s)) {
          m_demux = makeGStreamerElement("qtdemux"_s);
