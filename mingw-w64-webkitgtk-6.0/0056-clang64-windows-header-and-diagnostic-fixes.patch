@@ -104,18 +104,9 @@
 +#endif
 --- a/Source/WebCore/accessibility/atspi/AccessibilityAtspi.cpp
 +++ b/Source/WebCore/accessibility/atspi/AccessibilityAtspi.cpp
-@@ -281,7 +281,7 @@
-     m_cacheClearTimer.startOneShot(10_s);
- }
- 
+@@ -284,1 +284,1 @@
 -bool AccessibilityAtspi::shouldEmitSignal(const char* interface, const char* name, const char* detail)
 +bool AccessibilityAtspi::shouldEmitSignal(const char* interfaceName, const char* name, const char* detail)
- {
-     // Always emit signals if we couldn't connect to the registry.
-     if (!m_registry)
-@@ -290,4 +290,4 @@
-     if (m_eventListeners.isEmpty())
-         return false;
- 
+@@ -293,1 +293,1 @@
 -    const char* needle[4] = { interface, name, detail, nullptr };
 +    const char* needle[4] = { interfaceName, name, detail, nullptr };
