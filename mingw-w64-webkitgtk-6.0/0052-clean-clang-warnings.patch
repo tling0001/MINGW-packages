@@ -28,7 +28,7 @@
  }
 --- a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
 +++ b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedPlatformLayerBufferVideo.cpp
-@@ -107,9 +107,11 @@
+@@ -107,6 +107,7 @@
  {
 +#if USE(GBM) || USE(GSTREAMER_GL)
      const auto& sample = m_videoFrame->sample();
