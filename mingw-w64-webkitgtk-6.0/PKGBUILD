@@ -191,7 +191,7 @@ prepare() {
     "${srcdir}/0054-use-generated-win32-handle-ipc-serializer.patch" \
     ; do
     case "${patch_file}" in
-      *0025-*|*0027-*|*0030-*|*0036-*|*0053-*)
+      *0025-*|*0027-*|*0030-*)
         patch --fuzz=0 -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
         ;;
       *)
