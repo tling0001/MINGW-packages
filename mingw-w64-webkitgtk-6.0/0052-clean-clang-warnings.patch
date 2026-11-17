@@ -46,9 +46,7 @@
          // GBM FD pointing to the decoded frame. The frame format is YUV (NV12). As this is stored
 --- a/Source/WebCore/platform/graphics/gstreamer/mse/AppendPipeline.cpp
 +++ b/Source/WebCore/platform/graphics/gstreamer/mse/AppendPipeline.cpp
-@@ -122,11 +122,11 @@
-     GST_DEBUG_OBJECT(pipeline(), "SourceBuffer containerType: %s", type.utf8().data());
- 
+@@ -124,7 +124,7 @@
      if (type.endsWith("mp4"_s) || type.endsWith("aac"_s)) {
          m_demux = makeGStreamerElement("qtdemux"_s);
          m_typefind = makeGStreamerElement("identity"_s);
