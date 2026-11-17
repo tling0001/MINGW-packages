@@ -32,12 +32,14 @@
  #include <wtf/Fnmatch.h>
  #include <assert.h>
  
-@@ -43,4 +45,4 @@
+@@ -43,5 +45,5 @@
 -#ifdef HAVE_MMAP
 +#if HAVE_MMAP
  #include <sys/mman.h>
  #else
- /* mmap is unavailable on this platform; the non-cache MIME lookup path is used. */
+-#warning Building xdgmime without MMAP support. Binary "mime.cache" files will not be used.
++/* mmap is unavailable on this platform; the non-cache MIME lookup path is used. */
+ #endif
 @@ -105 +107 @@
 -#ifdef HAVE_MMAP
 +#if HAVE_MMAP
