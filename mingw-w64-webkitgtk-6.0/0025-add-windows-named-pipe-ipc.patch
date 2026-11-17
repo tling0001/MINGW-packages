@@ -373,7 +373,7 @@
 +} // namespace IPC
 --- a/Source/WebKit/Platform/IPC/win/IPCSemaphoreWin.cpp
 +++ b/Source/WebKit/Platform/IPC/win/IPCSemaphoreWin.cpp
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,83 @@
 +/*
 + * Copyright (C) 2021 Apple Inc. All rights reserved.
 + * Copyright (C) 2021 Sony Interactive Entertainment Inc.
@@ -399,7 +399,6 @@
 + * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 + * THE POSSIBILITY OF SUCH DAMAGE.
 + */
-+
 +#include "config.h"
 +#include "IPCSemaphore.h"
 +
