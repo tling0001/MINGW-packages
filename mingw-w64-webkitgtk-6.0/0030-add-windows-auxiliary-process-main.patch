@@ -1,6 +1,6 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -66,20 +66,26 @@
+@@ -66,24 +66,30 @@
      list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
  else ()
      list(APPEND WebKit_SOURCES
@@ -17,6 +17,10 @@
 +    list(APPEND WebKit_SOURCES Shared/unix/AuxiliaryProcessMain.cpp)
 +endif ()
 +
+ if (WIN32)
+     list(APPEND WebKit_LIBRARIES shlwapi)
+ endif ()
+ 
  list(APPEND WebKit_LIBRARIES
      GLib::GioUnix
      GLib::Module
