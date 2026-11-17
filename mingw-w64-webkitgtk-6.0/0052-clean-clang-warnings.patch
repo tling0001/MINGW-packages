@@ -34,8 +34,8 @@
  
  std::unique_ptr<CoordinatedPlatformLayerBuffer> CoordinatedPlatformLayerBufferVideo::createBufferIfNeeded(bool gstGLEnabled)
  {
-+#if USE(GBM) || USE(GSTREAMER_GL)
      const auto& sample = m_videoFrame->sample();
++#if USE(GBM) || USE(GSTREAMER_GL)
      auto buffer = gst_sample_get_buffer(sample.get());
      auto memory = gst_buffer_peek_memory(buffer, 0);
 +#endif
