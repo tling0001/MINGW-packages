@@ -1,0 +1,67 @@
+--- a/Source/WebKit/PlatformGTK.cmake
++++ b/Source/WebKit/PlatformGTK.cmake
+@@ -34,7 +34,7 @@
+ 
+ add_definitions(-DPKGLIBEXECDIR="${LIBEXEC_INSTALL_DIR}")
+ add_definitions(-DLOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
+-add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
++add_definitions(-DWEBKIT_DATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
+ add_definitions(-DLIBDIR="${LIB_INSTALL_DIR}")
+ add_definitions(-DPKGLIBDIR="${LIB_INSTALL_DIR}/webkit${WEBKITGTK_API_INFIX}gtk-${WEBKITGTK_API_VERSION}")
+ 
+@@ -47,10 +47,45 @@
+     "SourcesGTK.txt"
+ )
+ 
+-list(APPEND WebKit_LIBRARIES
+-    GLib::GioUnix
+-    GLib::Module
+-)
++if (WIN32)
++    list(APPEND WebKit_SOURCES
++        Platform/IPC/win/ConnectionWin.cpp
++        Platform/IPC/win/IPCSemaphoreWin.cpp
++        Platform/IPC/win/ArgumentCodersWin.cpp
++    )
++else ()
++    list(APPEND WebKit_SOURCES
++        Platform/IPC/glib/ConnectionGLib.cpp
++        Platform/IPC/unix/ArgumentCodersUnix.cpp
++        Platform/IPC/unix/IPCSemaphoreUnix.cpp
++        Platform/IPC/unix/IPCUtilitiesUnix.cpp
++    )
++endif ()
++
++if (WIN32)
++    list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
++else ()
++    list(APPEND WebKit_SOURCES
++        UIProcess/Launcher/glib/ProcessLauncherGLib.cpp
++        UIProcess/Launcher/glib/BubblewrapLauncher.cpp
++        UIProcess/Launcher/glib/FlatpakLauncher.cpp
++        UIProcess/Launcher/glib/XDGDBusProxy.cpp
++    )
++endif ()
++
++if (WIN32)
++    list(APPEND WebKit_SOURCES Shared/win/AuxiliaryProcessMainWin.cpp)
++else ()
++    list(APPEND WebKit_SOURCES Shared/unix/AuxiliaryProcessMain.cpp)
++endif ()
++
++if (WIN32)
++    list(APPEND WebKit_LIBRARIES shlwapi)
++endif ()
++if (NOT WIN32)
++    list(APPEND WebKit_LIBRARIES GLib::GioUnix)
++endif ()
++list(APPEND WebKit_LIBRARIES GLib::Module GTK::GTK)
+ 
+ list(APPEND WebKit_MESSAGES_IN_FILES
+     UIProcess/ViewGestureController
+@@ -82,6 +117,7 @@
+     Shared/glib/UserMessage.serialization.in
+ 
+     Shared/soup/WebCoreArgumentCodersSoup.serialization.in
++    Shared/win/WTFArgumentCodersWin.serialization.in
+ )
