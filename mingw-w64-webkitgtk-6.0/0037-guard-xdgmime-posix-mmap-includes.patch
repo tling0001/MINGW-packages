@@ -37,7 +37,7 @@
 +#if HAVE_MMAP
  #include <sys/mman.h>
  #else
- #warning Building xdgmime without MMAP support. Binary "mime.cache" files will not be used.
+ /* mmap is unavailable on this platform; the non-cache MIME lookup path is used. */
 @@ -105 +107 @@
 -#ifdef HAVE_MMAP
 +#if HAVE_MMAP
