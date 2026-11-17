@@ -71,7 +71,7 @@
      sAllowRuntimeCPUDetection = false;
 --- a/Source/WebCore/CMakeLists.txt
 +++ b/Source/WebCore/CMakeLists.txt
-@@ -3261,6 +3261,10 @@
+@@ -3261,7 +3261,11 @@
  string(REPLACE "." "\\." _WebCore_derived_re "${WebCore_DERIVED_SOURCES_DIR}")
  list(FILTER _WebCore_generated_sources INCLUDE REGEX "^${_WebCore_derived_re}/")
 +if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
