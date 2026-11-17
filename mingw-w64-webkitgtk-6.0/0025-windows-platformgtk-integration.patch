@@ -13,8 +13,6 @@
      "SourcesGTK.txt"
  )
  
- list(APPEND WebKit_DERIVED_SOURCES
- 
 -list(APPEND WebKit_LIBRARIES
 -    GLib::GioUnix
 -    GLib::Module
@@ -67,3 +65,5 @@
      Shared/soup/WebCoreArgumentCodersSoup.serialization.in
 +    Shared/win/WTFArgumentCodersWin.serialization.in
  )
+ 
+ list(APPEND WebKit_DERIVED_SOURCES
