@@ -1,0 +1,10 @@
+--- a/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitProtocolHandler.cpp
+@@ -758,7 +758,9 @@
+     } else {
+ #if PLATFORM(GTK)
++#if USE(LIBDRM)
+         addTableRow(hardwareAccelerationObject, "Buffer format"_s, renderBufferDescription(request));
++#endif // USE(LIBDRM)
+ #endif
+     }
