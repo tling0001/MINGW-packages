@@ -1,6 +1,6 @@
 --- a/Source/WebKit/Platform/IPC/win/ConnectionWin.cpp
 +++ b/Source/WebKit/Platform/IPC/win/ConnectionWin.cpp
-@@ -0,0 +1,373 @@
+@@ -0,0 +1,374 @@
 +/*
 + * Copyright (C) 2017 Sony Interactive Entertainment Inc.
 + *
