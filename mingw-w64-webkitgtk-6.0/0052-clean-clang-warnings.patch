@@ -58,3 +58,26 @@
      } else if (type.endsWith("webm"_s)) {
          m_demux = makeGStreamerElement("matroskademux"_s);
          m_typefind = makeGStreamerElement("identity"_s);
+--- a/Source/ThirdParty/skia/modules/skcms/skcms.cc
++++ b/Source/ThirdParty/skia/modules/skcms/skcms.cc
+@@ -41,7 +41,7 @@
+ // 32-bit signed integer (which is what AVX2/AVX-512 gather expects).
+ #define SKCMS_MAX_GRID_POINTS 350000000
+ 
+-static bool sAllowRuntimeCPUDetection = true;
++[[maybe_unused]] static bool sAllowRuntimeCPUDetection = true;
+ 
+ void skcms_DisableRuntimeCPUDetection() {
+     sAllowRuntimeCPUDetection = false;
+--- a/Source/WebCore/CMakeLists.txt
++++ b/Source/WebCore/CMakeLists.txt
+@@ -3261,6 +3261,10 @@
+ string(REPLACE "." "\\." _WebCore_derived_re "${WebCore_DERIVED_SOURCES_DIR}")
+ list(FILTER _WebCore_generated_sources INCLUDE REGEX "^${_WebCore_derived_re}/")
++if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
++    set_source_files_properties(${_WebCore_generated_sources} PROPERTIES
++        COMPILE_OPTIONS "-Wno-unsafe-buffer-usage")
++endif ()
+ add_custom_target(WebCoreGeneratedSources DEPENDS
+     ${_WebCore_generated_sources}
+     ${WebCore_DERIVED_BUILTIN_HEADERS}
