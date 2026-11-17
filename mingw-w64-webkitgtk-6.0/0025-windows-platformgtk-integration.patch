@@ -13,6 +13,8 @@
      "SourcesGTK.txt"
  )
  
+ list(APPEND WebKit_DERIVED_SOURCES
+ 
 -list(APPEND WebKit_LIBRARIES
 -    GLib::GioUnix
 -    GLib::Module
