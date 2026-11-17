@@ -104,9 +104,158 @@
 +#endif
 --- a/Source/WebCore/accessibility/atspi/AccessibilityAtspi.cpp
 +++ b/Source/WebCore/accessibility/atspi/AccessibilityAtspi.cpp
-@@ -284,1 +284,1 @@
+@@ -256,10 +256,10 @@
+     addResult.iterator->value = g_dbus_connection_signal_subscribe(m_connection.get(), nullptr, "org.freedesktop.DBus", "NameOwnerChanged", nullptr, dbusName,
+         G_DBUS_SIGNAL_FLAGS_MATCH_ARG0_NAMESPACE, [](GDBusConnection*, const gchar*, const gchar*, const gchar*, const gchar*, GVariant* parameters, gpointer userData) {
+             auto& atspi = *static_cast<AccessibilityAtspi*>(userData);
+-            const char* interface;
++            const char* interfaceName;
+             const char* oldName;
+             const char* newName;
+-            g_variant_get(parameters, "(&s&s&s)", &interface, &oldName, &newName);
++            g_variant_get(parameters, "(&s&s&s)", &interfaceName, &oldName, &newName);
+             if (*oldName != '\0' && *newName == '\0')
+                 atspi.removeClient(oldName);
+         }, this, nullptr);
+@@ -281,7 +281,7 @@
+     m_cacheClearTimer.startOneShot(10_s);
+ }
+ 
 -bool AccessibilityAtspi::shouldEmitSignal(const char* interface, const char* name, const char* detail)
 +bool AccessibilityAtspi::shouldEmitSignal(const char* interfaceName, const char* name, const char* detail)
-@@ -293,1 +293,1 @@
+ {
+     // Always emit signals if we couldn't connect to the registry.
+     if (!m_registry)
+@@ -290,7 +290,7 @@
+     if (m_eventListeners.isEmpty())
+         return false;
+ 
 -    const char* needle[4] = { interface, name, detail, nullptr };
 +    const char* needle[4] = { interfaceName, name, detail, nullptr };
+     for (const auto& listeners : m_eventListeners.values()) {
+         auto result = listeners.findIf([&](const GUniquePtr<char*>& event) {
+             return eventIsSubtype(const_cast<char**>(needle), event.get());
+@@ -337,8 +337,8 @@
+ 
+     ensureCache();
+     String path = makeString("/org/a11y/webkit/accessible/"_s, makeStringByReplacingAll(createVersion4UUIDString(), '-', '_'));
+-    auto registeredObjects = WTF::map<3>(interfaces, [&](auto& interface) -> unsigned {
+-        return g_dbus_connection_register_object(m_connection.get(), path.utf8().data(), interface.first, interface.second, &rootObject, nullptr, nullptr);
++    auto registeredObjects = WTF::map<3>(interfaces, [&](auto& interfaceName) -> unsigned {
++        return g_dbus_connection_register_object(m_connection.get(), path.utf8().data(), interfaceName.first, interfaceName.second, &rootObject, nullptr, nullptr);
+     });
+     m_rootObjects.add(&rootObject, WTF::move(registeredObjects));
+     String reference = makeString(m_busName, ':', path);
+@@ -378,8 +378,8 @@
+ 
+     ensureCache();
+     String path = makeString("/org/a11y/atspi/accessible/"_s, makeStringByReplacingAll(createVersion4UUIDString(), '-', '_'));
+-    auto registeredObjects = WTF::map<7>(interfaces, [&](auto& interface) -> unsigned {
+-        return g_dbus_connection_register_object(m_connection.get(), path.utf8().data(), interface.first, interface.second, &atspiObject, nullptr, nullptr);
++    auto registeredObjects = WTF::map<7>(interfaces, [&](auto& interfaceName) -> unsigned {
++        return g_dbus_connection_register_object(m_connection.get(), path.utf8().data(), interfaceName.first, interfaceName.second, &atspiObject, nullptr, nullptr);
+     });
+     m_atspiObjects.add(&atspiObject, WTF::move(registeredObjects));
+ 
+@@ -425,8 +425,8 @@
+         return { };
+ 
+     String path = makeString("/org/a11y/atspi/accessible/"_s, makeStringByReplacingAll(createVersion4UUIDString(), '-', '_'));
+-    auto registeredObjects = WTF::map<1>(interfaces, [&](auto& interface) -> unsigned {
+-        return g_dbus_connection_register_object(m_connection.get(), path.utf8().data(), interface.first, interface.second, &atspiObject, nullptr, nullptr);
++    auto registeredObjects = WTF::map<1>(interfaces, [&](auto& interfaceName) -> unsigned {
++        return g_dbus_connection_register_object(m_connection.get(), path.utf8().data(), interfaceName.first, interfaceName.second, &atspiObject, nullptr, nullptr);
+     });
+     m_atspiHyperlinks.add(&atspiObject, WTF::move(registeredObjects));
+ 
+--- a/Source/WebCore/accessibility/atspi/AccessibilityObjectCollectionAtspi.cpp
++++ b/Source/WebCore/accessibility/atspi/AccessibilityObjectCollectionAtspi.cpp
+@@ -120,9 +120,9 @@
+     }
+     roles.type = static_cast<Atspi::CollectionMatchType>(rolesMatchType);
+ 
+-    const char* interface;
+-    while (g_variant_iter_next(interfacesIter.get(), "&s", &interface))
+-        interfaces.value.append(String::fromUTF8(interface));
++    const char* interfaceName;
++    while (g_variant_iter_next(interfacesIter.get(), "&s", &interfaceName))
++        interfaces.value.append(String::fromUTF8(interfaceName));
+     interfaces.type = static_cast<Atspi::CollectionMatchType>(interfacesMatchType);
+ }
+ 
+@@ -131,32 +131,32 @@
+     if (interfaces.value.isEmpty())
+         return true;
+ 
+-    auto matchInterface = [&](const String& interface) {
+-        if (interface == "accessible"_s)
++    auto matchInterface = [&](const String& interfaceName) {
++        if (interfaceName == "accessible"_s)
+             return axObject.interfaces().contains(Interface::Accessible);
+-        if (interface == "action"_s)
++        if (interfaceName == "action"_s)
+             return axObject.interfaces().contains(Interface::Action);
+-        if (interface == "component"_s)
++        if (interfaceName == "component"_s)
+             return axObject.interfaces().contains(Interface::Component);
+-        if (interface == "text"_s)
++        if (interfaceName == "text"_s)
+             return axObject.interfaces().contains(Interface::Text);
+-        if (interface == "hypertext"_s)
++        if (interfaceName == "hypertext"_s)
+             return axObject.interfaces().contains(Interface::Hypertext);
+-        if (interface == "hyperlink"_s)
++        if (interfaceName == "hyperlink"_s)
+             return axObject.interfaces().contains(Interface::Hyperlink);
+-        if (interface == "image"_s)
++        if (interfaceName == "image"_s)
+             return axObject.interfaces().contains(Interface::Image);
+-        if (interface == "selection"_s)
++        if (interfaceName == "selection"_s)
+             return axObject.interfaces().contains(Interface::Selection);
+-        if (interface == "table"_s)
++        if (interfaceName == "table"_s)
+             return axObject.interfaces().contains(Interface::Table);
+-        if (interface == "tablecell"_s)
++        if (interfaceName == "tablecell"_s)
+             return axObject.interfaces().contains(Interface::TableCell);
+-        if (interface == "value"_s)
++        if (interfaceName == "value"_s)
+             return axObject.interfaces().contains(Interface::Value);
+-        if (interface == "document"_s)
++        if (interfaceName == "document"_s)
+             return axObject.interfaces().contains(Interface::Document);
+-        if (interface == "collection"_s)
++        if (interfaceName == "collection"_s)
+             return axObject.interfaces().contains(Interface::Collection);
+         return false;
+     };
+@@ -166,22 +166,22 @@
+     case Atspi::CollectionMatchType::MatchEmpty:
+         return false;
+     case Atspi::CollectionMatchType::MatchAll:
+-        for (const auto& interface : interfaces.value) {
+-            if (!matchInterface(interface))
++        for (const auto& interfaceName : interfaces.value) {
++            if (!matchInterface(interfaceName))
+                 return false;
+         }
+ 
+         return true;
+     case Atspi::CollectionMatchType::MatchAny:
+-        for (const auto& interface : interfaces.value) {
+-            if (matchInterface(interface))
++        for (const auto& interfaceName : interfaces.value) {
++            if (matchInterface(interfaceName))
+                 return true;
+         }
+ 
+         return false;
+     case Atspi::CollectionMatchType::MatchNone:
+-        for (const auto& interface : interfaces.value) {
+-            if (matchInterface(interface))
++        for (const auto& interfaceName : interfaces.value) {
++            if (matchInterface(interfaceName))
+                 return false;
+         }
+ 
