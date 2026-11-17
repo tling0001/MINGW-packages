@@ -61,7 +61,7 @@
 --- a/Source/ThirdParty/skia/modules/skcms/skcms.cc
 +++ b/Source/ThirdParty/skia/modules/skcms/skcms.cc
 @@ -41,7 +41,7 @@
- // 32-bit signed integer (which is what AVX2/AVX-512 gather expects).
+ // a 32-bit signed integer (which is what AVX2/AVX-512 gather expects).
  #define SKCMS_MAX_GRID_POINTS 350000000
  
 -static bool sAllowRuntimeCPUDetection = true;
@@ -71,7 +71,7 @@
      sAllowRuntimeCPUDetection = false;
 --- a/Source/WebCore/CMakeLists.txt
 +++ b/Source/WebCore/CMakeLists.txt
-@@ -3261,7 +3261,11 @@
+@@ -3261,5 +3261,9 @@
  string(REPLACE "." "\\." _WebCore_derived_re "${WebCore_DERIVED_SOURCES_DIR}")
  list(FILTER _WebCore_generated_sources INCLUDE REGEX "^${_WebCore_derived_re}/")
 +if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
