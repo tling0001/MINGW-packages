@@ -1,0 +1,104 @@
+--- a/Source/WebCore/accessibility/atspi/AccessibilityAtspi.h
++++ b/Source/WebCore/accessibility/atspi/AccessibilityAtspi.h
+@@ -120,7 +120,7 @@
+     void cacheUpdateTimerFired();
+     void cacheClearTimerFired();
+ 
+-    bool shouldEmitSignal(const char* interface, const char* name, const char* detail = "");
++    bool shouldEmitSignal(const char* interfaceName, const char* name, const char* detail = "");
+ 
+ #if ENABLE(DEVELOPER_MODE)
+     void notify(AccessibilityObjectAtspi&, const char*, NotificationObserverParameter) const;
+--- a/Source/WebCore/accessibility/AXObjectCache.h
++++ b/Source/WebCore/accessibility/AXObjectCache.h
+@@ -40,6 +40,7 @@
+ #include <wtf/HashMap.h>
+ #include <wtf/HashSet.h>
+ #include <wtf/ListHashSet.h>
++#include <wtf/ProcessID.h>
+ #include <wtf/WeakHashMap.h>
+ #include <wtf/WeakHashSet.h>
+ #include <wtf/WeakListHashSet.h>
+@@ -119,7 +120,7 @@
+     {
+         for (const String& warning : warnings)
+             SAFE_FPRINTF(stderr, "WARNING: %s\n", warning.utf8());
+-        SAFE_FPRINTF(stderr, "==AX Trees (PID %d)==\n%s\n%s\n", getpid(), liveTree.utf8(), isolatedTree.utf8());
++        SAFE_FPRINTF(stderr, "==AX Trees (PID %d)==\n%s\n%s\n", getCurrentProcessID(), liveTree.utf8(), isolatedTree.utf8());
+     }
+ };
+ 
+--- a/Source/JavaScriptCore/bytecode/ValueProfile.h
++++ b/Source/JavaScriptCore/bytecode/ValueProfile.h
+@@ -112,10 +112,10 @@
+             JSValue value = JSValue::decode(m_buckets[i]);
+             if (!!value) {
+                 if (first) {
+-                    out.printf(": ");
++                    out.print(": ");
+                     first = false;
+                 } else
+-                    out.printf(", ");
++                    out.print(", ");
+                 out.print(value);
+             }
+         }
+--- a/Source/WebKit/WebKitPrefix.h
++++ b/Source/WebKit/WebKitPrefix.h
+@@ -31,6 +31,10 @@
+ #endif
+ 
+ #include <wtf/Platform.h>
++#if OS(WINDOWS)
++#include <winsock2.h>
++#include <ws2tcpip.h>
++#endif
+ 
+ #if PLATFORM(COCOA)
+ 
+--- a/Source/JavaScriptCore/runtime/VM.cpp
++++ b/Source/JavaScriptCore/runtime/VM.cpp
+@@ -1173,6 +1173,9 @@
+ // when needed, see http://support.microsoft.com/kb/100775.
+ // By touching every page up to the stack limit with a dummy operation,
+ // we force the system to move the guard page, and commit memory.
++#if defined(__clang__)
++#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
++#endif
+ 
+ static void preCommitStackMemory(void* stackLimit)
+ {
+--- a/Source/JavaScriptCore/tools/JSDollarVM.cpp
++++ b/Source/JavaScriptCore/tools/JSDollarVM.cpp
+@@ -25,6 +25,9 @@
+ 
+ #include "config.h"
+ #include "JSDollarVM.h"
++#if defined(__clang__)
++#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
++#endif
+ 
+ #include "AccessCase.h"
+ #include "ArrayPrototype.h"
+--- a/Source/WTF/wtf/Fnmatch.h
++++ b/Source/WTF/wtf/Fnmatch.h
+@@ -2,6 +2,11 @@
+  * Supports the wildcard syntax used by WebKit and xdgmime.
+  */
+ #pragma once
++#if defined(__clang__)
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
++#endif
++
+ 
+ #if defined(_WIN32)
+ static inline int wtfFnmatchMatchBracket(const char** pattern, unsigned char character)
+@@ -78,3 +83,7 @@
+ #else
+ #include <fnmatch.h>
+ #endif
++
++#if defined(__clang__)
++#pragma clang diagnostic pop
++#endif
