@@ -55,7 +55,7 @@
 +        if (!characters)
 +            return false;
 +        pipeNameCharacters = WTF::move(characters.value());
-+        serverIdentifier = ::CreateNamedPipeW(reinterpret_cast<const wchar_t*>(pipeNameCharacters.data()),
++        serverIdentifier = ::CreateNamedPipeW(reinterpret_cast<const wchar_t*>(pipeNameCharacters.begin()),
 +            PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
 +            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS, 1, inlineMessageMaxSize, inlineMessageMaxSize,
 +            0, 0);
@@ -64,7 +64,7 @@
 +    if (!serverIdentifier)
 +        return false;
 +
-+    clientIdentifier = ::CreateFileW(reinterpret_cast<const wchar_t*>(pipeNameCharacters.data()), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
++    clientIdentifier = ::CreateFileW(reinterpret_cast<const wchar_t*>(pipeNameCharacters.begin()), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
 +    if (!clientIdentifier) {
 +        ::CloseHandle(serverIdentifier);
 +        return false;
