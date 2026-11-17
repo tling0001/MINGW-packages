@@ -47,7 +47,7 @@
 +{
 +    String pipeName;
 +
-+    Vector<char16_t> pipeNameCharacters;
++    WTF::Vector<char16_t> pipeNameCharacters;
 +    do {
 +        pipeName = makeString("\\\\.\\pipe\\com.apple.WebKit."_s, hex(cryptographicallyRandomNumber<unsigned>()));
 +
