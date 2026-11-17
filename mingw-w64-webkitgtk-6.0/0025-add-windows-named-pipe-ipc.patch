@@ -1,6 +1,6 @@
 --- a/Source/WebKit/Platform/IPC/win/ConnectionWin.cpp
 +++ b/Source/WebKit/Platform/IPC/win/ConnectionWin.cpp
-@@ -0,0 +1,374 @@
+@@ -0,0 +1,380 @@
 +/*
 + * Copyright (C) 2017 Sony Interactive Entertainment Inc.
 + *
@@ -36,6 +36,7 @@
 +#include <wtf/CryptographicallyRandomNumber.h>
 +#include <wtf/HexNumber.h>
 +#include <wtf/text/MakeString.h>
++#include <wtf/Vector.h>
 +
 +namespace IPC {
 +
@@ -46,14 +47,15 @@
 +{
 +    String pipeName;
 +
++    Vector<char16_t> pipeNameCharacters;
 +    do {
 +        pipeName = makeString("\\\\.\\pipe\\com.apple.WebKit."_s, hex(cryptographicallyRandomNumber<unsigned>()));
 +
-+        auto pipeNameCharacters = pipeName.charactersWithNullTermination();
-+        if (!pipeNameCharacters)
++        auto characters = pipeName.charactersWithNullTermination();
++        if (!characters)
 +            return false;
-+        auto* pipeNameWideCharacters = reinterpret_cast<const wchar_t*>(pipeNameCharacters->data());
-+        serverIdentifier = ::CreateNamedPipeW(pipeNameWideCharacters,
++        pipeNameCharacters = WTF::move(characters.value());
++        serverIdentifier = ::CreateNamedPipeW(reinterpret_cast<const wchar_t*>(pipeNameCharacters.data()),
 +            PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
 +            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS, 1, inlineMessageMaxSize, inlineMessageMaxSize,
 +            0, 0);
@@ -62,7 +64,7 @@
 +    if (!serverIdentifier)
 +        return false;
 +
-+    clientIdentifier = ::CreateFileW(pipeNameWideCharacters, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
++    clientIdentifier = ::CreateFileW(reinterpret_cast<const wchar_t*>(pipeNameCharacters.data()), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
 +    if (!clientIdentifier) {
 +        ::CloseHandle(serverIdentifier);
 +        return false;
