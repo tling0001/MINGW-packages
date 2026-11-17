@@ -10,7 +10,7 @@
 +endif ()
 +list(APPEND WebKit_LIBRARIES GLib::Module GTK::GTK)
  
-@@ -107,20 +107,21 @@
+@@ -107,21 +107,22 @@
      Shared/glib/DMABufBufferAttributes.serialization.in
      Shared/glib/InputMethodState.serialization.in
      Shared/glib/RenderProcessInfo.serialization.in
