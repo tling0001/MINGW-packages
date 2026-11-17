@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/Source/WebKit/UIProcess/Launcher/win/ProcessLauncherWin.cpp
-@@ -0,0 +1,139 @@
+@@ -0,0 +1,143 @@
 +/*
 + * Copyright (C) 2010 Apple Inc. All rights reserved.
 + * Copyright (C) 2017 Sony Interactive Entertainment Inc.
@@ -67,22 +67,22 @@
 +
 +    // To get the full file path to WebKit2WebProcess.exe, we fild the location of WebKit2.dll,
 +    // remove the last path component.
-+    HMODULE webKitModule = ::GetModuleHandle(L"WebKit2.dll");
++    HMODULE webKitModule = ::GetModuleHandleW(L"WebKit2.dll");
 +    ASSERT(webKitModule);
 +    if (!webKitModule)
 +        return;
 +
 +    WCHAR pathStr[MAX_PATH];
-+    if (!::GetModuleFileName(webKitModule, pathStr, std::size(pathStr)))
++    if (!::GetModuleFileNameW(webKitModule, pathStr, std::size(pathStr)))
 +        return;
 +
-+    ::PathRemoveFileSpec(pathStr);
-+    if (!::PathAppend(pathStr, processName(m_launchOptions.processType)))
++    ::PathRemoveFileSpecW(pathStr);
++    if (!::PathAppendW(pathStr, processName(m_launchOptions.processType)))
 +        return;
 +
 +    StringBuilder commandLineBuilder;
 +    commandLineBuilder.append("\""_s);
-+    commandLineBuilder.append(String(pathStr));
++    commandLineBuilder.append(String(std::span<const char16_t>(reinterpret_cast<const char16_t*>(pathStr), wcslen(pathStr))));
 +    commandLineBuilder.append("\""_s);
 +    commandLineBuilder.append(" -type "_s);
 +    commandLineBuilder.append(String::number(static_cast<int>(m_launchOptions.processType)));
@@ -94,16 +94,20 @@
 +        commandLineBuilder.append(" -configure-jsc-for-testing"_s);
 +    if (!m_client->isJITEnabled())
 +        commandLineBuilder.append(" -disable-jit"_s);
-+    commandLineBuilder.append('\0');
-+
-+    auto commandLine = commandLineBuilder.toString().wideCharacters();
++    auto commandLineCharacters = commandLineBuilder.toString().charactersWithNullTermination();
++    if (!commandLineCharacters) {
++        ::CloseHandle(clientIdentifier);
++        ::CloseHandle(serverIdentifier);
++        return;
++    }
++    auto commandLine = WTF::move(commandLineCharacters.value());
 +
 +    STARTUPINFO startupInfo { };
 +    startupInfo.cb = sizeof(startupInfo);
 +    startupInfo.dwFlags = STARTF_USESHOWWINDOW;
 +    startupInfo.wShowWindow = SW_HIDE;
 +    PROCESS_INFORMATION processInformation { };
-+    BOOL result = ::CreateProcess(0, commandLine.mutableSpan().data(), 0, 0, true, 0, 0, 0, &startupInfo, &processInformation);
++    BOOL result = ::CreateProcessW(nullptr, reinterpret_cast<LPWSTR>(commandLine.mutableSpan().data()), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &startupInfo, &processInformation);
 +
 +    // We can now close the client identifier handle.
 +    ::CloseHandle(clientIdentifier);
@@ -140,3 +144,23 @@
 +}
 +
 +} // namespace WebKit
+--- a/Source/WebKit/UIProcess/Launcher/ProcessLauncher.h
++++ b/Source/WebKit/UIProcess/Launcher/ProcessLauncher.h
+@@ -39,7 +39,7 @@
+ #include <wtf/text/StringHash.h>
+ #include <wtf/text/WTFString.h>
+ 
+-#if PLATFORM(WIN)
++#if OS(WINDOWS)
+ #include <wtf/win/Win32Handle.h>
+ #endif
+ 
+@@ -190,7 +190,7 @@
+     bool m_isRetryingLaunch { false };
+ #endif
+ 
+-#if PLATFORM(WIN)
++#if OS(WINDOWS)
+     WTF::Win32Handle m_hProcess;
+ #endif
+ 
