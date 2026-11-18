@@ -1,0 +1,11 @@
+--- a/Source/WebKit/UIProcess/gtk/Display.cpp
++++ b/Source/WebKit/UIProcess/gtk/Display.cpp
+@@ -51,7 +51,7 @@
+ 
+ Display::Display()
+ {
+-    if (!gtk_init_check(nullptr, nullptr))
++    if (!(gtk_init_check)(nullptr, nullptr))
+         return;
+ 
+     // As soon as gtk is initialized we listen to GtkSettings.
