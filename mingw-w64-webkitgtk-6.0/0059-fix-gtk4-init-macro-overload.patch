@@ -1,0 +1,22 @@
+--- a/Source/WebKit/UIProcess/gtk/GtkVersioning.h
++++ b/Source/WebKit/UIProcess/gtk/GtkVersioning.h
+@@ -76,15 +76,15 @@
+ }
+ 
+ static inline void
+-gtk_init(int*, char***)
++(gtk_init)(int*, char***)
+ {
+-    gtk_init();
++    (gtk_init)();
+ }
+ 
+ static inline gboolean
+-gtk_init_check(int*, char***)
++(gtk_init_check)(int*, char***)
+ {
+-    return gtk_init_check();
++    return (gtk_init_check)();
+ }
+ 
+ static inline GdkEvent*
