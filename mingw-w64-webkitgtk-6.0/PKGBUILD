@@ -275,7 +275,7 @@ build() {
   cmake --build . --parallel "${NUMBER_OF_PROCESSORS:-2}"
 }
 
-package( 'SKIP') {
+package() {
   DESTDIR="${pkgdir}" cmake --install "${srcdir}/build-${MSYSTEM}"
 
   install -Dm644 "${srcdir}/webkitgtk-${pkgver}/Source/WebKit/LICENSE" \
