@@ -1,0 +1,156 @@
+--- a/Source/WebKit/UIProcess/API/gtk/WebKitPrintOperation.cpp
++++ b/Source/WebKit/UIProcess/API/gtk/WebKitPrintOperation.cpp
+@@ -28,14 +28,19 @@
+ #include "WebKitPrivate.h"
+ #include "WebKitWebViewPrivate.h"
+ #include "WebPageProxy.h"
+-#include <WebCore/NotImplemented.h>
++#if HAVE(GTK_UNIX_PRINTING)
+ #include <WebCore/ResourceError.h>
+ #include <WebCore/SharedMemory.h>
++#endif
++#if OS(UNIX)
+ #include <fcntl.h>
+ #include <gio/gunixfdlist.h>
+-#include <glib/gi18n-lib.h>
+ #include <unistd.h>
++#endif
++#include <glib/gi18n-lib.h>
++#if HAVE(GTK_UNIX_PRINTING)
+ #include <wtf/SafeStrerror.h>
++#endif
+ #include <wtf/glib/GRefPtr.h>
+ #include <wtf/glib/GUniquePtr.h>
+ #include <wtf/glib/GWeakPtr.h>
+@@ -43,7 +48,9 @@
+ #include <wtf/glib/WTFGType.h>
+ #include <wtf/text/CString.h>
+ #include <wtf/text/MakeString.h>
++#if HAVE(GTK_UNIX_PRINTING)
+ #include <wtf/unix/UnixFileDescriptor.h>
++#endif
+ 
+ #if HAVE(GTK_UNIX_PRINTING)
+ #include <gtk/gtkunixprint.h>
+@@ -94,8 +101,8 @@
+ 
+     GRefPtr<GtkPrintSettings> printSettings;
+     GRefPtr<GtkPageSetup> pageSetup;
+-    GRefPtr<GtkPrinter> printer;
+ #if HAVE(GTK_UNIX_PRINTING)
++    GRefPtr<GtkPrinter> printer;
+     GRefPtr<GtkPrintJob> printJob;
+     UnixFileDescriptor data;
+ #endif
+@@ -327,20 +334,15 @@
+ 
+     return returnValue;
+ }
+-#else
+-// TODO: We need to add an implementation for Windows.
+-static WebKitPrintOperationResponse webkitPrintOperationRunDialog(WebKitPrintOperation*, GtkWindow*)
+-{
+-    notImplemented();
+-    return WEBKIT_PRINT_OPERATION_RESPONSE_CANCEL;
+-}
+-#endif
++#endif // HAVE(GTK_UNIX_PRINTING)
+ 
+ static void webkitPrintOperationFinished(WebKitPrintOperation* printOperation)
+ {
+     auto* priv = printOperation->priv;
++#if HAVE(GTK_UNIX_PRINTING)
+     priv->printJob = nullptr;
+     priv->data = { };
++#endif
+ 
+     g_signal_emit(printOperation, signals[FINISHED], 0);
+ }
+@@ -351,6 +353,7 @@
+     webkitPrintOperationFinished(printOperation);
+ }
+ 
++#if HAVE(GTK_UNIX_PRINTING)
+ static void webkitPrintOperationFailed(WebKitPrintOperation* printOperation, GUniqueOutPtr<GError>&& error)
+ {
+     g_signal_emit(printOperation, signals[FAILED], 0, error.get());
+@@ -363,9 +366,10 @@
+         toWebKitError(error.errorCode()), error.localizedDescription().utf8().data()) });
+     webkitPrintOperationFinished(printOperation);
+ }
++#endif // HAVE(GTK_UNIX_PRINTING)
+ 
++#if HAVE(GTK_UNIX_PRINTING)
+ static unsigned jobNumber = 0;
+-
+ static void webkitPrintOperationPrintPagesForFrame(WebKitPrintOperation* printOperation, WebFrameProxy* webFrame, GtkPrinter* printer, GtkPrintSettings* printSettings, GtkPageSetup* pageSetup)
+ {
+     if (!printer) {
+@@ -569,6 +573,9 @@
+     });
+ }
+ 
++#endif // HAVE(GTK_UNIX_PRINTING)
++
++#if HAVE(GTK_UNIX_PRINTING)
+ static void webkitPrintOperationPreparePrint(WebKitPrintOperation* printOperation)
+ {
+     auto* priv = printOperation->priv;
+@@ -676,8 +683,11 @@
+     return priv->preparePrintResponse->result;
+ }
+ 
++#endif // HAVE(GTK_UNIX_PRINTING)
++
+ WebKitPrintOperationResponse webkitPrintOperationRunDialogForFrame(WebKitPrintOperation* printOperation, GtkWindow* parent, WebFrameProxy* webFrame)
+ {
++#if HAVE(GTK_UNIX_PRINTING)
+     WebKitPrintOperationPrivate* priv = printOperation->priv;
+     if (!parent) {
+         GtkWidget* toplevel = gtk_widget_get_toplevel(GTK_WIDGET(priv->webView.get()));
+@@ -700,6 +710,13 @@
+         webkitPrintOperationPrintPagesForFrame(printOperation, webFrame, priv->printer.get(), priv->printSettings.get(), priv->pageSetup.get());
+ 
+     return response;
++
++#else
++    UNUSED_PARAM(printOperation);
++    UNUSED_PARAM(parent);
++    UNUSED_PARAM(webFrame);
++    return WEBKIT_PRINT_OPERATION_RESPONSE_CANCEL;
++#endif // HAVE(GTK_UNIX_PRINTING)
+ }
+ 
+ void webkitPrintOperationSetPrintMode(WebKitPrintOperation* printOperation, PrintInfo::PrintMode printMode)
+@@ -834,6 +851,7 @@
+     return webkitPrintOperationRunDialogForFrame(printOperation, parent, page.mainFrame());
+ }
+ 
++#if HAVE(GTK_UNIX_PRINTING)
+ static GRefPtr<GtkPrinter> printerFromSettingsOrDefault(GtkPrintSettings* settings)
+ {
+     struct FindPrinterData {
+@@ -857,6 +875,7 @@
+ 
+     return data.printer;
+ }
++#endif // HAVE(GTK_UNIX_PRINTING)
+ 
+ /**
+  * webkit_print_operation_print:
+@@ -882,6 +901,7 @@
+ {
+     g_return_if_fail(WEBKIT_IS_PRINT_OPERATION(printOperation));
+ 
++#if HAVE(GTK_UNIX_PRINTING)
+     WebKitPrintOperationPrivate* priv = printOperation->priv;
+     GRefPtr<GtkPrintSettings> printSettings = priv->printSettings ? priv->printSettings : adoptGRef(gtk_print_settings_new());
+     GRefPtr<GtkPageSetup> pageSetup = priv->pageSetup ? priv->pageSetup : adoptGRef(gtk_page_setup_new());
+@@ -889,4 +909,7 @@
+ 
+     auto& page = webkitWebViewGetPage(printOperation->priv->webView.get());
+     webkitPrintOperationPrintPagesForFrame(printOperation, page.mainFrame(), printer.get(), printSettings.get(), pageSetup.get());
++#else
++    webkitPrintOperationFailed(printOperation, GUniquePtr<GError> { g_error_new_literal(WEBKIT_PRINT_ERROR, WEBKIT_PRINT_ERROR_GENERAL, _("Printing is not supported on this platform")) });
++#endif // HAVE(GTK_UNIX_PRINTING)
+ }
