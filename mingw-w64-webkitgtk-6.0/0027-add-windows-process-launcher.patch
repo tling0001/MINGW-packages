@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/Source/WebKit/UIProcess/Launcher/win/ProcessLauncherWin.cpp
-@@ -0,0 +1,145 @@
+@@ -0,0 +1,147 @@
 +/*
 + * Copyright (C) 2010 Apple Inc. All rights reserved.
 + * Copyright (C) 2017 Sony Interactive Entertainment Inc.
@@ -69,9 +69,9 @@
 +
 +    // To get the full file path to WebKit2WebProcess.exe, we fild the location of WebKit2.dll,
 +    // remove the last path component.
-+    HMODULE webKitModule = ::GetModuleHandleW(L"WebKit2.dll");
-+    ASSERT(webKitModule);
-+    if (!webKitModule)
++    HMODULE webKitModule = nullptr;
++    if (!::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
++            reinterpret_cast<LPCWSTR>(reinterpret_cast<uintptr_t>(&processName)), &webKitModule))
 +        return;
 +
 +    WCHAR pathStr[MAX_PATH];
