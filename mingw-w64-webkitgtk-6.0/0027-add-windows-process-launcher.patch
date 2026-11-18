@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/Source/WebKit/UIProcess/Launcher/win/ProcessLauncherWin.cpp
-@@ -0,0 +1,147 @@
+@@ -0,0 +1,145 @@
 +/*
 + * Copyright (C) 2010 Apple Inc. All rights reserved.
 + * Copyright (C) 2017 Sony Interactive Entertainment Inc.
