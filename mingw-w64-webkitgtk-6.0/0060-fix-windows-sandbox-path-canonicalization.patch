@@ -1,0 +1,45 @@
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp
+@@ -1425,6 +1425,28 @@
+ IGNORE_CLANG_WARNINGS_BEGIN("unsafe-buffer-usage-in-libc-call")
+ static bool pathExistsAndIsNotHomeDirectory(const char* path)
+ {
++#if OS(WINDOWS)
++    // realpath() is a POSIX API and is not provided by the Windows CRT.
++    // _fullpath() supplies the corresponding absolute-path normalization;
++    // GLib's existence check preserves the requirement that sandbox paths
++    // must already exist.
++    std::unique_ptr<char, decltype(free)*> resolvedPath(_fullpath(nullptr, path, 0), free);
++    if (!resolvedPath || !g_file_test(resolvedPath.get(), G_FILE_TEST_EXISTS)) {
++        g_warning("Path %s must exist before adding it to the sandbox", path);
++        return false;
++    }
++
++    if (!g_ascii_strcasecmp(resolvedPath.get(), "\\home"))
++        return false;
++
++    std::unique_ptr<char, decltype(free)*> resolvedHomeDirectory(_fullpath(nullptr, g_get_home_dir(), 0), free);
++    if (!resolvedHomeDirectory) {
++        g_warning("Failed to canonicalize home directory %s", g_get_home_dir());
++        return false;
++    }
++
++    return g_ascii_strcasecmp(resolvedPath.get(), resolvedHomeDirectory.get());
++#else
+     std::unique_ptr<char, decltype(free)*> resolvedPath(realpath(path, nullptr), free);
+     if (!resolvedPath) {
+         if (errno == ENOENT)
+@@ -1438,12 +1460,13 @@
+         return false;
+ 
+     std::unique_ptr<char, decltype(free)*> resolvedHomeDirectory(realpath(g_get_home_dir(), nullptr), free);
+-    if (!resolvedPath) {
++    if (!resolvedHomeDirectory) {
+         g_warning("Failed to canonicalize path %s: %s", g_get_home_dir(), g_strerror(errno));
+         return false;
+     }
+ 
+     return strcmp(resolvedPath.get(), resolvedHomeDirectory.get());
++#endif
+ }
+ IGNORE_CLANG_WARNINGS_END
