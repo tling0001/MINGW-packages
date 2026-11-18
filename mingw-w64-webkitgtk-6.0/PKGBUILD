@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=202
+pkgrel=203
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -120,8 +120,9 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0056-clang64-windows-header-and-diagnostic-fixes.patch"
         "0057-fix-windows-gtk-api-cast-header.patch"
         "0058-guard-render-buffer-description-with-libdrm.patch"
+        "0059-fix-gtk4-init-macro-overload.patch"
         )
-sha256sums=('a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
 # Follow the extraction workaround used by mingw-w64-qemu.
@@ -194,9 +195,10 @@ prepare() {
     "${srcdir}/0056-clang64-windows-header-and-diagnostic-fixes.patch" \
     "${srcdir}/0057-fix-windows-gtk-api-cast-header.patch" \
     "${srcdir}/0058-guard-render-buffer-description-with-libdrm.patch" \
+    "${srcdir}/0059-fix-gtk4-init-macro-overload.patch" \
     ; do
     case "${patch_file}" in
-      *0025-*|*0027-*|*0030-*|*0056-*|*0057-*|*0058-*)
+      *0025-*|*0027-*|*0030-*|*0056-*|*0057-*|*0058-*|*0059-*)
         patch --fuzz=0 -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
         ;;
       *)
