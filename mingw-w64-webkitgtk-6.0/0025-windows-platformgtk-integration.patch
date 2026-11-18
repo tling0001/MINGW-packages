@@ -70,10 +70,9 @@
 
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -251,10 +251,6 @@
+@@ -254,5 +254,1 @@
 -UIProcess/Launcher/glib/ProcessLauncherGLib.cpp @no-unify
 -UIProcess/Launcher/glib/BubblewrapLauncher.cpp @no-unify
 -UIProcess/Launcher/glib/FlatpakLauncher.cpp @no-unify
 -UIProcess/Launcher/glib/XDGDBusProxy.cpp @no-unify
--
  UIProcess/Notifications/glib/NotificationService.cpp
