@@ -1,0 +1,11 @@
+--- a/Source/WebKit/NetworkProcess/cache/NetworkCacheDataGLib.cpp
++++ b/Source/WebKit/NetworkProcess/cache/NetworkCacheDataGLib.cpp
+@@ -31,8 +31,4 @@
+ #include <WebCore/SharedMemory.h>
+ 
+-#if !PLATFORM(WIN)
+-#include <gio/gfiledescriptorbased.h>
+-#endif
+-
+ #include <wtf/MallocSpan.h>
+ #include <wtf/glib/GSpanExtras.h>
