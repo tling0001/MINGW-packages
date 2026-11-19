@@ -1,0 +1,45 @@
+--- a/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/AcceleratedSurface.cpp
++++ b/Source/WebKit/WebProcess/WebPage/CoordinatedGraphics/AcceleratedSurface.cpp
+@@ -233,10 +233,12 @@
+ 
+ void AcceleratedSurface::RenderTargetShareableBuffer::willRenderFrame()
+ {
++#if OS(UNIX)
+     if (m_releaseFenceFD) {
+         if (auto fence = GLFence::importFD(PlatformDisplay::sharedDisplay().glDisplay(), WTF::move(m_releaseFenceFD)))
+             fence->serverWait();
+     }
++#endif
+ 
+     if (!m_surface->useSkia()) {
+         glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+@@ -248,19 +250,29 @@
+ std::unique_ptr<GLFence> AcceleratedSurface::RenderTargetShareableBuffer::createRenderingFence(bool useExplicitSync) const
+ {
+     auto& display = PlatformDisplay::sharedDisplay().glDisplay();
++#if OS(UNIX)
+     if (useExplicitSync && supportsExplicitSync()) {
+         if (auto fence = GLFence::createExportable(display))
+             return fence;
+     }
++#else
++    UNUSED_PARAM(useExplicitSync);
++#endif
+     return GLFence::create(display);
+ }
+ 
+ void AcceleratedSurface::RenderTargetShareableBuffer::sync(bool useExplicitSync)
+ {
+     if (auto fence = createRenderingFence(useExplicitSync)) {
++#if OS(UNIX)
+         m_renderingFenceFD = fence->exportFD();
+         if (!m_renderingFenceFD)
+             fence->clientWait();
++#else
++        // Windows has no Unix-fd fence transport. Complete rendering before
++        // publishing the shared buffer to the UI process instead.
++        fence->clientWait();
++#endif
+     } else if (!m_surface->useSkia())
+         glFlush();
+ }
