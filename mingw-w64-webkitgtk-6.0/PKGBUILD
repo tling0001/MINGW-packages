@@ -97,6 +97,7 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0061-fix-windows-gtk4-print-operation.patch"
         "0062-fix-gtk4-init-check-call-site.patch"
         "0063-fix-windows-gl-fence-fallback.patch"
+        "0064-fix-windows-network-cache-glib-header.patch"
         "0030-add-windows-auxiliary-process-main.patch"
         "0031-remove-stale-unix-includes.patch"
         "0032-use-glib-for-notification-icon-files.patch"
@@ -125,7 +126,7 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0059-fix-gtk4-init-macro-overload.patch"
         "0060-fix-windows-sandbox-path-canonicalization.patch"
         )
-sha256sums=('a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 # WebKit's source tarball contains links that bsdtar cannot materialize on Windows.
 # Follow the extraction workaround used by mingw-w64-qemu.
@@ -175,6 +176,7 @@ prepare() {
     "${srcdir}/0061-fix-windows-gtk4-print-operation.patch" \
     "${srcdir}/0062-fix-gtk4-init-check-call-site.patch" \
     "${srcdir}/0063-fix-windows-gl-fence-fallback.patch" \
+    "${srcdir}/0064-fix-windows-network-cache-glib-header.patch" \
     "${srcdir}/0030-add-windows-auxiliary-process-main.patch" \
     "${srcdir}/0031-remove-stale-unix-includes.patch" \
     "${srcdir}/0032-use-glib-for-notification-icon-files.patch" \
