@@ -4,7 +4,7 @@ _realname=webkitgtk-6.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=2.54.2
-pkgrel=213
+pkgrel=214
 pkgdesc="Web content engine for GTK 4 (WebKitGTK API 6.0) (mingw-w64)"
 arch=('any')
 mingw_arch=('ucrt64' 'clang64' 'clangarm64')
@@ -96,6 +96,7 @@ source=("https://www.webkitgtk.org/releases/webkitgtk-${pkgver}.tar.xz"
         "0028-remove-unused-unix-includes.patch"
         "0061-fix-windows-gtk4-print-operation.patch"
         "0062-fix-gtk4-init-check-call-site.patch"
+        "0063-fix-windows-gl-fence-fallback.patch"
         "0030-add-windows-auxiliary-process-main.patch"
         "0031-remove-stale-unix-includes.patch"
         "0032-use-glib-for-notification-icon-files.patch"
@@ -173,6 +174,7 @@ prepare() {
     "${srcdir}/0028-remove-unused-unix-includes.patch" \
     "${srcdir}/0061-fix-windows-gtk4-print-operation.patch" \
     "${srcdir}/0062-fix-gtk4-init-check-call-site.patch" \
+    "${srcdir}/0063-fix-windows-gl-fence-fallback.patch" \
     "${srcdir}/0030-add-windows-auxiliary-process-main.patch" \
     "${srcdir}/0031-remove-stale-unix-includes.patch" \
     "${srcdir}/0032-use-glib-for-notification-icon-files.patch" \
@@ -202,7 +204,7 @@ prepare() {
     "${srcdir}/0060-fix-windows-sandbox-path-canonicalization.patch" \
     ; do
     case "${patch_file}" in
-      *0025-*|*0027-*|*0030-*|*0056-*|*0057-*|*0058-*|*0059-*|*0060-*|*0061-*|*0062-*)
+      *0025-*|*0027-*|*0030-*|*0056-*|*0057-*|*0058-*|*0059-*|*0060-*|*0061-*|*0062-*|*0063-*)
         patch --fuzz=0 -d "${source_dir}" -Np1 -i "${patch_file}" || return 1
         ;;
       *)
