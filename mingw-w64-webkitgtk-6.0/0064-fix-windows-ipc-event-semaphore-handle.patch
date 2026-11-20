@@ -1,9 +1,11 @@
 --- a/Source/WebKit/Platform/IPC/IPCEvent.h
 +++ b/Source/WebKit/Platform/IPC/IPCEvent.h
 @@ -149,7 +149,7 @@ inline std::optional<EventSignalPair> createEventSignalPair()
+ {
      Semaphore event;
- #if PLATFORM(WIN)
+-#if PLATFORM(WIN)
 -    Semaphore signal(Win32Handle { event.m_semaphoreHandle });
++#if OS(WINDOWS)
 +    Semaphore signal(event.win32Handle());
  #else
      Semaphore signal(event.m_fd.duplicate());
