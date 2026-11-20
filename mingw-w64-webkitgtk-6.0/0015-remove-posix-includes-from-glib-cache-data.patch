@@ -16,7 +16,8 @@
  
  #include <wtf/MallocSpan.h>
  #include <wtf/glib/GSpanExtras.h>
-@@ -128,9 +119,9 @@ Data Data::adoptMap(FileSystem::MappedFileData&& mappedFile, FileSystem::FileHandle&& fileHandle)
+@@ -128,9 +119,9 @@
+ Data Data::adoptMap(FileSystem::MappedFileData&& mappedFile, FileSystem::FileHandle&& fileHandle)
  {
      size_t size = mappedFile.size();
 +    ASSERT(mappedFile);
@@ -26,7 +27,8 @@
      MapWrapper* wrapper = new MapWrapper { WTF::move(mappedFile) };
      return { adoptGRef(g_bytes_new_with_free_func(map, size, reinterpret_cast<GDestroyNotify>(deleteMapWrapper), wrapper)), WTF::move(fileHandle) };
  }
-@@ -142,7 +133,15 @@ RefPtr<WebCore::SharedMemory> Data::tryCreateSharedMemory() const
+@@ -142,7 +133,15 @@
+ 
      gsize length;
      const auto* data = g_bytes_get_data(m_buffer.get(), &length);
 +#if OS(WINDOWS)
