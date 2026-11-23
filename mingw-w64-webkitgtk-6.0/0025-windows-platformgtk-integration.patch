@@ -70,7 +70,7 @@
 
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -59,9 +59,3 @@
+@@ -59,9 +59,4 @@
  NetworkProcess/webrtc/rice/RiceBackend.cpp
  
 -Platform/IPC/glib/ConnectionGLib.cpp
@@ -80,9 +80,9 @@
 -Platform/IPC/unix/IPCUtilitiesUnix.cpp
  
  Platform/classifier/ResourceLoadStatisticsClassifier.cpp
-@@ -109,1 +103,0 @@
+@@ -109,1 +104,0 @@
 -Shared/unix/AuxiliaryProcessMain.cpp
-@@ -254,6 +247,2 @@
+@@ -254,6 +248,2 @@
 -UIProcess/Launcher/glib/ProcessLauncherGLib.cpp @no-unify
 -UIProcess/Launcher/glib/BubblewrapLauncher.cpp @no-unify
 -UIProcess/Launcher/glib/FlatpakLauncher.cpp @no-unify
