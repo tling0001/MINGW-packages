@@ -17,7 +17,7 @@
 -    GLib::GioUnix
 -    GLib::Module
 -)
-+if (WIN32)
++if (WIN32 OR MINGW)
 +    list(APPEND WebKit_SOURCES
 +        Platform/IPC/win/ConnectionWin.cpp
 +        Platform/IPC/win/IPCSemaphoreWin.cpp
@@ -32,7 +32,7 @@
 +    )
 +endif ()
 +
-+if (WIN32)
++if (WIN32 OR MINGW)
 +    list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
 +else ()
 +    list(APPEND WebKit_SOURCES
@@ -43,16 +43,16 @@
 +    )
 +endif ()
 +
-+if (WIN32)
++if (WIN32 OR MINGW)
 +    list(APPEND WebKit_SOURCES Shared/win/AuxiliaryProcessMainWin.cpp)
 +else ()
 +    list(APPEND WebKit_SOURCES Shared/unix/AuxiliaryProcessMain.cpp)
 +endif ()
 +
-+if (WIN32)
++if (WIN32 OR MINGW)
 +    list(APPEND WebKit_LIBRARIES shlwapi)
 +endif ()
-+if (NOT WIN32)
++if (NOT WIN32 AND NOT MINGW)
 +    list(APPEND WebKit_LIBRARIES GLib::GioUnix)
 +endif ()
 +list(APPEND WebKit_LIBRARIES GLib::Module GTK::GTK)
