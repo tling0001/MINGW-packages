@@ -77,3 +77,14 @@
 -UIProcess/Launcher/glib/XDGDBusProxy.cpp @no-unify
  
  UIProcess/Notifications/glib/NotificationService.cpp
+--- a/Source/WebKit/SourcesGTK.txt
++++ b/Source/WebKit/SourcesGTK.txt
+@@ -58,7 +58,6 @@
+ 
+ NetworkProcess/webrtc/rice/RiceBackend.cpp
+ 
+-Platform/IPC/glib/ConnectionGLib.cpp
+ 
+ Platform/IPC/unix/ArgumentCodersUnix.cpp
+ Platform/IPC/unix/IPCSemaphoreUnix.cpp
+ Platform/IPC/unix/IPCUtilitiesUnix.cpp
