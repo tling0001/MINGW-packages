@@ -70,15 +70,6 @@
 
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -254,6 +254,2 @@
--UIProcess/Launcher/glib/ProcessLauncherGLib.cpp @no-unify
--UIProcess/Launcher/glib/BubblewrapLauncher.cpp @no-unify
--UIProcess/Launcher/glib/FlatpakLauncher.cpp @no-unify
--UIProcess/Launcher/glib/XDGDBusProxy.cpp @no-unify
- 
- UIProcess/Notifications/glib/NotificationService.cpp
---- a/Source/WebKit/SourcesGTK.txt
-+++ b/Source/WebKit/SourcesGTK.txt
 @@ -58,7 +58,6 @@
  
  NetworkProcess/webrtc/rice/RiceBackend.cpp
@@ -88,3 +79,10 @@
  Platform/IPC/unix/ArgumentCodersUnix.cpp
  Platform/IPC/unix/IPCSemaphoreUnix.cpp
  Platform/IPC/unix/IPCUtilitiesUnix.cpp
+@@ -254,6 +253,2 @@
+-UIProcess/Launcher/glib/ProcessLauncherGLib.cpp @no-unify
+-UIProcess/Launcher/glib/BubblewrapLauncher.cpp @no-unify
+-UIProcess/Launcher/glib/FlatpakLauncher.cpp @no-unify
+-UIProcess/Launcher/glib/XDGDBusProxy.cpp @no-unify
+ 
+ UIProcess/Notifications/glib/NotificationService.cpp
