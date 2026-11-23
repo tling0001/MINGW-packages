@@ -79,7 +79,7 @@
  Platform/IPC/unix/ArgumentCodersUnix.cpp
  Platform/IPC/unix/IPCSemaphoreUnix.cpp
  Platform/IPC/unix/IPCUtilitiesUnix.cpp
-@@ -254,6 +253,2 @@
+@@ -251,10 +250,6 @@
 -UIProcess/Launcher/glib/ProcessLauncherGLib.cpp @no-unify
 -UIProcess/Launcher/glib/BubblewrapLauncher.cpp @no-unify
 -UIProcess/Launcher/glib/FlatpakLauncher.cpp @no-unify
