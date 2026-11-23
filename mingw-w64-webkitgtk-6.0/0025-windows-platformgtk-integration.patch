@@ -17,7 +17,7 @@
 -    GLib::GioUnix
 -    GLib::Module
 -)
-+if (WIN32 OR MINGW)
++if (CMAKE_HOST_WIN32)
 +    list(APPEND WebKit_SOURCES
 +        Platform/IPC/win/ConnectionWin.cpp
 +        Platform/IPC/win/IPCSemaphoreWin.cpp
@@ -32,7 +32,7 @@
 +    )
 +endif ()
 +
-+if (WIN32 OR MINGW)
++if (CMAKE_HOST_WIN32)
 +    list(APPEND WebKit_SOURCES UIProcess/Launcher/win/ProcessLauncherWin.cpp)
 +else ()
 +    list(APPEND WebKit_SOURCES
@@ -43,16 +43,16 @@
 +    )
 +endif ()
 +
-+if (WIN32 OR MINGW)
++if (CMAKE_HOST_WIN32)
 +    list(APPEND WebKit_SOURCES Shared/win/AuxiliaryProcessMainWin.cpp)
 +else ()
 +    list(APPEND WebKit_SOURCES Shared/unix/AuxiliaryProcessMain.cpp)
 +endif ()
 +
-+if (WIN32 OR MINGW)
++if (CMAKE_HOST_WIN32)
 +    list(APPEND WebKit_LIBRARIES shlwapi)
 +endif ()
-+if (NOT WIN32 AND NOT MINGW)
++if (NOT CMAKE_HOST_WIN32)
 +    list(APPEND WebKit_LIBRARIES GLib::GioUnix)
 +endif ()
 +list(APPEND WebKit_LIBRARIES GLib::Module GTK::GTK)
@@ -70,16 +70,21 @@
 
 --- a/Source/WebKit/SourcesGTK.txt
 +++ b/Source/WebKit/SourcesGTK.txt
-@@ -58,7 +58,6 @@
+@@ -58,11 +58,6 @@
  
  NetworkProcess/webrtc/rice/RiceBackend.cpp
  
 -Platform/IPC/glib/ConnectionGLib.cpp
- 
- Platform/IPC/unix/ArgumentCodersUnix.cpp
+-Platform/IPC/unix/ArgumentCodersUnix.cpp
+-Platform/IPC/unix/IPCSemaphoreUnix.cpp
+-Platform/IPC/unix/IPCUtilitiesUnix.cpp
+
+
  Platform/IPC/unix/IPCSemaphoreUnix.cpp
  Platform/IPC/unix/IPCUtilitiesUnix.cpp
-@@ -251,10 +250,6 @@
+@@ -109,7 +104,6 @@
+-Shared/unix/AuxiliaryProcessMain.cpp
+@@ -251,10 +249,6 @@
 -UIProcess/Launcher/glib/ProcessLauncherGLib.cpp @no-unify
 -UIProcess/Launcher/glib/BubblewrapLauncher.cpp @no-unify
 -UIProcess/Launcher/glib/FlatpakLauncher.cpp @no-unify
