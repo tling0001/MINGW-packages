@@ -13,7 +13,6 @@
      WEBKIT_ADD_TARGET_PROPERTIES(WebKit LINK_FLAGS "-Wl,--version-script,${CMAKE_CURRENT_SOURCE_DIR}/webkitglib-symbols.map")
      set_property(TARGET WebKit APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/webkitglib-symbols.map")
  endif ()
- 
 @@ -47,10 +47,46 @@
      "SourcesGTK.txt"
  )
