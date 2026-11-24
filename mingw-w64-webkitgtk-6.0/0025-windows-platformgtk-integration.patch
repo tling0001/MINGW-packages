@@ -1,6 +1,6 @@
 --- a/Source/WebKit/PlatformGTK.cmake
 +++ b/Source/WebKit/PlatformGTK.cmake
-@@ -35,10 +35,11 @@
+@@ -35,10 +35,10 @@
  add_definitions(-DPKGLIBEXECDIR="${LIBEXEC_INSTALL_DIR}")
  add_definitions(-DLOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
 -add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}")
@@ -14,7 +14,7 @@
      set_property(TARGET WebKit APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/webkitglib-symbols.map")
  endif ()
  
-@@ -47,10 +47,45 @@
+@@ -47,10 +47,46 @@
      "SourcesGTK.txt"
  )
  
@@ -65,7 +65,7 @@
  
  list(APPEND WebKit_MESSAGES_IN_FILES
      UIProcess/ViewGestureController
-@@ -82,6 +117,7 @@
+@@ -82,6 +118,7 @@
      Shared/glib/UserMessage.serialization.in
  
      Shared/soup/WebCoreArgumentCodersSoup.serialization.in
