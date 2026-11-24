@@ -1,3 +1,5 @@
+diff --git a/Source/JavaScriptCore/jsc.cpp b/Source/JavaScriptCore/jsc.cpp
+index 7a26bf7..f789fa0 100644
 --- a/Source/JavaScriptCore/jsc.cpp
 +++ b/Source/JavaScriptCore/jsc.cpp
 @@ -146,8 +146,10 @@
@@ -11,7 +13,36 @@
  
  #if OS(DARWIN) && CPU(ARM_THUMB2)
  #include <arm/arch.h>
-@@ -3647,7 +3649,9 @@
+@@ -1049,7 +1051,7 @@ static URL currentWorkingDirectory()
+     // https://msdn.microsoft.com/en-us/library/windows/desktop/ff381407.aspx
+     Vector<wchar_t> buffer(bufferLength);
+     DWORD lengthNotIncludingNull = ::GetCurrentDirectoryW(bufferLength, buffer.mutableSpan().data());
+-    String directoryString(buffer.span().data(), lengthNotIncludingNull);
++    String directoryString(std::span<const char16_t>(reinterpret_cast<const char16_t*>(buffer.span().data()), lengthNotIncludingNull));
+     // We don't support network path like \\host\share\<path name>.
+     if (directoryString.startsWith("\\\\"_s))
+         return { };
+@@ -1442,14 +1444,16 @@ static bool fetchModuleFromLocalFileSystem(const URL& fileURL, Vector& buffer)
+     // These also appear to turn off handling forward slashes as
+     // directory separators as it disables all string parsing on names.
+     fileName = makeStringByReplacingAll(fileName, '/', '\\');
+-    auto pathName = makeString("\\\\?\\"_s, fileName).wideCharacters();
++    auto pathName = makeString("\\\\?\\"_s, fileName).charactersWithNullTermination();
++    if (!pathName)
++        return false;
+     struct _stat status { };
+-    if (_wstat(pathName.span().data(), &status))
++    if (_wstat(reinterpret_cast<const wchar_t*>(pathName->span().data()), &status))
+         return false;
+     if ((status.st_mode & S_IFMT) != S_IFREG)
+         return false;
+ 
+-    FILE* f = _wfopen(pathName.span().data(), L"rb");
++    FILE* f = _wfopen(reinterpret_cast<const wchar_t*>(pathName->span().data()), L"rb");
+ #else
+     auto pathName = fileName.utf8();
+     struct stat status { };
+@@ -3647,7 +3651,9 @@ int main(int argc, char** argv)
      _setmode(_fileno(stdout), _O_BINARY);
      _setmode(_fileno(stderr), _O_BINARY);
  
