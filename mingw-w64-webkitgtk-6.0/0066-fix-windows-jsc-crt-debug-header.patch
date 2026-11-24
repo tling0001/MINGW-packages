@@ -1,0 +1,23 @@
+--- a/Source/JavaScriptCore/jsc.cpp
++++ b/Source/JavaScriptCore/jsc.cpp
+@@ -146,8 +146,10 @@
+ #if OS(WINDOWS)
+ #include <mmsystem.h>
+ #include <windows.h>
++#if !PLATFORM(GTK)
+ #include <wtf/win/WTFCRTDebug.h>
+ #endif
++#endif
+ 
+ #if OS(DARWIN) && CPU(ARM_THUMB2)
+ #include <arm/arch.h>
+@@ -3647,7 +3649,9 @@
+     _setmode(_fileno(stdout), _O_BINARY);
+     _setmode(_fileno(stderr), _O_BINARY);
+ 
++#if !PLATFORM(GTK)
+     WTF::disableCRTDebugAssertDialog();
++#endif
+ 
+     timeBeginPeriod(1);
+ #endif
