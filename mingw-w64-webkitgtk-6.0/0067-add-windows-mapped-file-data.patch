@@ -2,10 +2,11 @@ diff --git a/Source/WTF/wtf/MappedFileData.h b/Source/WTF/wtf/MappedFileData.h
 --- a/Source/WTF/wtf/MappedFileData.h
 +++ b/Source/WTF/wtf/MappedFileData.h
 @@ -57,6 +57,6 @@
--#if OS(WINDOWS) && PLATFORM(GTK) && !HAVE(MMAP)
-+#if OS(WINDOWS) && PLATFORM(GTK)
-     MappedFileData(MappedFileData&&);
-     MappedFileData& operator=(MappedFileData&&);
+ #if OS(WINDOWS) && PLATFORM(GTK) && !HAVE(MMAP)
+-    MappedFileData(MappedFileData&&);
+-    MappedFileData& operator=(MappedFileData&&);
++    WTF_EXPORT_PRIVATE MappedFileData(MappedFileData&&);
++    WTF_EXPORT_PRIVATE MappedFileData& operator=(MappedFileData&&);
  #else
      MappedFileData(MappedFileData&&) = default;
      MappedFileData& operator=(MappedFileData&&) = default;
@@ -13,7 +14,7 @@ diff --git a/Source/WTF/wtf/win/MappedFileDataWin.cpp b/Source/WTF/wtf/win/Mappe
 new file mode 100644
 --- /dev/null
 +++ b/Source/WTF/wtf/win/MappedFileDataWin.cpp
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,72 @@
 +/*
 + * Copyright (C) 2026 WebKit contributors. All rights reserved.
 + *
@@ -55,8 +56,6 @@ new file mode 100644
 +    , m_isValid(true)
 +{ }
 +
-+MappedFileData::MappedFileData(MappedFileData&&) = default;
-+MappedFileData& MappedFileData::operator=(MappedFileData&&) = default;
 +MappedFileData::~MappedFileData() = default;
 +#elif OS(WINDOWS) && PLATFORM(GTK)
 +MappedFileData::MappedFileData(std::span<uint8_t> fileData)
