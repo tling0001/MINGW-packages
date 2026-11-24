@@ -2,7 +2,7 @@ diff --git a/Source/WTF/wtf/win/MappedFileDataWin.cpp b/Source/WTF/wtf/win/Mappe
 new file mode 100644
 --- /dev/null
 +++ b/Source/WTF/wtf/win/MappedFileDataWin.cpp
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,63 @@
 +/*
 + * Copyright (C) 2026 WebKit contributors. All rights reserved.
 + *
