@@ -1,23 +1,8 @@
-diff --git a/Source/WTF/wtf/MappedFileData.h b/Source/WTF/wtf/MappedFileData.h
-index e05e207..fb96b61 100644
---- a/Source/WTF/wtf/MappedFileData.h
-+++ b/Source/WTF/wtf/MappedFileData.h
-@@ -54,7 +54,7 @@ public:
-     MappedFileData() = default;
-     WTF_EXPORT_PRIVATE ~MappedFileData();
- 
--    MappedFileData(MappedFileData&&) = default;
--    MappedFileData& operator=(MappedFileData&&) = default;
-+    WTF_EXPORT_PRIVATE MappedFileData(MappedFileData&&);
-+    WTF_EXPORT_PRIVATE MappedFileData& operator=(MappedFileData&&);
- 
-     static MappedFileData emptyFile()
-     {
 diff --git a/Source/WTF/wtf/win/MappedFileDataWin.cpp b/Source/WTF/wtf/win/MappedFileDataWin.cpp
 new file mode 100644
 --- /dev/null
 +++ b/Source/WTF/wtf/win/MappedFileDataWin.cpp
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,61 @@
 +/*
 + * Copyright (C) 2026 WebKit contributors. All rights reserved.
 + *
@@ -46,6 +31,11 @@ new file mode 100644
 +#include "config.h"
 +#include <wtf/MappedFileData.h>
 +
++#if OS(WINDOWS) && PLATFORM(GTK)
++#include <windows.h>
++#endif
++#include <utility>
++
 +namespace WTF::FileSystemImpl {
 +
 +#if HAVE(MMAP)
@@ -53,10 +43,35 @@ new file mode 100644
 +    : m_fileData(WTF::move(fileData))
 +    , m_isValid(true)
 +{ }
-+#endif
 +
-+MappedFileData::MappedFileData(MappedFileData&&) = default;
-+MappedFileData& MappedFileData::operator=(MappedFileData&&) = default;
 +MappedFileData::~MappedFileData() = default;
++#elif OS(WINDOWS) && PLATFORM(GTK)
++MappedFileData::MappedFileData(std::span<uint8_t> fileData)
++    : m_fileData(fileData)
++    , m_isValid(true)
++{ }
++
++MappedFileData::MappedFileData(MappedFileData&& other)
++    : m_fileData(std::exchange(other.m_fileData, { }))
++    , m_isValid(std::exchange(other.m_isValid, false))
++{ }
++
++MappedFileData& MappedFileData::operator=(MappedFileData&& other)
++{
++    if (this == &other)
++        return *this;
++    if (!m_fileData.empty())
++        UnmapViewOfFile(m_fileData.data());
++    m_fileData = std::exchange(other.m_fileData, { });
++    m_isValid = std::exchange(other.m_isValid, false);
++    return *this;
++}
++
++MappedFileData::~MappedFileData()
++{
++    if (!m_fileData.empty())
++        UnmapViewOfFile(m_fileData.data());
++}
++#endif
 +
 +} // namespace WTF::FileSystemImpl
