@@ -1,0 +1,28 @@
+diff --git a/Source/WebKit/UIProcess/gtk/AcceleratedBackingStore.cpp b/Source/WebKit/UIProcess/gtk/AcceleratedBackingStore.cpp
+index 59023fc..27b3479 100644
+--- a/Source/WebKit/UIProcess/gtk/AcceleratedBackingStore.cpp
++++ b/Source/WebKit/UIProcess/gtk/AcceleratedBackingStore.cpp
+@@ -395,6 +395,7 @@ void AcceleratedBackingStore::BufferDMABuf::release()
+ 
+ RefPtr<AcceleratedBackingStore::Buffer> AcceleratedBackingStore::BufferEGLImage::create(WebPageProxy& webPage, uint64_t id, uint64_t surfaceID, const IntSize& size, RendererBufferFormat::Usage usage, DMABufBufferAttributes&& dmaBufAttributes)
+ {
++#if USE(GBM)
+     auto* glDisplay = Display::singleton().glDisplay();
+     if (!glDisplay)
+         return nullptr;
+@@ -406,6 +407,15 @@ RefPtr<AcceleratedBackingStore::Buffer> AcceleratedBackingStore::BufferEGLImage:
+     }
+ 
+     return adoptRef(*new BufferEGLImage(webPage, id, surfaceID, size, usage, WTF::move(dmaBufAttributes), image));
++#else
++    UNUSED_PARAM(webPage);
++    UNUSED_PARAM(id);
++    UNUSED_PARAM(surfaceID);
++    UNUSED_PARAM(size);
++    UNUSED_PARAM(usage);
++    UNUSED_PARAM(dmaBufAttributes);
++    return nullptr;
++#endif
+ }
+ 
+ AcceleratedBackingStore::BufferEGLImage::BufferEGLImage(WebPageProxy& webPage, uint64_t id, uint64_t surfaceID, const IntSize& size, RendererBufferFormat::Usage usage, DMABufBufferAttributes&& dmaBufAttributes, EGLImage image)
