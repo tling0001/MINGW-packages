@@ -1,19 +1,27 @@
+diff --git a/Source/WTF/wtf/PlatformGTK.cmake b/Source/WTF/wtf/PlatformGTK.cmake
+index c45ffd1..9cb72ca 100644
 --- a/Source/WTF/wtf/PlatformGTK.cmake
 +++ b/Source/WTF/wtf/PlatformGTK.cmake
-@@ -23,8 +23,6 @@
+@@ -21,9 +21,7 @@ list(APPEND WTF_SOURCES
+     posix/CPUTimePOSIX.cpp
      posix/FileHandlePOSIX.cpp
      posix/FileSystemPOSIX.cpp
-     posix/MappedFileDataPOSIX.cpp
+-    posix/MappedFileDataPOSIX.cpp
      posix/OSAllocatorPOSIX.cpp
 -    posix/ThreadingPOSIX.cpp
--
+ 
      text/unix/TextBreakIteratorInternalICUUnix.cpp
  
-@@ -32,7 +30,18 @@
-     unix/LoggingUnix.cpp
+@@ -32,6 +30,23 @@ list(APPEND WTF_SOURCES
      unix/UniStdExtrasUnix.cpp
  )
  
++if (WIN32)
++    list(APPEND WTF_SOURCES win/MappedFileDataWin.cpp)
++else ()
++    list(APPEND WTF_SOURCES posix/MappedFileDataPOSIX.cpp)
++endif ()
++
 +if (WIN32)
 +    list(APPEND WTF_SOURCES
 +        win/ThreadingWin.cpp
@@ -28,9 +36,22 @@
  list(APPEND WTF_PUBLIC_HEADERS
      PlatformEnableGlib.h
  
+@@ -62,6 +77,10 @@ list(APPEND WTF_PUBLIC_HEADERS
+     unix/UnixFileDescriptor.h
+ )
+ 
++if (WIN32)
++    list(APPEND WTF_PUBLIC_HEADERS win/Win32Handle.h)
++endif ()
++
+ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+     list(APPEND WTF_SOURCES
+         linux/CurrentProcessMemoryStatus.cpp
+diff --git a/Source/JavaScriptCore/interpreter/CallFrame.h b/Source/JavaScriptCore/interpreter/CallFrame.h
+index 8ad7388..a23c554 100644
 --- a/Source/JavaScriptCore/interpreter/CallFrame.h
 +++ b/Source/JavaScriptCore/interpreter/CallFrame.h
-@@ -392,6 +392,8 @@
+@@ -392,7 +392,9 @@ JS_EXPORT_PRIVATE bool NODELETE isFromJSCode(void* returnAddress);
              : "rbp" /* clobber rbp */ \
          ); \
          ASSERT(JSC::isFromJSCode(removeCodePtrTag<void*>(__builtin_return_address(0)))); \
@@ -40,16 +61,4 @@
 +        std::bit_cast<JSC::CallFrame*>(*(returnAddressLocation - 1)); \
      })
  #else // !OS(WINDOWS) || !CPU(X86_64)
-
---- a/Source/WTF/wtf/PlatformGTK.cmake
-+++ b/Source/WTF/wtf/PlatformGTK.cmake
-@@ -63,3 +63,9 @@
- )
- 
-+if (WIN32)
-+    list(APPEND WTF_PUBLIC_HEADERS
-+        win/Win32Handle.h
-+    )
-+endif ()
-+
- if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+ // FIXME (see rdar://72897291): Work around a Clang bug where __builtin_return_address()
