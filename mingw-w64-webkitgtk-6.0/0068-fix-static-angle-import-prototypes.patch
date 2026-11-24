@@ -1,9 +1,18 @@
 diff --git a/Source/ThirdParty/ANGLE/CMakeLists.txt b/Source/ThirdParty/ANGLE/CMakeLists.txt
 --- a/Source/ThirdParty/ANGLE/CMakeLists.txt
 +++ b/Source/ThirdParty/ANGLE/CMakeLists.txt
+@@ -163 +163 @@
+-        LIBANGLE_IMPLEMENTATION
++        LIBANGLE_IMPLEMENTATION ANGLE_EXPORT=
+@@ -177 +177 @@
+-        LIBGLESV2_IMPLEMENTATION
++        LIBGLESV2_IMPLEMENTATION ANGLE_EXPORT=
 @@ -192 +192 @@
 -    target_compile_definitions(GLESv2Framework INTERFACE USE_SYSTEM_EGL)
 +    target_compile_definitions(GLESv2Framework INTERFACE USE_SYSTEM_EGL KHRONOS_STATIC GL_APICALL= ANGLE_EXPORT=)
+@@ -204 +204 @@
+-            EGLAPI=
++            EGLAPI= ANGLE_EXPORT=
 @@ -218 +218 @@
 -        target_compile_definitions(EGLFramework INTERFACE ${gl_prototypes})
-+        target_compile_definitions(EGLFramework INTERFACE ${gl_prototypes} KHRONOS_STATIC EGLAPI=)
++        target_compile_definitions(EGLFramework INTERFACE ${gl_prototypes} KHRONOS_STATIC EGLAPI= ANGLE_EXPORT=)
