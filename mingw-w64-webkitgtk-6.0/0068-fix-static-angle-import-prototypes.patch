@@ -7,7 +7,7 @@ index 37aaff1..195ed6e 100644
      target_link_libraries(GLESv2Framework INTERFACE GLESv2)
      target_include_directories(GLESv2Framework INTERFACE ${ANGLE_FRAMEWORK_HEADERS_DIR} ${ANGLE_HEADERS_DIR})
 -    target_compile_definitions(GLESv2Framework INTERFACE USE_SYSTEM_EGL)
-+    target_compile_definitions(GLESv2Framework INTERFACE USE_SYSTEM_EGL KHRONOS_STATIC GL_APICALL=)
++    target_compile_definitions(GLESv2Framework INTERFACE USE_SYSTEM_EGL KHRONOS_STATIC GL_APICALL= ANGLE_EXPORT=)
      add_dependencies(GLESv2Framework GLSLANGHeaders ANGLEHeaders)
      add_library(ANGLE::GLES ALIAS GLESv2Framework)
  
