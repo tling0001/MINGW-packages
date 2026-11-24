@@ -2,7 +2,7 @@ diff --git a/Source/WTF/wtf/MappedFileData.h b/Source/WTF/wtf/MappedFileData.h
 index e05e207..fb96b61 100644
 --- a/Source/WTF/wtf/MappedFileData.h
 +++ b/Source/WTF/wtf/MappedFileData.h
-@@ -54,8 +54,8 @@ public:
+@@ -54,7 +54,7 @@ public:
      MappedFileData() = default;
      WTF_EXPORT_PRIVATE ~MappedFileData();
  
